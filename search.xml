@@ -44,7 +44,7 @@
 
 <p>你可以按照提示输入命令<code>git config receive.denyCurrentBranch ignore</code>解决，这里我采用另一种方法解决：</p>
 <p><strong>创建裸仓库，和代码文件分开存放</strong></p>
-<p>创建一个叫hexo.git的裸仓库，所以hexo的配置信息也要换成hexo.git。然后添加钩子post-receive并设置为可执行文件，里面的内容为</p>
+<p>创建一个叫hexo.git的裸仓库，所以hexo的配置信息也要换成hexo.git，创建hexo空文件夹。然后添加钩子post-receive并设置为可执行文件，里面的内容为</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git --work-tree=/home/ubuntu/hexo --git-dir=/home/ubuntu/hexo.git checkout -f</span><br></pre></td></tr></table></figure>
 
 <p>这样，当你deploy的时候，会把网站的内容到存到hexo文件夹中。后面你还需要配置服务器，用Apache或者Nginx，然后指定网站的根目录为hexo，即可正常访问。</p>
