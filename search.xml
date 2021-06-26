@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>搭建个人博客</title>
-    <url>/2021/06/26/%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
+    <url>/2021/06/24/%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<p>买服务器。。配置。。</p>
 <p>之前用WordPress搭建了一遍，但是感觉WordPress对代码和markdown的支持不太好，后面就改换Hexo了。</p>
 <p>如何安装Hexo可以在官网得到详细的教程，所以这里不打算展开讲，下面讲讲官网没提到的。</p>
