@@ -29,6 +29,8 @@
 <li>如何建网站、建文章、本地发布</li>
 </ul>
 <h3 id="我要讲的"><a href="#我要讲的" class="headerlink" title="我要讲的"></a>我要讲的</h3><h4 id="博客主题"><a href="#博客主题" class="headerlink" title="博客主题"></a>博客主题</h4><p>这里我选择了NexT，比较简洁，地址：<a href="https://theme-next.js.org,网站里面也介绍了如何配置各种东西./">https://theme-next.js.org，网站里面也介绍了如何配置各种东西。</a></p>
+<span id="more"></span>
+
 <blockquote>
 <p>如果你不清楚某一个配置项如何实现的，可以在评论区留言</p>
 </blockquote>
@@ -37,12 +39,11 @@
 
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">date: 2021-06-13 09:10:25</span><br><span class="line">type: tags</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
 
-<span id="more"></span>
-
 <p>最后记得在NexT的配置中开启这两个，比如我当前的配置如下：</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">  <span class="comment">#about: /about/ || fa fa-user</span></span><br><span class="line">  <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-th</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br><span class="line">  <span class="comment">#schedule: /schedule/ || fa fa-calendar</span></span><br><span class="line">  <span class="comment">#sitemap: /sitemap.xml || fa fa-sitemap</span></span><br><span class="line">  <span class="comment">#commonweal: /404/ || fa fa-heartbeat</span></span><br></pre></td></tr></table></figure>
 
-
+<h4 id="部署到服务器上"><a href="#部署到服务器上" class="headerlink" title="部署到服务器上"></a>部署到服务器上</h4><p>这里采用Git的方式部署，首先需要安装Git部署插件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
 
 
 
