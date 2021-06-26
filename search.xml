@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2021/06/26/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
     <title>搭建个人博客</title>
     <url>/2021/06/26/%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<p>买服务器。。配置。。</p>
@@ -45,8 +27,33 @@
 <h4 id="部署到服务器上"><a href="#部署到服务器上" class="headerlink" title="部署到服务器上"></a>部署到服务器上</h4><p>这里采用Git的方式部署，首先需要安装Git部署插件</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
 
+<p>本地配置添加（IP改为你的服务器地址，同时要先配置好SSH，比如我本地配置了SSH免密登陆服务器，不然每次都需要输入密码，当然这也看你个人意愿）</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">ubuntu@11.22.33.44:/home/ubuntu/hexo</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
 
+<p>然后在服务器上面创建一个hexo的git仓库</p>
+<blockquote>
+<p>写博客的几个步骤：</p>
+<p>hexo new ‘new blog title’</p>
+<p>写内容…</p>
+<p>hexo clean</p>
+<p>hexo generate</p>
+<p>hexo deploy</p>
+</blockquote>
+<p>如果你按我上面说的，当你deploy的时候，会出错</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">On branch master</span><br><span class="line">nothing to commit, working tree clean</span><br><span class="line">Enumerating objects: 90, done.</span><br><span class="line">Counting objects: 100% (90/90), done.</span><br><span class="line">Delta compression using up to 8 threads</span><br><span class="line">Compressing objects: 100% (77/77), done.</span><br><span class="line">Writing objects: 100% (90/90), 54.96 KiB | 3.92 MiB/s, done.</span><br><span class="line">Total 90 (delta 15), reused 0 (delta 0), pack-reused 0</span><br><span class="line">remote: error: refusing to update checked out branch: refs/heads/master</span><br><span class="line">remote: error: By default, updating the current branch in a non-bare repository</span><br><span class="line">remote: is denied, because it will make the index and work tree inconsistent</span><br><span class="line">remote: with what you pushed, and will require &#x27;git reset --hard&#x27; to match</span><br><span class="line">remote: the work tree to HEAD.</span><br><span class="line">remote: </span><br><span class="line">remote: You can set the &#x27;receive.denyCurrentBranch&#x27; configuration variable</span><br><span class="line">remote: to &#x27;ignore&#x27; or &#x27;warn&#x27; in the remote repository to allow pushing into</span><br><span class="line">remote: its current branch; however, this is not recommended unless you</span><br><span class="line">remote: arranged to update its work tree to match what you pushed in some</span><br><span class="line">remote: other way.</span><br><span class="line">remote: </span><br><span class="line">remote: To squelch this message and still keep the default behaviour, set</span><br><span class="line">remote: &#x27;receive.denyCurrentBranch&#x27; configuration variable to &#x27;refuse&#x27;.</span><br><span class="line">To 159.75.249.140:/home/ubuntu/hexo</span><br><span class="line"> ! [remote rejected] HEAD -&gt; master (branch is currently checked out)</span><br><span class="line">error: failed to push some refs to &#x27;159.75.249.140:/home/ubuntu/hexo&#x27;</span><br><span class="line">FATAL &#123;</span><br><span class="line">  err: Error: Spawn failed</span><br><span class="line">      at ChildProcess.&lt;anonymous&gt; (/Users/jieyingzhuang/Desktop/blog/node_modules/hexo-util/lib/spawn.js:51:21)</span><br><span class="line">      at ChildProcess.emit (node:events:394:28)</span><br><span class="line">      at Process.ChildProcess._handle.onexit (node:internal/child_process:290:12) &#123;</span><br><span class="line">    code: 1</span><br><span class="line">  &#125;</span><br><span class="line">&#125; Something&#x27;s wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html</span><br></pre></td></tr></table></figure>
 
+<p>你可以按照提示输入命令<code>git config receive.denyCurrentBranch ignore</code>解决，这里我采用另一种方法解决：</p>
+<p><strong>创建裸仓库，和代码文件分开存放</strong></p>
+<p>创建一个叫hexo.git的裸仓库，所以hexo的配置信息也要换成hexo.git。然后添加钩子post-receive，里面的内容为</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git --work-tree=/home/ubuntu/hexo --git-dir=/home/ubuntu/hexo.git checkout -f</span><br></pre></td></tr></table></figure>
+
+<p>这样，当你deploy的时候，会把网站的内容到存到hexo文件夹中。后面你还需要配置服务器，用Apache或者Nginx，然后指定网站的根目录为hexo，即可正常访问。</p>
+<h3 id="没讲的东西"><a href="#没讲的东西" class="headerlink" title="没讲的东西"></a>没讲的东西</h3><p>感觉属于其他方面的知识，我就没有细说。这些也可以找其他博客看看。</p>
+<ul>
+<li>SSH免密登陆</li>
+<li>配置Nginx服务器（配置SSL证书）</li>
+<li>Hexo具体的配置信息（主要看各自喜好）</li>
+</ul>
 ]]></content>
       <categories>
         <category>教程</category>
