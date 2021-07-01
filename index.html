@@ -359,7 +359,26 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>买服务器。。配置。。</p>
+          <h3 id="服务器选购"><a href="#服务器选购" class="headerlink" title="服务器选购"></a>服务器选购</h3><p>我这次采用的是腾讯云，因为我有几百块的代金劵，哈哈。</p>
+<p>操作系统：Ubuntu 20.04 LTS</p>
+<p>硬件配置：1核 2GB 2Mbps</p>
+<h3 id="系统配置"><a href="#系统配置" class="headerlink" title="系统配置"></a>系统配置</h3><p>通过SSH获取密码登录系统，然后需要修改一下DNS服务器的配置。</p>
+<p>默认好像开启了systemd-resolved这个服务，一开始一直解析不了DNS。</p>
+<blockquote>
+<p>关于systemd-resolved，可以参考这篇文章：<a target="_blank" rel="noopener" href="https://www.freedomwolf.cc/2020/01/dns_by_systemd/">https://www.freedomwolf.cc/2020/01/dns_by_systemd/</a></p>
+</blockquote>
+<p>在<code>/etc/systemd/resolved.conf</code>中，把<code>#DNS=</code> 改为<code>DNS=1.1.1.1</code>，然后重启服务就可以了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart systemd-resolved.service</span><br></pre></td></tr></table></figure>
+
+<p>然而，现在是可以ping <a target="_blank" rel="noopener" href="http://www.baidu.com了,但是tencent内部的一些域名就解析不了了./">www.baidu.com了，但是tencent内部的一些域名就解析不了了。</a></p>
+<p>当我执行sudo apt-get update的时候，会出现下面这段内容</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Err:1 http://mirrors.tencentyun.com/ubuntu focal InRelease</span><br><span class="line">  Something wicked happened resolving &#x27;mirrors.tencentyun.com:http&#x27; (-5 - No address associated with hostname)</span><br><span class="line">Err:2 http://mirrors.tencentyun.com/ubuntu focal-security InRelease</span><br><span class="line">  Something wicked happened resolving &#x27;mirrors.tencentyun.com:http&#x27; (-5 - No address associated with hostname)</span><br><span class="line">Err:3 http://mirrors.tencentyun.com/ubuntu focal-updates InRelease</span><br><span class="line">  Something wicked happened resolving &#x27;mirrors.tencentyun.com:http&#x27; (-5 - No address associated with hostname)</span><br><span class="line">Reading package lists... Done            </span><br><span class="line">W: Failed to fetch http://mirrors.tencentyun.com/ubuntu/dists/focal/InRelease  Something wicked happened resolving &#x27;mirrors.tencentyun.com:http&#x27; (-5 - No address associated with hostname)</span><br><span class="line">W: Failed to fetch http://mirrors.tencentyun.com/ubuntu/dists/focal-security/InRelease  Something wicked happened resolving &#x27;mirrors.tencentyun.com:http&#x27; (-5 - No address associated with hostname)</span><br><span class="line">W: Failed to fetch http://mirrors.tencentyun.com/ubuntu/dists/focal-updates/InRelease  Something wicked happened resolving &#x27;mirrors.tencentyun.com:http&#x27; (-5 - No address associated with hostname)</span><br><span class="line">W: Some index files failed to download. They have been ignored, or old ones used instead.</span><br></pre></td></tr></table></figure>
+
+<p>一种方法是修改apt的镜像源，在/etc/apt/sources.list中配置其他镜像地址</p>
+<p>另外就是使用腾讯的DNS服务器了。在<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/213/5225%E8%BF%99%E9%87%8C%E6%89%BE%E3%80%82">https://cloud.tencent.com/document/product/213/5225这里找。</a></p>
+<p>我的是广州六区，找不到，问了一下客服，选择了“私有网络-所有地域”这个类型的ip地址，然后就可以了。</p>
+<h3 id="Wordpress的搭建"><a href="#Wordpress的搭建" class="headerlink" title="Wordpress的搭建"></a>Wordpress的搭建</h3><p>这个根据某位博主的指引，找到了一个不错的视频教程</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1j4411C7Qf">https://www.bilibili.com/video/BV1j4411C7Qf</a></p>
 <p>之前用WordPress搭建了一遍，但是感觉WordPress对代码和markdown的支持不太好，后面就改换Hexo了。</p>
 <p>如何安装Hexo可以在官网得到详细的教程，所以这里不打算展开讲，下面讲讲官网没提到的。</p>
 <h3 id="官网有的内容"><a href="#官网有的内容" class="headerlink" title="官网有的内容"></a>官网有的内容</h3><ul>
