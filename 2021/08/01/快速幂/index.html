@@ -20,29 +20,27 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="抱歉，我水了一篇博客。。">
+<meta name="description" content="快速幂是一个很实用的算法，可以快速计算那些需要多次求幂的场景">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二分查找">
-<meta property="og:url" content="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:title" content="快速幂">
+<meta property="og:url" content="http://example.com/2021/08/01/%E5%BF%AB%E9%80%9F%E5%B9%82/index.html">
 <meta property="og:site_name" content="Jayying007的网络日志">
-<meta property="og:description" content="抱歉，我水了一篇博客。。">
+<meta property="og:description" content="快速幂是一个很实用的算法，可以快速计算那些需要多次求幂的场景">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-08-01T14:38:24.000Z">
-<meta property="article:modified_time" content="2021-08-01T14:38:24.000Z">
+<meta property="article:published_time" content="2021-08-01T15:44:10.000Z">
+<meta property="article:modified_time" content="2021-08-01T15:44:10.000Z">
 <meta property="article:author" content="Jayying007">
-<meta property="article:tag" content="二分">
-<meta property="article:tag" content="数据结构">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+<link rel="canonical" href="http://example.com/2021/08/01/%E5%BF%AB%E9%80%9F%E5%B9%82/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/","path":"2021/08/01/二分查找/","title":"二分查找"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/01/%E5%BF%AB%E9%80%9F%E5%B9%82/","path":"2021/08/01/快速幂/","title":"快速幂"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>二分查找 | Jayying007的网络日志</title>
+<title>快速幂 | Jayying007的网络日志</title>
   
 
 
@@ -147,7 +145,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E6%A8%A1%E6%8B%9F"><span class="nav-number">2.</span> <span class="nav-text">场景模拟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.</span> <span class="nav-text">代码模板</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E6%B1%82%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">普通求解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%B9%82"><span class="nav-number">2.</span> <span class="nav-text">快速幂</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">具体的代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82"><span class="nav-number">4.</span> <span class="nav-text">矩阵快速幂</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -226,7 +224,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/%E5%BF%AB%E9%80%9F%E5%B9%82/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
@@ -239,7 +237,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          二分查找
+          快速幂
         </h1>
 
         <div class="post-meta-container">
@@ -250,7 +248,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-08-01 22:38:24" itemprop="dateCreated datePublished" datetime="2021-08-01T22:38:24+08:00">2021-08-01</time>
+      <time title="创建时间：2021-08-01 23:44:10" itemprop="dateCreated datePublished" datetime="2021-08-01T23:44:10+08:00">2021-08-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -272,7 +270,7 @@
     </span>
 </div>
 
-            <div class="post-description">抱歉，我水了一篇博客。。</div>
+            <div class="post-description">快速幂是一个很实用的算法，可以快速计算那些需要多次求幂的场景</div>
         </div>
       </header>
 
@@ -280,18 +278,59 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>二分查找，又称折半查找。顾名思义，就是在一堆<strong>有序排列</strong>的元素中查找某一指定数值。返回数值对应的下标或-1（查不到）。</p>
-<h2 id="场景模拟"><a href="#场景模拟" class="headerlink" title="场景模拟"></a>场景模拟</h2><p>看其他文章都是千篇一律的猜数字，我们换一换风格，来猜一猜价格吧。这不是一样的吗？</p>
-<p>比如说现在让你猜一件商品的价格，已知商品的价格在1-1000元之间，且为整数，现在让你尽快猜中商品的价格，你要怎么做呢？（你每猜一个价格，都能得知这个价格与正确价格相比是相同的，还是小了或大了）</p>
-<p>鲁莽的方法：从1元开始猜到1000元，总会猜到的。运气好的话，价格刚好是1元，猜一次就中了。运气不好的话，价格是1000元，要猜1000次才能猜中。</p>
-<p><strong>这种方法其实没有充分利用猜价格得到的反馈信息，即从1元开始猜到1000元的过程中，你得到的反馈只有正确或者小了，绝对不会出现大了。</strong></p>
-<p>睿智的方法：既然价格在1元到1000元之间，那我就猜500元，即（1+1000）/2。这时可能的反馈信息分别有</p>
-<p>比正确价格小：这样我们就知道商品的价格不在1元到500元之间，而是在501元到1000元之间。</p>
-<p>与正确价格相同：即我们猜中了，所以就直接返回这个结果就可以了。</p>
-<p>比正确价格大：所以商品价格不在500元到1000元之间，而是在1元到499元之间。</p>
-<p><strong>不难看出，只经过一次猜测，可能猜中或者把猜测范围缩小一半。后面用同样的方式猜测，则又可以将猜测范围缩小一半。</strong>这个不就是递归吗？虽然用循环也可以做</p>
-<p><strong>用二分查找的时间复杂度为O（logN）</strong></p>
-<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="keyword">int</span>&gt; arr,<span class="keyword">int</span> aim)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 参数说明：arr即查找的容器序列，aim为需要查找的元素</span></span><br><span class="line"><span class="comment">     * 要求：arr容器需保证元素升序</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> left=<span class="number">0</span>,right=arr.<span class="built_in">size</span>()<span class="number">-1</span>,mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span>(left&lt;=right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid]&lt;aim)&#123;</span><br><span class="line">            left=mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]==aim)&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;找到了&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]&gt;aim)&#123;</span><br><span class="line">            right=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;找不到&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; arr;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">        arr.<span class="built_in">push_back</span>(i*<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">binarySearch</span>(arr,<span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>​    今天介绍一个在中低难度算法竞赛中经常碰到的算法—快速幂，于此相匹配的还有一个叫矩阵快速幂的东西。不过这篇文章只介绍快速幂，矩阵快速幂只是把两个数的乘法换成两个矩阵的乘法而已。</p>
+<p>快速幂，顾名思义，就是快速求解某一个数的指数次方结果为多少。</p>
+<h2 id="普通求解"><a href="#普通求解" class="headerlink" title="普通求解"></a>普通求解</h2><p>如让你求2^5次方，你可以很快计算出结果为2*2*2*2*2=32。</p>
+<blockquote>
+<p>这种方式在计算机中可以使用pow函数解决，即pow（2,5）=32。引入头文件cmath就行了，当然你也可以手写。</p>
+</blockquote>
+<p>pow函数的实现方式大致如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="function">ll <span class="title">pow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b--)&#123;</span><br><span class="line">        d=d*a%c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>不难看出，这种计算方式的速度是由b决定的，即时间复杂度为O（b），而如果b很大的，那就超时了啊！</strong></p>
+<hr>
+<h2 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h2><p>下面就进入本节的主要内容，用快速幂求解，这其实是对二进制的巧妙使用。</p>
+<p>讲一个例子，现在要求3^11，按上述方法需要计算11次，但快速幂可以将求3^11简化为(3^8)<em>(3^2)</em>(3^1)，这样就只计算了3次，其实总共比较了4次，往下看就懂了。</p>
+<p>来一波分析：</p>
+<ol>
+<li>将指数11转化为二进制，即00…001011（32位，前面的0我就省略不写了，太多容易看乱）</li>
+<li>从右到左开始，32位的01串我们在下面给它们一个数值标识，从3^1开始，以平方的方式不断递增，如下面的表格所示（注意只给出最后边的6位，int类型总共应该有32位） </li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>0</th>
+<th>1</th>
+<th>0</th>
+<th>1</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3^32</td>
+<td>3^16</td>
+<td>3^8</td>
+<td>3^4</td>
+<td>3^2</td>
+<td>3^1</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p> 其实下面的指数也可以有另外一种方式理解，即当前位置的1表示十进制的哪个数，指数就是哪个。</p>
+</blockquote>
+<p>所以下面的操作就很简单了，3^11=3^(8+2+1)，为什么要拆成这几个数呢，因为他们就是11转成二进制后，对应的1的位置数值的表示啊（上面的表格），而这些位置的1代表的数加起来就是11. </p>
+<p>那么计算的思路就是，读取11的二进制数，若该位置为1，就乘上该位置所代表的数，若为0则不作处理。</p>
+<p><strong>时间复杂度从O(N)降到了O(logN)</strong></p>
+<blockquote>
+<p>具体方法：将11与1做按位与位运算，若结果为1，说明11二进制最后的数为1，所以乘上。</p>
+<p>然后下一步我们让11做右移位运算，即将32个01集体往右移动1位，这时最左侧会补上0，而最右侧的1已经不见了。相当于继续比较下一位，若当前数值为0，即二进制32个都为0，说明已经没有1了，就可以结束循环。</p>
+</blockquote>
+<h2 id="具体的代码实现"><a href="#具体的代码实现" class="headerlink" title="具体的代码实现"></a>具体的代码实现</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">quickPow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)&#123;</span><br><span class="line">            d=d*a%c;</span><br><span class="line">        &#125;</span><br><span class="line">        a=a*a%c;<span class="comment">//更新当前位置代表的数</span></span><br><span class="line">        b=b&gt;&gt;<span class="number">1</span>;<span class="comment">//右移1位</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;10的1亿次方mod3的结果为: &quot;</span>&lt;&lt;<span class="built_in">quickPow</span>(<span class="number">10</span>,<span class="number">1e9</span>,<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="矩阵快速幂"><a href="#矩阵快速幂" class="headerlink" title="矩阵快速幂"></a>矩阵快速幂</h2><p>这里放一下矩阵快速幂的模板</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">typedef long long ll;</span><br><span class="line">const int mod=1e9+7;</span><br><span class="line">const int MaxN=105;//矩阵大小</span><br><span class="line">struct Mat&#123;</span><br><span class="line">    ll m[MaxN][MaxN];</span><br><span class="line">&#125;ans,a;//结果与输入矩阵</span><br><span class="line">Mat Mul(Mat a,Mat b,int n)&#123;</span><br><span class="line">    Mat c;</span><br><span class="line">    memset(c.m,0,sizeof(c.m));</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        <span class="keyword">for</span>(int j=1;j&lt;=n;j++)</span><br><span class="line">            <span class="keyword">for</span>(int k=1;k&lt;=n;k++)</span><br><span class="line">                c.m[i][j]=(c.m[i][j]+(a.m[i][k]*b.m[k][j])%mod)%mod;</span><br><span class="line">    <span class="built_in">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line">Mat _power(Mat a,ll b,int n)&#123;</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        ans.m[i][i]=1;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;1)</span><br><span class="line">            ans=Mul(ans,a,n);</span><br><span class="line">        a=Mul(a,a,n);</span><br><span class="line">        b&gt;&gt;=1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -300,22 +339,18 @@
     
 
     <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/%E4%BA%8C%E5%88%86/" rel="tag"><i class="fa fa-tag"></i> 二分</a>
-              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"><i class="fa fa-tag"></i> 数据结构</a>
-          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/06/27/KVO%E4%B8%8EKVOController%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="prev" title="KVO与KVOController的介绍与实现原理">
-                  <i class="fa fa-chevron-left"></i> KVO与KVOController的介绍与实现原理
+                <a href="/2021/08/01/%E5%AD%97%E5%85%B8%E6%A0%91/" rel="prev" title="字典树">
+                  <i class="fa fa-chevron-left"></i> 字典树
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/08/01/k-means%E7%AE%97%E6%B3%95/" rel="next" title="k-means算法">
-                  k-means算法 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/08/02/%E8%87%AA%E5%B7%B1%E6%89%8B%E5%8A%A8%E7%94%9F%E6%88%90%E4%BA%8C%E7%BB%B4%E7%A0%81/" rel="next" title="自己手动生成二维码">
+                  自己手动生成二维码 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

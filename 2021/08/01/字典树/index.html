@@ -20,29 +20,32 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="抱歉，我水了一篇博客。。">
+<meta name="description" content="字典树是字符串匹配的一种常用数据结构，与此相关的还有AC自动机">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二分查找">
-<meta property="og:url" content="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:title" content="字典树">
+<meta property="og:url" content="http://example.com/2021/08/01/%E5%AD%97%E5%85%B8%E6%A0%91/index.html">
 <meta property="og:site_name" content="Jayying007的网络日志">
-<meta property="og:description" content="抱歉，我水了一篇博客。。">
+<meta property="og:description" content="字典树是字符串匹配的一种常用数据结构，与此相关的还有AC自动机">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-08-01T14:38:24.000Z">
-<meta property="article:modified_time" content="2021-08-01T14:38:24.000Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190825170358538.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==">
+<meta property="article:published_time" content="2021-08-01T15:30:31.000Z">
+<meta property="article:modified_time" content="2021-08-01T15:30:31.000Z">
 <meta property="article:author" content="Jayying007">
-<meta property="article:tag" content="二分">
 <meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="字符串匹配">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190825170358538.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70">
 
 
-<link rel="canonical" href="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+<link rel="canonical" href="http://example.com/2021/08/01/%E5%AD%97%E5%85%B8%E6%A0%91/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/","path":"2021/08/01/二分查找/","title":"二分查找"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/01/%E5%AD%97%E5%85%B8%E6%A0%91/","path":"2021/08/01/字典树/","title":"字典树"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>二分查找 | Jayying007的网络日志</title>
+<title>字典树 | Jayying007的网络日志</title>
   
 
 
@@ -147,7 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E6%A8%A1%E6%8B%9F"><span class="nav-number">2.</span> <span class="nav-text">场景模拟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.</span> <span class="nav-text">代码模板</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E7%9A%84%E5%A4%A7%E8%87%B4%E6%84%8F%E6%80%9D%E6%97%B6%EF%BC%8C%E5%85%88%E7%BB%99%E4%BD%A0n%E4%B8%AA%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%8C%E7%84%B6%E5%90%8E%E5%86%8D%E7%BB%99%E4%BD%A0m%E4%B8%AA%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%8C%E6%B1%82%E8%BF%99m%E4%B8%AA%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%98%AF%E5%90%A6%E5%9C%A8n%E4%B8%AA%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E5%87%BA%E7%8E%B0%E8%BF%87%E6%88%96%E6%98%AF%E5%90%A6%E9%87%8D%E5%A4%8D%E5%87%BA%E7%8E%B0%E4%BA%86%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">题目的大致意思时，先给你n个字符串，然后再给你m个字符串，求这m个字符串是否在n个字符串中出现过或是否重复出现了。</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -226,7 +229,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/%E5%AD%97%E5%85%B8%E6%A0%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
@@ -239,7 +242,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          二分查找
+          字典树
         </h1>
 
         <div class="post-meta-container">
@@ -250,7 +253,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-08-01 22:38:24" itemprop="dateCreated datePublished" datetime="2021-08-01T22:38:24+08:00">2021-08-01</time>
+      <time title="创建时间：2021-08-01 23:30:31" itemprop="dateCreated datePublished" datetime="2021-08-01T23:30:31+08:00">2021-08-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -272,7 +275,7 @@
     </span>
 </div>
 
-            <div class="post-description">抱歉，我水了一篇博客。。</div>
+            <div class="post-description">字典树是字符串匹配的一种常用数据结构，与此相关的还有AC自动机</div>
         </div>
       </header>
 
@@ -280,18 +283,21 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>二分查找，又称折半查找。顾名思义，就是在一堆<strong>有序排列</strong>的元素中查找某一指定数值。返回数值对应的下标或-1（查不到）。</p>
-<h2 id="场景模拟"><a href="#场景模拟" class="headerlink" title="场景模拟"></a>场景模拟</h2><p>看其他文章都是千篇一律的猜数字，我们换一换风格，来猜一猜价格吧。这不是一样的吗？</p>
-<p>比如说现在让你猜一件商品的价格，已知商品的价格在1-1000元之间，且为整数，现在让你尽快猜中商品的价格，你要怎么做呢？（你每猜一个价格，都能得知这个价格与正确价格相比是相同的，还是小了或大了）</p>
-<p>鲁莽的方法：从1元开始猜到1000元，总会猜到的。运气好的话，价格刚好是1元，猜一次就中了。运气不好的话，价格是1000元，要猜1000次才能猜中。</p>
-<p><strong>这种方法其实没有充分利用猜价格得到的反馈信息，即从1元开始猜到1000元的过程中，你得到的反馈只有正确或者小了，绝对不会出现大了。</strong></p>
-<p>睿智的方法：既然价格在1元到1000元之间，那我就猜500元，即（1+1000）/2。这时可能的反馈信息分别有</p>
-<p>比正确价格小：这样我们就知道商品的价格不在1元到500元之间，而是在501元到1000元之间。</p>
-<p>与正确价格相同：即我们猜中了，所以就直接返回这个结果就可以了。</p>
-<p>比正确价格大：所以商品价格不在500元到1000元之间，而是在1元到499元之间。</p>
-<p><strong>不难看出，只经过一次猜测，可能猜中或者把猜测范围缩小一半。后面用同样的方式猜测，则又可以将猜测范围缩小一半。</strong>这个不就是递归吗？虽然用循环也可以做</p>
-<p><strong>用二分查找的时间复杂度为O（logN）</strong></p>
-<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="keyword">int</span>&gt; arr,<span class="keyword">int</span> aim)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 参数说明：arr即查找的容器序列，aim为需要查找的元素</span></span><br><span class="line"><span class="comment">     * 要求：arr容器需保证元素升序</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> left=<span class="number">0</span>,right=arr.<span class="built_in">size</span>()<span class="number">-1</span>,mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span>(left&lt;=right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid]&lt;aim)&#123;</span><br><span class="line">            left=mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]==aim)&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;找到了&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]&gt;aim)&#123;</span><br><span class="line">            right=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;找不到&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; arr;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">        arr.<span class="built_in">push_back</span>(i*<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">binarySearch</span>(arr,<span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <blockquote>
+<p> 字典树一般用于字符串的匹配，当数量多的时候效率还是挺明显的。</p>
+</blockquote>
+<p> 这里以一道洛谷的题为例子，<a target="_blank" rel="noopener" href="https://www.luogu.org/problem/P2580">https://www.luogu.org/problem/P2580</a></p>
+<h3 id="题目的大致意思时，先给你n个字符串，然后再给你m个字符串，求这m个字符串是否在n个字符串中出现过或是否重复出现了。"><a href="#题目的大致意思时，先给你n个字符串，然后再给你m个字符串，求这m个字符串是否在n个字符串中出现过或是否重复出现了。" class="headerlink" title="题目的大致意思时，先给你n个字符串，然后再给你m个字符串，求这m个字符串是否在n个字符串中出现过或是否重复出现了。"></a>题目的大致意思时，先给你n个字符串，然后再给你m个字符串，求这m个字符串是否在n个字符串中出现过或是否重复出现了。</h3><hr>
+<p>若采用朴素一对一的比较方式，那时间复杂度就是O(n <strong>X</strong> m <strong>X</strong> ‘字符串长度’)，所以还是算了。</p>
+<p>解决的方法便是利用字典树，将n个字符串搭建成一个字典树。</p>
+<p><strong>什么是字典树？？？？比如字符串（ab,ac,b,bca,bcd）构成的字典树如下</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/20190825170358538.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p><strong>红色标记的结点即该结点为某一字符串的结束结点，注意字典树的根结点不存任何字符</strong></p>
+<blockquote>
+<p>构建完字典树后，后面的操作就简单了。待查询的m个字符串依次从根节点开始查询，<strong>当前结点存在该字符，则更新当前位置到该字符所在结点，否则就证明查询不到。到最后一个字符匹配且该结点是结束结点，说明查询成功。</strong></p>
+</blockquote>
+<p>下面是题目的代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">int</span> n,m,cnt;</span><br><span class="line">string s;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> vis[<span class="number">26</span>];</span><br><span class="line">    <span class="keyword">int</span> state;<span class="comment">//0 普通节点 1 结束节点 2 结束且已访问</span></span><br><span class="line">&#125;tried[<span class="number">500010</span>];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Build_tree</span><span class="params">(string s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len=s.<span class="built_in">length</span>();</span><br><span class="line">    <span class="keyword">int</span> now=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(tried[now].vis[s[i]-<span class="string">&#x27;a&#x27;</span>]==<span class="number">0</span>)&#123;</span><br><span class="line">            tried[now].vis[s[i]-<span class="string">&#x27;a&#x27;</span>]=++cnt;</span><br><span class="line">        &#125;</span><br><span class="line">        now=tried[now].vis[s[i]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    tried[now].state=<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Query_str</span><span class="params">(string s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len=s.<span class="built_in">length</span>();</span><br><span class="line">    <span class="keyword">int</span> now=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;len;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(tried[now].vis[s[i]-<span class="string">&#x27;a&#x27;</span>])&#123;</span><br><span class="line">            now=tried[now].vis[s[i]-<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">            <span class="keyword">if</span>(i==len<span class="number">-1</span>&amp;&amp;tried[now].state==<span class="number">1</span>)&#123;</span><br><span class="line">                cout&lt;&lt;<span class="string">&quot;OK&quot;</span>&lt;&lt;endl;</span><br><span class="line">                tried[now].state=<span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(i==len<span class="number">-1</span>&amp;&amp;tried[now].state==<span class="number">2</span>)&#123;</span><br><span class="line">                cout&lt;&lt;<span class="string">&quot;REPEAT&quot;</span>&lt;&lt;endl;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;WRONG&quot;</span>&lt;&lt;endl;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cin&gt;&gt;n;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++)&#123;</span><br><span class="line">        cin&gt;&gt;s;</span><br><span class="line">        <span class="built_in">Build_tree</span>(s);</span><br><span class="line">    &#125;</span><br><span class="line">    cin&gt;&gt;m;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;m;i++)&#123;</span><br><span class="line">        cin&gt;&gt;s;</span><br><span class="line">        <span class="built_in">Query_str</span>(s);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -301,21 +307,21 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E4%BA%8C%E5%88%86/" rel="tag"><i class="fa fa-tag"></i> 二分</a>
               <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"><i class="fa fa-tag"></i> 数据结构</a>
+              <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D/" rel="tag"><i class="fa fa-tag"></i> 字符串匹配</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/06/27/KVO%E4%B8%8EKVOController%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="prev" title="KVO与KVOController的介绍与实现原理">
-                  <i class="fa fa-chevron-left"></i> KVO与KVOController的介绍与实现原理
+                <a href="/2021/08/01/%E9%83%A8%E7%BD%B2Tensorflow%E6%A8%A1%E5%9E%8B%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8-%E6%96%B9%E6%B3%95%E4%BA%8C/" rel="prev" title="部署Tensorflow模型到服务器-方法二">
+                  <i class="fa fa-chevron-left"></i> 部署Tensorflow模型到服务器-方法二
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/08/01/k-means%E7%AE%97%E6%B3%95/" rel="next" title="k-means算法">
-                  k-means算法 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/08/01/%E5%BF%AB%E9%80%9F%E5%B9%82/" rel="next" title="快速幂">
+                  快速幂 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

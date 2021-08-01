@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="现在很多编程语言都自带垃圾回收了，不过垃圾回收其实很早就已经出现了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简述垃圾回收算法">
+<meta property="og:url" content="http://example.com/2021/08/02/%E7%AE%80%E8%BF%B0%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Jayying007的网络日志">
+<meta property="og:description" content="现在很多编程语言都自带垃圾回收了，不过垃圾回收其实很早就已经出现了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/a5aec2575de6280d7fb745cde167c8dc.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/baf321c73a321a69339a6223a35858d8.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/904c4bbb0ff02745c26d5e8cabccbb42.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/a6884a135cffa7f0a5dfbd38e63963a0.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/f6a9508f151e2be0cf45d51b3cdd0b4c.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/ebb84a415b9493c50988bfca116e4258.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/a07183d5a37a41a81b0cd6873c5caf68.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/be48105e64cec299cb2218e1592616f6.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/54b247151e6342e6b1b3bc7a6f96d94b.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/2f9fcb7ce4054df5db6c79d0207e56e1.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/416d59030abc0f8a58e550c3c9afe392.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/471c98e4b5c097c01c1480de549093f1.png">
+<meta property="article:published_time" content="2021-08-01T16:17:25.000Z">
+<meta property="article:modified_time" content="2021-08-01T16:17:25.000Z">
+<meta property="article:author" content="Jayying007">
+<meta property="article:tag" content="垃圾回收">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/img_convert/a5aec2575de6280d7fb745cde167c8dc.png">
+
+
+<link rel="canonical" href="http://example.com/2021/08/02/%E7%AE%80%E8%BF%B0%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/02/%E7%AE%80%E8%BF%B0%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/","path":"2021/08/02/简述垃圾回收算法/","title":"简述垃圾回收算法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>简述垃圾回收算法 | Jayying007的网络日志</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Jayying007的网络日志</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1%E5%9C%A8%E5%A0%86%E4%B8%8A%E7%9A%84%E5%B8%83%E5%B1%80"><span class="nav-number">2.</span> <span class="nav-text">关于对象在堆上的布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%89%BE%E5%88%B0%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E5%9E%83%E5%9C%BE"><span class="nav-number">3.</span> <span class="nav-text">如何找到内存中的垃圾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC%E7%AE%97%E6%B3%95%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87"><span class="nav-number">4.</span> <span class="nav-text">GC算法评价指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GC%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D"><span class="nav-number">5.</span> <span class="nav-text">GC算法介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E7%AE%97%E6%B3%95"><span class="nav-number">5.1.</span> <span class="nav-text">标记清除算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E6%B3%95"><span class="nav-number">5.2.</span> <span class="nav-text">引用计数法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95"><span class="nav-number">5.3.</span> <span class="nav-text">标记复制算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E7%AE%97%E6%B3%95"><span class="nav-number">5.4.</span> <span class="nav-text">标记整理算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E4%BB%A3%E5%9B%9E%E6%94%B6"><span class="nav-number">5.5.</span> <span class="nav-text">分代回收</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A2%9E%E9%87%8F%E5%BC%8F%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">5.6.</span> <span class="nav-text">增量式垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%89%E8%89%B2%E6%A0%87%E8%AE%B0%E7%AE%97%E6%B3%95"><span class="nav-number">5.6.1.</span> <span class="nav-text">三色标记算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jayying007"
+      src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
+  <p class="site-author-name" itemprop="name">Jayying007</p>
+  <div class="site-description" itemprop="description">好好学习，天天向上</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/jayying007" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;jayying007" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1172510964@qq.com" title="E-Mail → mailto:1172510964@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/jayying007" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/02/%E7%AE%80%E8%BF%B0%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
+      <meta itemprop="name" content="Jayying007">
+      <meta itemprop="description" content="好好学习，天天向上">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jayying007的网络日志">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          简述垃圾回收算法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-08-02 00:17:25" itemprop="dateCreated datePublished" datetime="2021-08-02T00:17:25+08:00">2021-08-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">现在很多编程语言都自带垃圾回收了，不过垃圾回收其实很早就已经出现了。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>垃圾回收(Garbage Collection),简称GC,主要是对那些已经分配的空间进行回收利用,实现再分配.</p>
+<p>比如下面的Java代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">	list.add(<span class="number">1</span>);</span><br><span class="line">	System.out.println(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个函数中,我创建了一个ArrayList对象,Java则在内存堆上为其分配空间.但是一旦出了这个函数,我们就再也访问不到这块空间了,如果不进行回收,那么内存堆的这个位置就浪费了.</p>
+<p><strong>所以GC要完成的主要有两件事:</strong></p>
+<ul>
+<li>找到内存中的垃圾</li>
+<li>回收这部分垃圾,以便之后可以再分配</li>
+</ul>
+<h3 id="关于对象在堆上的布局"><a href="#关于对象在堆上的布局" class="headerlink" title="关于对象在堆上的布局"></a>关于对象在堆上的布局</h3><p>一般一个对象在堆中存储两部分信息,一部分是对象的元数据,比如对象的大小,hashcode的值以及用来标识垃圾回收的信息等.另一部分就是对象的具体数据.这部分主要分两种,如果是基本数据类型,那么这个位置存的就是它的值.如果不是,那么这个位置存放的是指向具体内存地址的指针.</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/a5aec2575de6280d7fb745cde167c8dc.png" alt="image-20210322220230929"></p>
+<h3 id="如何找到内存中的垃圾"><a href="#如何找到内存中的垃圾" class="headerlink" title="如何找到内存中的垃圾"></a>如何找到内存中的垃圾</h3><p>这里采用==可达性分析==,首先我们会将一些对象作为根,这些对象我们把它标记为可达的,然后由这些根所能指向的其他对象,我们也标记为可达…这样一直传递下去,到最后,我们可以遍历整个堆,然后把那些不可达的对象给回收掉.</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/baf321c73a321a69339a6223a35858d8.png" alt="image-20210322222228195"></p>
+<p>哪些对象可以作为根呢 —&gt; 调用栈、寄存器以及全局变量</p>
+<p>不过,这些根可能还有潜在的问题. <strong>怎么判断这个值是指针的地址还是一个基本数据类型呢</strong>?</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/904c4bbb0ff02745c26d5e8cabccbb42.png" alt="image-20210322232620392"></p>
+<p>就概率上讲,数值刚好位于堆地址范围内,且刚好是对象头的地址,情况还是比较少的. 我们可以将错就错,不过在这种情况下,可能一个本该回收的对象就被我们列为根了.</p>
+<blockquote>
+<p>当存在貌似指针的非指针时，保守式GC会把被引用的对象错误识别为活动对象。如果这个对象存在大量的子对象，那么它们一律都会被看成活动对象</p>
+</blockquote>
+<p>要严格区别指针与非指针,需要语言处理程序的一些支持.这一块不作展开.</p>
+<h3 id="GC算法评价指标"><a href="#GC算法评价指标" class="headerlink" title="GC算法评价指标"></a>GC算法评价指标</h3><ul>
+<li>吞吐量</li>
+</ul>
+<p>如堆的大小为HEAP_SIZE,GC总共花费的时间为（A+B+C),则吞吐量为HEAP_SIZE/（A+B+C）。</p>
+<ul>
+<li>最大暂停时间</li>
+</ul>
+<p>最大暂停时间指的是“因执行GC而暂停执行mutator的最长时间”,比如下图指的就是B. 如果暂停时间太长,就会出现Stop-The-World</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/a6884a135cffa7f0a5dfbd38e63963a0.png" alt="image-20210322223611521"></p>
+<ul>
+<li>堆使用效率</li>
+</ul>
+<p>不同的GC算法,会在堆中对象的对象头存放一些信息,大小不一,或者会将堆做划分.</p>
+<ul>
+<li>访问的局部性</li>
+</ul>
+<p>我们知道计算机是有高速缓存这么个东西.一般而言,具有引用关系的对象之间通常很可能存在连续访问的情况。所以如果在堆中这两个对象存放位置连续,那当读取第一个对象时,后面的对象也跟着被读进了缓存,后续访问的速度就加快了.</p>
+<h3 id="GC算法介绍"><a href="#GC算法介绍" class="headerlink" title="GC算法介绍"></a>GC算法介绍</h3><h4 id="标记清除算法"><a href="#标记清除算法" class="headerlink" title="标记清除算法"></a>标记清除算法</h4><p>这个其实在前面也有提到,从根集合出发,将能访问到的对象打上标记,然后遍历堆,将没有标记的对象清除.伪代码描述如下:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">mark_sweep() &#123;</span><br><span class="line">	<span class="comment">//标记阶段</span></span><br><span class="line">	<span class="keyword">for</span>(r : $roots) &#123;</span><br><span class="line">		mark(*r)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//清除阶段</span></span><br><span class="line">	sweeping = $heap_start</span><br><span class="line">	while(sweeping &lt; $heap_end)</span><br><span class="line">		<span class="keyword">if</span>(sweeping.mark == TRUE)</span><br><span class="line">			sweeping.mark = FALSE</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			sweeping.next = $free_list</span><br><span class="line">			$free_list = sweeping</span><br><span class="line">		sweeping += sweeping.size</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//标记函数</span></span><br><span class="line">mark(obj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(obj.mark == FALSE) &#123;</span><br><span class="line">		obj.mark = TRUE</span><br><span class="line">		<span class="keyword">for</span>(child : children(obj))</span><br><span class="line">			mark(*child)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种方式不会挪动对象在堆中的位置,但是容易产生内存碎片.关于回收后的内存如何分配使用,可以找更相关的资料.比如参考malloc库的实现,在&lt;&lt;深入理解计算机系统&gt;&gt;一书中也有所涉及.</p>
+<h4 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h4><p>顾名思义,在对象头记录有多少个引用了这个对象.当计数变为0的时候,我们就可以立即对这部分内存进行回收.</p>
+<p>它的最大暂停时间短,但是存在多个无用对象循环引用无法释放内存的问题. Python的GC采用了引用计数法,可以去了解它如何解决循环引用的</p>
+<h4 id="标记复制算法"><a href="#标记复制算法" class="headerlink" title="标记复制算法"></a>标记复制算法</h4><p>这种算法把堆划分为两部分,每次分配对象的时候只使用其中一半.当标记过程结束后,把存活的对象全都挪到堆的另一半中.</p>
+<p>这种的好处是避免了内存碎片,因为每次都有一整块的空闲空间用于分配对象.但显然堆的使用效率降低了</p>
+<p>==注意==</p>
+<p>在这种算法中,由于挪动了对象,所以原先指向这些对象的指针,要做一个映射,使其访问到新的内存位置. 解决方法可以采用句柄的方式间接处理对象. (采用指向指针的指针也可以)</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/f6a9508f151e2be0cf45d51b3cdd0b4c.png" alt="image-20210322232131923"></p>
+<p>通过引入句柄,当我们移动对象的时候,只需要修改句柄里的指针,而不用更新根的值.</p>
+<h4 id="标记整理算法"><a href="#标记整理算法" class="headerlink" title="标记整理算法"></a>标记整理算法</h4><p>这种算法可以理解为先执行了标记清除算法,然后把存活的对象都挪到一起,这样空闲的空间就是连续的了.</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/ebb84a415b9493c50988bfca116e4258.png" alt="image-20210322231857408"></p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/a07183d5a37a41a81b0cd6873c5caf68.png" alt="image-20210322231906519"></p>
+<p>同样的,由于移动了对象,所以指针的访问也要做些修改.</p>
+<h4 id="分代回收"><a href="#分代回收" class="headerlink" title="分代回收"></a>分代回收</h4><p>在对象头部分多了对象的存活年龄,据此划分了新生代,老年代对象.在堆中也是划分存储.</p>
+<p>根据经验显示,新生代的对象存活率较低,所以这部分会有大量对象回收.对这部分采取标记复制算法收益比较好;</p>
+<p>而针对老年代对象,则采用标记清除算法. 当需要GC时,优先从新生代入手.</p>
+<p><strong>当我们对新生代进行GC时,如果有老年代的指向新生代的引用,怎么办?</strong></p>
+<p>如果遍历老年代去标记,那其实又跟遍历整个堆没区别了.</p>
+<p>所以这里引入了==记录集==和==写入屏障==</p>
+<p>记录集上面保存了老年代对象的指针. 它是在我们更新对象指针的时候,通过写入屏障的方式加入的.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">write_barrier(obj, field, new_obj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(obj &gt;= $old_start &amp;&amp; new_obj &lt; $old_start &amp;&amp; obj.remembered == FALSE)</span><br><span class="line">		$rs[$rs_index] = obj</span><br><span class="line">		$rs_index++</span><br><span class="line">		obj.remembered = TRUE</span><br><span class="line">	*field = new_obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如上述伪代码那样,当老年代对象有某个属性指向新生代对象时,将其加入记录集中.</p>
+<p>这样的好处是当新生代对象的内存位置移动时,能够知道要更新哪个老年代对象的指针</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/be48105e64cec299cb2218e1592616f6.png" alt="image-20210323203741382"></p>
+<h4 id="增量式垃圾回收"><a href="#增量式垃圾回收" class="headerlink" title="增量式垃圾回收"></a>增量式垃圾回收</h4><p>上面提到的GC都有一个问题,它们在进行垃圾回收时会阻塞主线程,直到垃圾回收结束.</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/54b247151e6342e6b1b3bc7a6f96d94b.png" alt="image-20210323204218375"></p>
+<p>这里主要讲一种增量GC的算法,它的GC要分好几个阶段完成,这样保证最大暂停时间变小.</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/2f9fcb7ce4054df5db6c79d0207e56e1.png" alt="image-20210323204322491"></p>
+<h5 id="三色标记算法"><a href="#三色标记算法" class="headerlink" title="三色标记算法"></a>三色标记算法</h5><p>这是Edsger W. Dijkstra等人提出的三色标记算法（Tri-color marking）,它将每个对象都标记了一个颜色:</p>
+<ul>
+<li><p>白色：还未搜索过的对象</p>
+</li>
+<li><p>灰色：正在搜索的对象</p>
+</li>
+<li><p>黑色：搜索完成的对象</p>
+</li>
+</ul>
+<p>GC开始运行前所有的对象都是白色。GC一开始运行，所有从根能到达的对象都会被标记，然后被堆到栈里。GC只是发现了这样的对象，但还没有搜索完它们，所以这些对象就成了灰色对象。灰色对象会被依次从栈中取出，其子对象也会被涂成灰色。当其所有的子对象都被涂成灰色时，对象就会被涂成黑色。当GC结束时已经不存在灰色对象了，活动对象全部为黑色，垃圾则为白色。</p>
+<hr>
+<p>它可以分为三个阶段: 根查找阶段,标记阶段,清除阶段</p>
+<p>根查找阶段把能直接从根引用的对象涂成灰色。</p>
+<p>标记阶段查找灰色对象，将其子对象也涂成灰色，查找结束后将灰色对象涂成黑色。</p>
+<p>清除阶段则查找堆，将白色对象连接到空闲链表，将黑色对象变回白色.</p>
+<p>// 在标记,清除阶段中,其都是增量式的,即每次只标记或清除一定数量的对象后切回主线程.</p>
+<hr>
+<p>这里还有几个需要注意的地方.</p>
+<p>问题1</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/416d59030abc0f8a58e550c3c9afe392.png" alt="image-20210323210817028"></p>
+<p>如图,当A标记完所有子对象后,自己变黑. 此时切换回主线程,然后主线程的代码做了个操作,将B–C之间的引用删掉,然后加了A–C的引用.  这时再回来GC的时候,由于A已经黑了,所以不会再对其子对象做标记, 这样就会错过对象C, 这样会误回收对象!!</p>
+<p>解决这个问题的办法同样使用写入屏障, 在添加A指向C的引用时, 如果C是白色的,就将其标黑.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">write_barrier(obj, field, newobj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(newobj.mark == FALSE) &#123;</span><br><span class="line">		newobj.mark = TRUE</span><br><span class="line">		push(newobj, $mark_stack)</span><br><span class="line">	&#125;</span><br><span class="line">	*field = newobj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题2</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/471c98e4b5c097c01c1480de549093f1.png" alt="image-20210323211416289"></p>
+<p>如图,当GC开始清除阶段时,它会把没有标黑的对象给清除掉. 如果这时切换回主线程,而我们又要分配新的对象时就要注意了, 如果分配的新对象位置在$sweeping的右边, 那我们要把新分配的对象给标成黑色的,以防被误清除.</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>&lt;&lt;垃圾回收的算法与实现&gt;&gt;  —– [日]中村成洋，[日]相川光</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/" rel="tag"><i class="fa fa-tag"></i> 垃圾回收</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/02/%E8%87%AA%E5%B7%B1%E6%89%8B%E5%8A%A8%E7%94%9F%E6%88%90%E4%BA%8C%E7%BB%B4%E7%A0%81/" rel="prev" title="自己手动生成二维码">
+                  <i class="fa fa-chevron-left"></i> 自己手动生成二维码
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">粤ICP备2021085928号-1 </a>
+      <img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/%E5%A4%87%E6%A1%88%E5%9B%BE%E6%A0%87.png" alt=""><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44010502001996" rel="noopener" target="_blank">粤公网安备 44010502001996号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jayying007</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>
