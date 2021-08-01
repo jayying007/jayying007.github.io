@@ -20,29 +20,28 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="抱歉，我水了一篇博客。。">
+<meta name="description" content="看看如何利用k-means实现物以类聚">
 <meta property="og:type" content="article">
-<meta property="og:title" content="二分查找">
-<meta property="og:url" content="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:title" content="k-means算法">
+<meta property="og:url" content="http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/index.html">
 <meta property="og:site_name" content="Jayying007的网络日志">
-<meta property="og:description" content="抱歉，我水了一篇博客。。">
+<meta property="og:description" content="看看如何利用k-means实现物以类聚">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-08-01T14:38:24.000Z">
-<meta property="article:modified_time" content="2021-08-01T14:38:24.000Z">
+<meta property="article:published_time" content="2021-08-01T15:06:53.000Z">
+<meta property="article:modified_time" content="2021-08-01T15:06:53.000Z">
 <meta property="article:author" content="Jayying007">
-<meta property="article:tag" content="二分">
-<meta property="article:tag" content="数据结构">
+<meta property="article:tag" content="机器学习，算法">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+<link rel="canonical" href="http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/","path":"2021/08/01/二分查找/","title":"二分查找"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/","path":"2021/08/01/k-means算法/","title":"k-means算法"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>二分查找 | Jayying007的网络日志</title>
+<title>k-means算法 | Jayying007的网络日志</title>
   
 
 
@@ -147,7 +146,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E6%A8%A1%E6%8B%9F"><span class="nav-number">2.</span> <span class="nav-text">场景模拟</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%A8%A1%E6%9D%BF"><span class="nav-number">3.</span> <span class="nav-text">代码模板</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B7%9D%E7%A6%BB%E5%85%AC%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">距离公式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B0%8F%E5%B0%8F%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">小小示例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E"><span class="nav-number">5.</span> <span class="nav-text">说明</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -226,7 +225,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
@@ -239,7 +238,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          二分查找
+          k-means算法
         </h1>
 
         <div class="post-meta-container">
@@ -250,7 +249,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-08-01 22:38:24" itemprop="dateCreated datePublished" datetime="2021-08-01T22:38:24+08:00">2021-08-01</time>
+      <time title="创建时间：2021-08-01 23:06:53" itemprop="dateCreated datePublished" datetime="2021-08-01T23:06:53+08:00">2021-08-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -258,7 +257,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+          <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
         </span>
     </span>
 
@@ -272,7 +271,7 @@
     </span>
 </div>
 
-            <div class="post-description">抱歉，我水了一篇博客。。</div>
+            <div class="post-description">看看如何利用k-means实现物以类聚</div>
         </div>
       </header>
 
@@ -280,18 +279,18 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>二分查找，又称折半查找。顾名思义，就是在一堆<strong>有序排列</strong>的元素中查找某一指定数值。返回数值对应的下标或-1（查不到）。</p>
-<h2 id="场景模拟"><a href="#场景模拟" class="headerlink" title="场景模拟"></a>场景模拟</h2><p>看其他文章都是千篇一律的猜数字，我们换一换风格，来猜一猜价格吧。这不是一样的吗？</p>
-<p>比如说现在让你猜一件商品的价格，已知商品的价格在1-1000元之间，且为整数，现在让你尽快猜中商品的价格，你要怎么做呢？（你每猜一个价格，都能得知这个价格与正确价格相比是相同的，还是小了或大了）</p>
-<p>鲁莽的方法：从1元开始猜到1000元，总会猜到的。运气好的话，价格刚好是1元，猜一次就中了。运气不好的话，价格是1000元，要猜1000次才能猜中。</p>
-<p><strong>这种方法其实没有充分利用猜价格得到的反馈信息，即从1元开始猜到1000元的过程中，你得到的反馈只有正确或者小了，绝对不会出现大了。</strong></p>
-<p>睿智的方法：既然价格在1元到1000元之间，那我就猜500元，即（1+1000）/2。这时可能的反馈信息分别有</p>
-<p>比正确价格小：这样我们就知道商品的价格不在1元到500元之间，而是在501元到1000元之间。</p>
-<p>与正确价格相同：即我们猜中了，所以就直接返回这个结果就可以了。</p>
-<p>比正确价格大：所以商品价格不在500元到1000元之间，而是在1元到499元之间。</p>
-<p><strong>不难看出，只经过一次猜测，可能猜中或者把猜测范围缩小一半。后面用同样的方式猜测，则又可以将猜测范围缩小一半。</strong>这个不就是递归吗？虽然用循环也可以做</p>
-<p><strong>用二分查找的时间复杂度为O（logN）</strong></p>
-<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="keyword">int</span>&gt; arr,<span class="keyword">int</span> aim)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 参数说明：arr即查找的容器序列，aim为需要查找的元素</span></span><br><span class="line"><span class="comment">     * 要求：arr容器需保证元素升序</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> left=<span class="number">0</span>,right=arr.<span class="built_in">size</span>()<span class="number">-1</span>,mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span>(left&lt;=right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid]&lt;aim)&#123;</span><br><span class="line">            left=mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]==aim)&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;找到了&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]&gt;aim)&#123;</span><br><span class="line">            right=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;找不到&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; arr;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">        arr.<span class="built_in">push_back</span>(i*<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">binarySearch</span>(arr,<span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h5><p>据说是机器学习中最简单的一种方法，属于<strong>非监督学习</strong>这一类。通俗一点讲，给机器一堆数据，告诉机器要分成多少种类别，然后机器就根据算法进行各种操作。</p>
+<h5 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h5><p>需要我们确定变量k，即最终 的数据会有几种类别。</p>
+<p>总共有k个中心坐标，一开始可以随机赋值，通过计算目标点坐标与所有中心坐标的距离，将其归类在距离较近的类别中。</p>
+<p>之后根据类别中的目标点计算平均值重新得到中心坐标，再重复上面的工作。</p>
+<h5 id="距离公式"><a href="#距离公式" class="headerlink" title="距离公式"></a>距离公式</h5><p>常用的距离公式如欧式距离，马氏距离，曼哈顿距离。</p>
+<p>借助科学计算库可以帮我们节省一些时间。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line">pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)<span class="comment">#欧氏距离</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="小小示例"><a href="#小小示例" class="headerlink" title="小小示例"></a>小小示例</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line"></span><br><span class="line">dimension = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机点，范围[0,10)</span></span><br><span class="line">dot_num = <span class="number">100</span></span><br><span class="line">dot = np.random.rand(dot_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机中心点，范围[0,10)</span></span><br><span class="line">center_num = <span class="number">4</span></span><br><span class="line">center = np.random.rand(center_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 循环迭代</span></span><br><span class="line">times = <span class="number">50</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(times):</span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 数据映射</span></span><br><span class="line">    belong = np.zeros([dot_num])</span><br><span class="line">    <span class="comment"># 计算随机点与中心点的距离，将其归属于距离近的中心点</span></span><br><span class="line">    dist = np.zeros([dot_num,center_num])</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">            dist[j][k] = pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)</span><br><span class="line">        belong[j] = np.argmax(dist[j])</span><br><span class="line">    <span class="comment"># 绘图</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">        temp_dot = []</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">            <span class="keyword">if</span>(belong[k] == j):</span><br><span class="line">                temp_dot.append(dot[k])</span><br><span class="line">        <span class="comment"># 根据随机点求取均值，得出新的中心点</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">len</span>(temp_dot) != <span class="number">0</span>):</span><br><span class="line">            temp_dot = np.array(temp_dot)</span><br><span class="line">            plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dimension):</span><br><span class="line">                center[j][k] = np.<span class="built_in">sum</span>(temp_dot[:,k])/<span class="built_in">len</span>(temp_dot)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            center[j] = np.zeros([dimension])</span><br><span class="line">    <span class="comment"># print(center)</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 满足迭代次数或中心点不再改变，结束命令</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h5><p>上述代码为动态实时更新画板内容，其中的关键代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">    <span class="comment"># 清除画布</span></span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 绘制散点</span></span><br><span class="line">    plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">    <span class="comment"># 暂停间隔</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -301,22 +300,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E4%BA%8C%E5%88%86/" rel="tag"><i class="fa fa-tag"></i> 二分</a>
-              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"><i class="fa fa-tag"></i> 数据结构</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%8C%E7%AE%97%E6%B3%95/" rel="tag"><i class="fa fa-tag"></i> 机器学习，算法</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/06/27/KVO%E4%B8%8EKVOController%E7%9A%84%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="prev" title="KVO与KVOController的介绍与实现原理">
-                  <i class="fa fa-chevron-left"></i> KVO与KVOController的介绍与实现原理
+                <a href="/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" rel="prev" title="二分查找">
+                  <i class="fa fa-chevron-left"></i> 二分查找
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/08/01/k-means%E7%AE%97%E6%B3%95/" rel="next" title="k-means算法">
-                  k-means算法 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
