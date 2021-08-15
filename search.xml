@@ -709,7 +709,7 @@
 
 <h2 id="从逻辑门到一台计算机"><a href="#从逻辑门到一台计算机" class="headerlink" title="从逻辑门到一台计算机"></a>从逻辑门到一台计算机</h2><h3 id="电的产生及应用"><a href="#电的产生及应用" class="headerlink" title="电的产生及应用"></a>电的产生及应用</h3><blockquote>
 <p> 这部分推荐一个B站Up主：《Ele实验室》，他的视频都是计算机相关的，通过动画呈现，小白也听得懂。</p>
-<p>视频在这里：<a href="https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0">https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0</a></p>
+<p><a href="https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0">视频在这里</a></p>
 </blockquote>
 <p>物质发生化学反应，产生的溶液中存在阴阳离子。不同金属吸引不同阴阳离子，形成电池的正负极，电池内部不知道有什么结构，使得正负离子能够位于电池两极，从而形成了电压。而当我们连接上导线的时候，电子就能顺着这条导线会到正极，电子的流动我们称为电流。</p>
 <p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608167111154-0f2f41cb-42a8-4775-b73a-41d7564f406e.png" alt="image.png"></p>
@@ -719,8 +719,8 @@
 <h3 id="逻辑门"><a href="#逻辑门" class="headerlink" title="逻辑门"></a>逻辑门</h3><p>利用上面的这个磁原理，我们其他能实现很多事情了。比如构造出非门、与门、或门等。</p>
 <p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168149593-2d1fdfc6-b233-4fdb-b688-f06686b1bef7.png" alt="image.png"></p>
 <p>有了这些基础门，其他更高级的元器件也能实现了。比如加法器、选择器、反向选择器、ALU，直到CPU。</p>
-<p>如果你想学习如何组装这些组件，这里有一个网站：<a href="https://nandgame.com/%EF%BC%8C%E8%BF%99%E4%B8%AA%E7%BD%91%E7%AB%99%E5%83%8F%E7%8E%A9%E6%B8%B8%E6%88%8F%E4%B8%80%E6%A0%B7%EF%BC%8C%E8%AE%A9%E4%BD%A0%E4%BB%8E%E9%80%BB%E8%BE%91%E9%97%A8%E4%B8%80%E6%AD%A5%E6%AD%A5%E7%BB%84%E8%A3%85%E5%88%B0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E3%80%82">https://nandgame.com/，这个网站像玩游戏一样，让你从逻辑门一步步组装到一台计算机。</a></p>
-<p>如果你更倾向于看书，这里推荐一本不错的书：《计算机系统要素》，里面的电路组件设计是通过HDL（硬件描述语言）来实现的，我之前也做过一些笔记，可以看看：<a href="https://github.com/jayying007/nand2tetris">https://github.com/jayying007/nand2tetris</a></p>
+<p>如果你想学习如何组装这些组件，<a href="https://nandgame.com/">这里有一个网站</a> ，这个网站像玩游戏一样，让你从逻辑门一步步组装到一台计算机。</p>
+<p>如果你更倾向于看书，这里推荐一本不错的书：《计算机系统要素》，里面的电路组件设计是通过HDL（硬件描述语言）来实现的，我之前也做过一些笔记，<a href="https://github.com/jayying007/nand2tetris">可以看看</a></p>
 <h3 id="组计算机"><a href="#组计算机" class="headerlink" title="组计算机"></a>组计算机</h3><p>接下来，你就要把这些元器件组装起来，构成一台计算机了，比如下面的图示：</p>
 <p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168660703-e43ec6d5-7565-4318-bf1e-61e6f71c0363.png" alt="image.png"></p>
 <p>更多的组装细节，还是看书《计算机系统要素》吧。基本上，计算机干的事就是</p>
@@ -729,13 +729,17 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这里，你已经拥有了一台自动机。当你接通电源的时候，它会从内存的0地址处开始读指令，执行…</p>
 <p>这里还有一本不错的书推荐，也是从逻辑门讲到计算机的，读起来挺有趣的，上面的图也是从这里取的。</p>
 <p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210815183553332.png" alt="image-20210815183553332"></p>
-<p>另外，如果有玩《我的世界》的小伙伴，也可以尝试用红石电路去构建。比如我之前就自己搭了一个二进制加法器，地址在这里：<a href="https://www.bilibili.com/video/BV1R3411z7ew%E3%80%82">https://www.bilibili.com/video/BV1R3411z7ew。</a></p>
+<p>另外，如果有玩《我的世界》的小伙伴，也可以尝试用红石电路去构建。比如我之前就自己搭了一个二进制加法器，<a href="https://www.bilibili.com/video/BV1R3411z7ew">地址在这里</a></p>
 <blockquote>
-<p>但是最后还有个问题，内存一开始也没有数据呀，那这些指令怎么来的呢？这部分内容等下篇博客来解答。</p>
+<p>但是最后其实还有个问题，前面我们说接通电源后从内存开始读指令，但是内存一开始也没有数据呀，那这些指令怎么来的呢？这部分内容等下篇博客来解答。</p>
 </blockquote>
 ]]></content>
       <categories>
         <category>计算机简史</category>
       </categories>
+      <tags>
+        <tag>逻辑门</tag>
+        <tag>计算机</tag>
+      </tags>
   </entry>
 </search>
