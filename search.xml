@@ -605,4 +605,137 @@
         <tag>二维码</tag>
       </tags>
   </entry>
+  <entry>
+    <title>分享一道算法设计题</title>
+    <url>/2021/08/02/%E5%88%86%E4%BA%AB%E4%B8%80%E9%81%93%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E9%A2%98/</url>
+    <content><![CDATA[<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>有一个函数rand()能生成1-65536之间的整数，利用这个函数，让30万人中有5万人中奖，要求保证公平（即每个人的中奖几率一样）。</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="首先解决如何做到30万人抽出5万人，还保证公平。"><a href="#首先解决如何做到30万人抽出5万人，还保证公平。" class="headerlink" title="首先解决如何做到30万人抽出5万人，还保证公平。"></a>首先解决如何做到30万人抽出5万人，还保证公平。</h4><p>假设能实现一个函数randX()，他能返回1-30万之间的整数，那么我可以制定一个策略，从随机到的数向后取5万个。如下图所示</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1615472709130-4d0d4a54-46a1-45e5-8322-ba832fddb6de.png" alt="img"></p>
+<p>当后面不足5万个时，从头部补一些</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1615472845433-aba9cff7-fe04-49b4-90e2-cb071439853b.png" alt="img"></p>
+<p>这种方式真的能保证公平吗，让我们来验证一下</p>
+<p>每个人的中奖概率为 5万/30万 = 1/6</p>
+<p>上面的这种方法，红色部分共有30万种可能（初始位置从1-30万），而每一个位置，比如5万这个位置，红色部分共有5万种可能会覆盖到这个数，所以这个位置被选到的概率也是 5万/30万 = 1/6</p>
+<h4 id="现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平"><a href="#现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平" class="headerlink" title="现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平"></a>现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平</h4><p>一个错误方式是将rand() * (300000/65536)，这种方式虽然能得到1-300000之间的整数，但是有些数却永远取不到。</p>
+<p>rand()=1时，rand()*(300000/65536)=4.5776,那么无论如何你就取不到1，2，3了</p>
+<p>那么该如何解决呢？一种方法是分区间</p>
+<p>比如把30万划分为5个一样大的区别，每个区间只有6万</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/jpeg/1556579/1615474782637-741cfe45-dcba-4c01-86b4-8ae1910a1c29.jpeg" alt="img"></p>
+<p>我们先随机取1-5之间的数，从而确定在那个区间取。</p>
+<p>一个区间只有6万，所以我们可以用rand()来取1-6万之间的整数了，最后加上区间起始位置的数就可以了。</p>
+<p>这样就没问题了吗？</p>
+<p>其实如果选择不慎，还是不公平的。</p>
+<p>比如一个能生成1-10随机数的函数rand，用它来生成1-4的随机数，如果写成rand%4+1，那结果就是错的。</p>
+<p>我们可以列出所有计算的可能情况</p>
+<p>生成1: 1 5 9</p>
+<p>生成2: 2 6 10</p>
+<p>生成3: 3 7</p>
+<p>生成4: 4 8</p>
+<p>可见生成不同随机数的概率其实是不一样的，生成1的概率是十分之三，生成4的概率是十分之二。</p>
+<p>要实现一个公平的随机数生成器，需要保证生成的最大数为原来随机器最大数的因数。比如1-10对应能制造生成1-2和1-5两种随机器，且保证公平。</p>
+<p>而针对上面这种情况，我们能做的是拒绝采样（reject sampling），当得到的数为9或10时，让它重新生成一个随机数直到满足条件。</p>
+<p>对于本文的题，65536的因数都是2的指数次幂，而30万不是，所以也只能采用拒绝采样的方法。</p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>基于消息表的分布式事务</title>
+    <url>/2021/08/02/%E5%9F%BA%E4%BA%8E%E6%B6%88%E6%81%AF%E8%A1%A8%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</url>
+    <content><![CDATA[<p><strong>在分布式数据库中，通过避免强一致性可以带来伸缩性的巨大提升。</strong></p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>随着你公司Web应用的发展，数据库容易陷入瓶颈。通常有两种方法解决这个问题，垂直扩展和水平扩展。</p>
+<ul>
+<li>垂直扩展通过提升硬件性能，但一般比较昂贵。</li>
+<li>水平扩展是本文主要讨论的方法，相比垂直扩展要复杂一些。</li>
+</ul>
+<p>水平扩展的方式通常也有两种：按模块切分，数据表做切片（Sharding）</p>
+<ul>
+<li>按模块切分的方式，将 Users, products, and transactions切分到不同的数据库。不同模块通过设计合适的外键进行关联访问。</li>
+<li>每个模块可以根据具体容量再进行切分</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1612706617125-07dd0bb7-f24e-4c31-9449-e7c3e9ee74c1.png" alt="img"></p>
+<h3 id="ACID与BASE"><a href="#ACID与BASE" class="headerlink" title="ACID与BASE"></a>ACID与BASE</h3><p>我们知道，在单个数据库下，是可以实现ACID的。而在跨多个数据库的情况下，一般是通过2PC实现。2PC保证了强一致性，而根据CAP理论可以得知，其可用性则无法完全实现。</p>
+<p>那如果我们想要可用性，不要求强一致性呢？可以试试BASE。</p>
+<p>如果说ACID是悲观的，要求每个操作都严格一致，那么BASE则是乐观的，允许流动（flux）的状态。</p>
+<p>BASE的高可用并不是保证每个用户请求都被执行。比如有5台数据库服务器，当有一台服务器宕机了，那么大约只有20%的用户访问不了，这种情况下我们仍然认为系统是可用的。</p>
+<p>下面我们以一个例子演示从单机到多机的变化。</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>假设我们有以下数据表User和Transaction，它们存放在同一个数据库中。每当有一件商品卖出时，向Transaction表插入一条数据，然后更新买家和卖家的user表。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1612708581417-c4fcd3cb-fe28-4adc-82e8-30552553f1dd.png" alt="img"></p>
+<p>上面这个过程可以通过下面的SQL事务表示</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1612708777051-5ff679c3-47a6-4bba-80c8-672b994dee77.png" alt="img"></p>
+<p>当我们按模块划分后，user和transaction位于不同的数据库服务器上，此时再执行则变成了两个独立的事务。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1612709344023-95ba9210-1d7f-4d85-8b2f-d17041173c7f.png" alt="img"></p>
+<p>这种情况下，若事务1执行成功，事务2执行失败，就出现了数据不一致的情况。怎么解决这种问题呢？这里就引入了我们本文的主角，消息表。</p>
+<p>实现消息表的方法可能有很多，但不管怎样，我们需要将消息的执行也划归到我们的事务内。引入消息表后，我们的SQL语句会变成下面这样。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1612709759494-0704876f-bc14-4a72-8f01-5c3985384ff6.png" alt="img"></p>
+<p>可以创建一个后台进程，查询消息表，然后根据消息内容更新user表。</p>
+<p>不过上述的代码其实有问题，因为消息表是和transaction表一起的，跟user表在不同的数据库服务器上，如果按照上面那种方法，一个事务中有update消息表和user表，又回到了使用2PC。</p>
+<p>如何解决这个问题？这里要先引入一个概念，幂等性。</p>
+<p>如果一个操作执行一次或几次的结果都是一样的，那么它就是幂等的。如果一个操作是幂等的，那么可以实现：即使操作失败了，我们可以重试直到成功，而重试不会影响最终结果。</p>
+<p>我们上面的这个例子则不支持幂等，每次操作都会改变购买量或销售量。怎么解决呢？可以在user表所在数据库服务器上再加一个表</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1612710768983-7970e275-52d4-4a75-b846-030d42ecc7bd.png" alt="img"></p>
+<p>然后将SQL语句改为下面这种</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1612710796277-0112dc19-e601-4a1b-b7f0-838c2775bb68.png" alt="img"></p>
+<p>从上面的SQL语句中可以看出，message被移到了事务外面，这样使得只有在事务操作成功的时候才将其从消息表中移除。</p>
+<p>当事务执行成功，在移除消息表之前宕机，重启之后又重新消费这条消息。而事务中有对已消费信息的判断，从而解决了重复消费的问题。这样保证了数据在最后能达到一致性。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://queue.acm.org/detail.cfm?id=1394128">https://queue.acm.org/detail.cfm?id=1394128</a></p>
+]]></content>
+      <categories>
+        <category>系统架构</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+        <tag>消息表</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>计算机简史（一）</title>
+    <url>/2021/08/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="这个系列什么？"><a href="#这个系列什么？" class="headerlink" title="这个系列什么？"></a>这个系列什么？</h2><p>我觉得，既然是学计算机的，那么应该对计算机体系有一些认识。当然，这跟你会不会修电脑无关。。。</p>
+<p>作为计算机专业的，计算机的一些核心课程想必都学过（虽然我们学院没开编译原理、数字电路这些课程。。），但是很少把它们串起来的。这里是我当时准备面试前，把自己对计算机的认知体系梳理了一遍，也是对我大学四年学的东西的总结，希望对你也有帮助。当然，由于个人能力有限，可能有些地方讲的不大对，所以也请你辩证地看。</p>
+<p>这里我不会特别深入讲某个东西，但是我会推荐一些不错的资源，那些要学习的话也是挺费时间的。</p>
+<p>另外，这个系列更多的是总结，而不是零基础入门。</p>
+<span id="more"></span>
+
+<h2 id="从逻辑门到一台计算机"><a href="#从逻辑门到一台计算机" class="headerlink" title="从逻辑门到一台计算机"></a>从逻辑门到一台计算机</h2><h3 id="电的产生及应用"><a href="#电的产生及应用" class="headerlink" title="电的产生及应用"></a>电的产生及应用</h3><blockquote>
+<p> 这部分推荐一个B站Up主：《Ele实验室》，他的视频都是计算机相关的，通过动画呈现，小白也听得懂。</p>
+<p>视频在这里：<a href="https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0">https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0</a></p>
+</blockquote>
+<p>物质发生化学反应，产生的溶液中存在阴阳离子。不同金属吸引不同阴阳离子，形成电池的正负极，电池内部不知道有什么结构，使得正负离子能够位于电池两极，从而形成了电压。而当我们连接上导线的时候，电子就能顺着这条导线会到正极，电子的流动我们称为电流。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608167111154-0f2f41cb-42a8-4775-b73a-41d7564f406e.png" alt="image.png"></p>
+<p>当然，也可以利用切割磁感线的原理产生电流。说到磁，学了物理我们知道，有电流通过的线圈会产生磁场。那么基于这个原理我们可以设计这样一个电路。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608167333744-b1badb83-b325-4f6d-9288-e56e693c9518.png" alt="image.png"></p>
+<p>当红色电路接通时，线圈产生的磁场把黑色电路的开关吸下来，从而电路闭合，灯泡亮起。这种结构一般称为继电器，可以实现电路影响另一条电路。假设黑色电路是高电压，那我们通过红色电路的低电压（emm,一般不会是干电池）就能控制高电压的电路。</p>
+<h3 id="逻辑门"><a href="#逻辑门" class="headerlink" title="逻辑门"></a>逻辑门</h3><p>利用上面的这个磁原理，我们其他能实现很多事情了。比如构造出非门、与门、或门等。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168149593-2d1fdfc6-b233-4fdb-b688-f06686b1bef7.png" alt="image.png"></p>
+<p>有了这些基础门，其他更高级的元器件也能实现了。比如加法器、选择器、反向选择器、ALU，直到CPU。</p>
+<p>如果你想学习如何组装这些组件，这里有一个网站：<a href="https://nandgame.com/%EF%BC%8C%E8%BF%99%E4%B8%AA%E7%BD%91%E7%AB%99%E5%83%8F%E7%8E%A9%E6%B8%B8%E6%88%8F%E4%B8%80%E6%A0%B7%EF%BC%8C%E8%AE%A9%E4%BD%A0%E4%BB%8E%E9%80%BB%E8%BE%91%E9%97%A8%E4%B8%80%E6%AD%A5%E6%AD%A5%E7%BB%84%E8%A3%85%E5%88%B0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E3%80%82">https://nandgame.com/，这个网站像玩游戏一样，让你从逻辑门一步步组装到一台计算机。</a></p>
+<p>如果你更倾向于看书，这里推荐一本不错的书：《计算机系统要素》，里面的电路组件设计是通过HDL（硬件描述语言）来实现的，我之前也做过一些笔记，可以看看：<a href="https://github.com/jayying007/nand2tetris">https://github.com/jayying007/nand2tetris</a></p>
+<h3 id="组计算机"><a href="#组计算机" class="headerlink" title="组计算机"></a>组计算机</h3><p>接下来，你就要把这些元器件组装起来，构成一台计算机了，比如下面的图示：</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168660703-e43ec6d5-7565-4318-bf1e-61e6f71c0363.png" alt="image.png"></p>
+<p>更多的组装细节，还是看书《计算机系统要素》吧。基本上，计算机干的事就是</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">while(true) &#123;</span><br><span class="line">	取指令</span><br><span class="line">	译码（根据指令生成控制信号）</span><br><span class="line">	执行（运算、读写内存...）</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这里，你已经拥有了一台自动机。当你接通电源的时候，它会从内存的0地址处开始读指令，执行…</p>
+<p>这里还有一本不错的书推荐，也是从逻辑门讲到计算机的，读起来挺有趣的，上面的图也是从这里取的。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210815183553332.png" alt="image-20210815183553332"></p>
+<p>另外，如果有玩《我的世界》的小伙伴，也可以尝试用红石电路去构建。比如我之前就自己搭了一个二进制加法器，地址在这里：<a href="https://www.bilibili.com/video/BV1R3411z7ew%E3%80%82">https://www.bilibili.com/video/BV1R3411z7ew。</a></p>
+<blockquote>
+<p>但是最后还有个问题，内存一开始也没有数据呀，那这些指令怎么来的呢？这部分内容等下篇博客来解答。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>计算机简史</category>
+      </categories>
+  </entry>
 </search>
