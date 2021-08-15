@@ -377,9 +377,9 @@
 <p>|</p>
 <p>|</p>
 <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="首先解决如何做到30万人抽出5万人，还保证公平。"><a href="#首先解决如何做到30万人抽出5万人，还保证公平。" class="headerlink" title="首先解决如何做到30万人抽出5万人，还保证公平。"></a>首先解决如何做到30万人抽出5万人，还保证公平。</h4><p>假设能实现一个函数randX()，他能返回1-30万之间的整数，那么我可以制定一个策略，从随机到的数向后取5万个。如下图所示</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1615472709130-4d0d4a54-46a1-45e5-8322-ba832fddb6de.png" alt="img"></p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472709130-4d0d4a54-46a1-45e5-8322-ba832fddb6de.png" alt="img"></p>
 <p>当后面不足5万个时，从头部补一些</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/1556579/1615472845433-aba9cff7-fe04-49b4-90e2-cb071439853b.png" alt="img"></p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472845433-aba9cff7-fe04-49b4-90e2-cb071439853b.png" alt="img"></p>
 <p>这种方式真的能保证公平吗，让我们来验证一下</p>
 <p>每个人的中奖概率为 5万/30万 = 1/6</p>
 <p>上面的这种方法，红色部分共有30万种可能（初始位置从1-30万），而每一个位置，比如5万这个位置，红色部分共有5万种可能会覆盖到这个数，所以这个位置被选到的概率也是 5万/30万 = 1/6</p>
@@ -387,7 +387,7 @@
 <p>rand()=1时，rand()*(300000/65536)=4.5776,那么无论如何你就取不到1，2，3了</p>
 <p>那么该如何解决呢？一种方法是分区间</p>
 <p>比如把30万划分为5个一样大的区别，每个区间只有6万</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/jpeg/1556579/1615474782637-741cfe45-dcba-4c01-86b4-8ae1910a1c29.jpeg" alt="img"></p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615474782637-741cfe45-dcba-4c01-86b4-8ae1910a1c29.jpeg" alt="img"></p>
 <p>我们先随机取1-5之间的数，从而确定在那个区间取。</p>
 <p>一个区间只有6万，所以我们可以用rand()来取1-6万之间的整数了，最后加上区间起始位置的数就可以了。</p>
 <p>这样就没问题了吗？</p>
