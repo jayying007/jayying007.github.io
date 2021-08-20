@@ -630,7 +630,9 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这里，你已经拥有了一台自动机。当你接通电源的时候，它会从内存的0地址处开始读指令，执行…</p>
 <p>这里还有一本不错的书推荐，也是从逻辑门讲到计算机的，读起来挺有趣的，上面的图也是从这里取的。</p>
 <p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210815183553332.png" alt="image-20210815183553332"></p>
-<p>另外，如果有玩《我的世界》的小伙伴，也可以尝试用红石电路去构建。比如我之前就自己搭了一个二进制加法器，<a href="https://www.bilibili.com/video/BV1R3411z7ew">地址在这里</a></p>
+<p>另外，如果有玩《我的世界》的小伙伴，也可以尝试用红石电路去构建。比如我之前就自己搭了一个二进制加法器</p>
+<iframe src="//player.bilibili.com/player.html?aid=419833419&bvid=BV1R3411z7ew&cid=389690536&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
 <blockquote>
 <p>但是最后其实还有个问题，前面我们说接通电源后从内存开始读指令，但是内存一开始也没有数据呀，那这些指令怎么来的呢？这部分内容等下篇博客来解答。</p>
 </blockquote>
