@@ -881,4 +881,26 @@
         <tag>docker</tag>
       </tags>
   </entry>
+  <entry>
+    <title>分享几个计算机相关的网站</title>
+    <url>/2021/08/31/%E5%88%86%E4%BA%AB%E5%87%A0%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9B%B8%E5%85%B3%E7%9A%84%E7%BD%91%E7%AB%99/</url>
+    <content><![CDATA[<p>大家好呀，作为程序员，分享几个我用过的网站，感觉还挺不错的。</p>
+<h3 id="sqlbolt"><a href="#sqlbolt" class="headerlink" title="sqlbolt"></a>sqlbolt</h3><p><a href="https://sqlbolt.com/">https://sqlbolt.com/</a></p>
+<p>这是一个练习SQL语句的地方，小白也可以学习。</p>
+<h3 id="regexone"><a href="#regexone" class="headerlink" title="regexone"></a>regexone</h3><p><a href="https://regexone.com/">https://regexone.com/</a></p>
+<p>这是一个练习正则的地方，跟第一个属于同一个作者开发。这种交互式的网站还挺有意思的。</p>
+<h3 id="Learn-Git-Branching"><a href="#Learn-Git-Branching" class="headerlink" title="Learn Git Branching"></a>Learn Git Branching</h3><p><a href="https://learngitbranching.js.org/?locale=zh_CN">https://learngitbranching.js.org/?locale=zh_CN</a></p>
+<p>这是一个练习Git的网站，非常实用。通过分支的可视化，可以帮助你更好理解你的每一步Git命令做了什么事情。</p>
+<h3 id="找计算机书籍"><a href="#找计算机书籍" class="headerlink" title="找计算机书籍"></a>找计算机书籍</h3><p><a href="https://www.xz577.com/">https://www.xz577.com/</a></p>
+<p>这里的资源比较多，可以找到很多PDF类型的计算机书籍。</p>
+<p>另一个我比较常用的是《微信读书》，里面的书籍也很多。</p>
+<h3 id="牛客网"><a href="#牛客网" class="headerlink" title="牛客网"></a>牛客网</h3><p><a href="https://www.nowcoder.com/">https://www.nowcoder.com/</a></p>
+<p>用来面试刷题的，我觉得跟leetcode的一个差别是在牛客网可以刷一些计算机基础的题目，比起leetcode纯粹都是算法题会更广一些。</p>
+<h3 id="iconfont"><a href="#iconfont" class="headerlink" title="iconfont"></a>iconfont</h3><p><a href="https://www.iconfont.cn/">https://www.iconfont.cn/</a></p>
+<p>这个主要用来找各种Icon的，比较适合在学习做项目又缺少设计同学的情况。</p>
+]]></content>
+      <categories>
+        <category>其他</category>
+      </categories>
+  </entry>
 </search>
