@@ -20,29 +20,33 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="看看如何利用k-means实现物以类聚">
+<meta name="description" content="NSTimer在IOS中用于设置定时器，但在使用时也有一些坑点">
 <meta property="og:type" content="article">
-<meta property="og:title" content="k-means算法">
-<meta property="og:url" content="http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:title" content="NSTimer的一些理解&amp;RunLoop简介">
+<meta property="og:url" content="http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/index.html">
 <meta property="og:site_name" content="Jayying007的网络日志">
-<meta property="og:description" content="看看如何利用k-means实现物以类聚">
+<meta property="og:description" content="NSTimer在IOS中用于设置定时器，但在使用时也有一些坑点">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-08-01T15:06:53.000Z">
-<meta property="article:modified_time" content="2021-08-01T15:06:53.000Z">
+<meta property="og:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg">
+<meta property="og:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg">
+<meta property="og:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png">
+<meta property="article:published_time" content="2021-09-04T07:04:29.000Z">
+<meta property="article:modified_time" content="2021-09-04T07:04:29.000Z">
 <meta property="article:author" content="Jayying007">
-<meta property="article:tag" content="机器学习">
-<meta property="article:tag" content="算法">
+<meta property="article:tag" content="定时">
+<meta property="article:tag" content="RunLoop">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg">
 
 
-<link rel="canonical" href="http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/">
+<link rel="canonical" href="http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/","path":"2021/08/01/k-means算法/","title":"k-means算法"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/","path":"2021/09/04/对NSTimer的一些理解/","title":"NSTimer的一些理解&RunLoop简介"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>k-means算法 | Jayying007的网络日志</title>
+<title>NSTimer的一些理解&RunLoop简介 | Jayying007的网络日志</title>
   
 
 
@@ -147,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B7%9D%E7%A6%BB%E5%85%AC%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">距离公式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B0%8F%E5%B0%8F%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">小小示例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E"><span class="nav-number">5.</span> <span class="nav-text">说明</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop"><span class="nav-number">1.</span> <span class="nav-text">RunLoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSTimer"><span class="nav-number">2.</span> <span class="nav-text">NSTimer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="nav-number">2.1.</span> <span class="nav-text">注意点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C"><span class="nav-number">2.2.</span> <span class="nav-text">关于后台运行</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -226,7 +230,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/01/k-means%E7%AE%97%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
@@ -239,7 +243,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          k-means算法
+          NSTimer的一些理解&RunLoop简介
         </h1>
 
         <div class="post-meta-container">
@@ -250,7 +254,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-08-01 23:06:53" itemprop="dateCreated datePublished" datetime="2021-08-01T23:06:53+08:00">2021-08-01</time>
+      <time title="创建时间：2021-09-04 15:04:29" itemprop="dateCreated datePublished" datetime="2021-09-04T15:04:29+08:00">2021-09-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -258,7 +262,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+          <a href="/categories/IOS/" itemprop="url" rel="index"><span itemprop="name">IOS</span></a>
         </span>
     </span>
 
@@ -272,7 +276,7 @@
     </span>
 </div>
 
-            <div class="post-description">看看如何利用k-means实现物以类聚</div>
+            <div class="post-description">NSTimer在IOS中用于设置定时器，但在使用时也有一些坑点</div>
         </div>
       </header>
 
@@ -280,18 +284,47 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h5><p>据说是机器学习中最简单的一种方法，属于<strong>非监督学习</strong>这一类。通俗一点讲，给机器一堆数据，告诉机器要分成多少种类别，然后机器就根据算法进行各种操作。</p>
-<h5 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h5><p>需要我们确定变量k，即最终 的数据会有几种类别。</p>
-<p>总共有k个中心坐标，一开始可以随机赋值，通过计算目标点坐标与所有中心坐标的距离，将其归类在距离较近的类别中。</p>
-<p>之后根据类别中的目标点计算平均值重新得到中心坐标，再重复上面的工作。</p>
-<h5 id="距离公式"><a href="#距离公式" class="headerlink" title="距离公式"></a>距离公式</h5><p>常用的距离公式如欧式距离，马氏距离，曼哈顿距离。</p>
-<p>借助科学计算库可以帮我们节省一些时间。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line">pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)<span class="comment">#欧氏距离</span></span><br></pre></td></tr></table></figure>
+        <h3 id="RunLoop"><a href="#RunLoop" class="headerlink" title="RunLoop"></a>RunLoop</h3><p>The purpose of a run loop is to keep your thread busy when there is work to do and put your thread to sleep when there is none.</p>
+<p>The app frameworks automatically set up and run the run loop on the main thread as part of the application startup process.</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg" alt="Structure of a run loop and its sources"></p>
+<hr>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg" alt="Operating a custom input source"></p>
+<p>You must be sure to add one or more input sources, timers, or run-loop observers to any modes you create for them to be useful.</p>
+<p>错误做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[runLoop run];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
-<h5 id="小小示例"><a href="#小小示例" class="headerlink" title="小小示例"></a>小小示例</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line"></span><br><span class="line">dimension = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机点，范围[0,10)</span></span><br><span class="line">dot_num = <span class="number">100</span></span><br><span class="line">dot = np.random.rand(dot_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机中心点，范围[0,10)</span></span><br><span class="line">center_num = <span class="number">4</span></span><br><span class="line">center = np.random.rand(center_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 循环迭代</span></span><br><span class="line">times = <span class="number">50</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(times):</span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 数据映射</span></span><br><span class="line">    belong = np.zeros([dot_num])</span><br><span class="line">    <span class="comment"># 计算随机点与中心点的距离，将其归属于距离近的中心点</span></span><br><span class="line">    dist = np.zeros([dot_num,center_num])</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">            dist[j][k] = pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)</span><br><span class="line">        belong[j] = np.argmax(dist[j])</span><br><span class="line">    <span class="comment"># 绘图</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">        temp_dot = []</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">            <span class="keyword">if</span>(belong[k] == j):</span><br><span class="line">                temp_dot.append(dot[k])</span><br><span class="line">        <span class="comment"># 根据随机点求取均值，得出新的中心点</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">len</span>(temp_dot) != <span class="number">0</span>):</span><br><span class="line">            temp_dot = np.array(temp_dot)</span><br><span class="line">            plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dimension):</span><br><span class="line">                center[j][k] = np.<span class="built_in">sum</span>(temp_dot[:,k])/<span class="built_in">len</span>(temp_dot)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            center[j] = np.zeros([dimension])</span><br><span class="line">    <span class="comment"># print(center)</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 满足迭代次数或中心点不再改变，结束命令</span></span><br></pre></td></tr></table></figure>
+<p>正确做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">  [runLoop run];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
-<h5 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h5><p>上述代码为动态实时更新画板内容，其中的关键代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">    <span class="comment"># 清除画布</span></span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 绘制散点</span></span><br><span class="line">    plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">    <span class="comment"># 暂停间隔</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>RunLoop有多种Modes，在某一时刻只会运行在一种Mode下，处理这个Mode下对应的sources。</p>
+<p>一般情况下，项目中都不需要我们去使用RunLoop，因为主线程的已经默认开启了。子线程的话，除非你需要Timer、performSelector这类需要运行在RunLoop上的东西时才开启。</p>
+<h3 id="NSTimer"><a href="#NSTimer" class="headerlink" title="NSTimer"></a>NSTimer</h3><p>从RunLoop的特性我们知道，一般情况下NSTimer运行在NSDefaultRunLoopMode模式，当scrollview滑动时，RunLoop是运行在UITrackingRunLoopMode模式下的，此时NSTimer就不工作了，到了指定时间也不会触发事件。</p>
+<p>If a timer is not in the mode currently being monitored by the run loop, it does not fire until you run the run loop in one of the timer’s supported modes.</p>
+<p>NSTimer并不是实时的，如果当前RunLoop有任务在执行，Timer将等任务结束再处理。如果你是一个重复的Timer，在5秒、10秒、15秒这些时间点触发，第一次因为延迟而在7秒的时候才执行，那么下次执行时间还是10秒。</p>
+<p>If the firing time is delayed so much that it misses one or more of the scheduled firing times, the timer is fired only once for the missed time period. </p>
+<p>比如下面每隔十秒执行的Timer：</p>
+<p>49秒的时候delay，直到53秒执行；</p>
+<p>59秒的时候delay，直到08秒执行；</p>
+<p>39秒、49秒的时候delay，也只在56秒执行一次。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png" alt="image-20210904155650452"></p>
+<p>延迟后要不要执行，可以通过设置<code>tolerance</code>去做</p>
+<h4 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h4><blockquote>
+<p>Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop</p>
+</blockquote>
+<p>RunLoop强引用Timer，Timer强引用Target，所以Timer存在的话，Target就不会消亡。通过invalidate方法可以从RunLoop中移除Timer。不过如果你把invalidate写在target的dealloc里面，那就是<strong>循环引用</strong>了</p>
+<h4 id="关于后台运行"><a href="#关于后台运行" class="headerlink" title="关于后台运行"></a>关于后台运行</h4><p>理论上，app进入后台，短暂待一会就进入挂起状态。你可以在项目中设置一个重复的Timer去验证。</p>
+<p>所以问题是，如果你想在几个小时后（比如你的App是类似闹钟之类的东西）执行某些代码逻辑？</p>
+<p>这里有一些方法供参考：</p>
+<ol>
+<li>设置本地通知。通知是由IOS管理的，所以不用担心App被kill掉，只要时间一到，IOS就会触发通知</li>
+<li>类似于后台播放音乐、定位、VOIP这些（这些可能需要申请权限，而且滥用的话苹果审核估计也不通过），可以后台播放静音文件（伪装你在播放音乐，实际是做它用），这样你的App就能一直运行了。。</li>
+<li>如果不是要精确的时间的话，可以在下次App启动的时候去做个时间检查，过了时间点的就可以执行相关的逻辑。</li>
+</ol>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1">https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501">https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/11fae16ab622">https://www.jianshu.com/p/11fae16ab622</a></p>
+<p><a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/foundation/nstimer">https://developer.apple.com/documentation/foundation/nstimer</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/totogo2010/article/details/8048652/">ios应用程序状态变迁</a></p>
 
     </div>
 
@@ -301,22 +334,19 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 机器学习</a>
-              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
+              <a href="/tags/%E5%AE%9A%E6%97%B6/" rel="tag"><i class="fa fa-tag"></i> 定时</a>
+              <a href="/tags/RunLoop/" rel="tag"><i class="fa fa-tag"></i> RunLoop</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" rel="prev" title="二分查找">
-                  <i class="fa fa-chevron-left"></i> 二分查找
+                <a href="/2021/08/31/%E5%88%86%E4%BA%AB%E5%87%A0%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9B%B8%E5%85%B3%E7%9A%84%E7%BD%91%E7%AB%99/" rel="prev" title="分享几个计算机相关的网站">
+                  <i class="fa fa-chevron-left"></i> 分享几个计算机相关的网站
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/08/01/%E9%83%A8%E7%BD%B2Tensorflow%E6%A8%A1%E5%9E%8B%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8-%E6%96%B9%E6%B3%95%E4%B8%80/" rel="next" title="部署Tensorflow模型到服务器--方法一">
-                  部署Tensorflow模型到服务器--方法一 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -387,7 +417,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"jayying007","repo":"blog-comment","client_id":"b60444c924a7ff9cd4be","client_secret":"d8e594664bac872d936849ed506d7df834dd9754","admin_user":"jayying007","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"260b14c8fe3a0e021b3b0d7a1260c811"}</script>
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"jayying007","repo":"blog-comment","client_id":"b60444c924a7ff9cd4be","client_secret":"d8e594664bac872d936849ed506d7df834dd9754","admin_user":"jayying007","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"00fdbab9605dd113d614dec5211eb1f5"}</script>
 <script src="/js/third-party/comments/gitalk.js"></script>
 
 </body>

@@ -903,4 +903,57 @@
         <category>其他</category>
       </categories>
   </entry>
+  <entry>
+    <title>NSTimer的一些理解&amp;RunLoop简介</title>
+    <url>/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h3 id="RunLoop"><a href="#RunLoop" class="headerlink" title="RunLoop"></a>RunLoop</h3><p>The purpose of a run loop is to keep your thread busy when there is work to do and put your thread to sleep when there is none.</p>
+<p>The app frameworks automatically set up and run the run loop on the main thread as part of the application startup process.</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg" alt="Structure of a run loop and its sources"></p>
+<hr>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg" alt="Operating a custom input source"></p>
+<p>You must be sure to add one or more input sources, timers, or run-loop observers to any modes you create for them to be useful.</p>
+<p>错误做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[runLoop run];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>正确做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">  [runLoop run];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>RunLoop有多种Modes，在某一时刻只会运行在一种Mode下，处理这个Mode下对应的sources。</p>
+<p>一般情况下，项目中都不需要我们去使用RunLoop，因为主线程的已经默认开启了。子线程的话，除非你需要Timer、performSelector这类需要运行在RunLoop上的东西时才开启。</p>
+<h3 id="NSTimer"><a href="#NSTimer" class="headerlink" title="NSTimer"></a>NSTimer</h3><p>从RunLoop的特性我们知道，一般情况下NSTimer运行在NSDefaultRunLoopMode模式，当scrollview滑动时，RunLoop是运行在UITrackingRunLoopMode模式下的，此时NSTimer就不工作了，到了指定时间也不会触发事件。</p>
+<p>If a timer is not in the mode currently being monitored by the run loop, it does not fire until you run the run loop in one of the timer’s supported modes.</p>
+<p>NSTimer并不是实时的，如果当前RunLoop有任务在执行，Timer将等任务结束再处理。如果你是一个重复的Timer，在5秒、10秒、15秒这些时间点触发，第一次因为延迟而在7秒的时候才执行，那么下次执行时间还是10秒。</p>
+<p>If the firing time is delayed so much that it misses one or more of the scheduled firing times, the timer is fired only once for the missed time period. </p>
+<p>比如下面每隔十秒执行的Timer：</p>
+<p>49秒的时候delay，直到53秒执行；</p>
+<p>59秒的时候delay，直到08秒执行；</p>
+<p>39秒、49秒的时候delay，也只在56秒执行一次。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png" alt="image-20210904155650452"></p>
+<p>延迟后要不要执行，可以通过设置<code>tolerance</code>去做</p>
+<h4 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h4><blockquote>
+<p>Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop</p>
+</blockquote>
+<p>RunLoop强引用Timer，Timer强引用Target，所以Timer存在的话，Target就不会消亡。通过invalidate方法可以从RunLoop中移除Timer。不过如果你把invalidate写在target的dealloc里面，那就是<strong>循环引用</strong>了</p>
+<h4 id="关于后台运行"><a href="#关于后台运行" class="headerlink" title="关于后台运行"></a>关于后台运行</h4><p>理论上，app进入后台，短暂待一会就进入挂起状态。你可以在项目中设置一个重复的Timer去验证。</p>
+<p>所以问题是，如果你想在几个小时后（比如你的App是类似闹钟之类的东西）执行某些代码逻辑？</p>
+<p>这里有一些方法供参考：</p>
+<ol>
+<li>设置本地通知。通知是由IOS管理的，所以不用担心App被kill掉，只要时间一到，IOS就会触发通知</li>
+<li>类似于后台播放音乐、定位、VOIP这些（这些可能需要申请权限，而且滥用的话苹果审核估计也不通过），可以后台播放静音文件（伪装你在播放音乐，实际是做它用），这样你的App就能一直运行了。。</li>
+<li>如果不是要精确的时间的话，可以在下次App启动的时候去做个时间检查，过了时间点的就可以执行相关的逻辑。</li>
+</ol>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1">https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1</a></p>
+<p><a href="https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501">https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501</a></p>
+<p><a href="https://www.jianshu.com/p/11fae16ab622">https://www.jianshu.com/p/11fae16ab622</a></p>
+<p><a href="https://developer.apple.com/documentation/foundation/nstimer">https://developer.apple.com/documentation/foundation/nstimer</a></p>
+<p><a href="https://blog.csdn.net/totogo2010/article/details/8048652/">ios应用程序状态变迁</a></p>
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+      <tags>
+        <tag>定时</tag>
+        <tag>RunLoop</tag>
+      </tags>
+  </entry>
 </search>
