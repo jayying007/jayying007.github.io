@@ -167,14 +167,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -306,7 +306,7 @@
 <p>但是长期做下去后，你会发现这样效率太低了。你要计算某条公式，就需要将其转换为0101的指令数据，要是有一个0被写成了1，那就出错了。</p>
 <h3 id="编程语言"><a href="#编程语言" class="headerlink" title="编程语言"></a>编程语言</h3><p>编程语言就是为了解决上述问题而诞生。它允许我们写一些人类看得懂的字符，然后经过编译器将其转换为0101。</p>
 <h4 id="汇编语言"><a href="#汇编语言" class="headerlink" title="汇编语言"></a>汇编语言</h4><p>这个算低级编程语言，语言描述还比较抽象，你还会跟寄存器打交道，大概长下面这样，</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mov ax, 0x10</span><br><span class="line">xor eax,eax</span><br><span class="line">in al, 0x70</span><br><span class="line">or al, 0x80</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mov ax, 0x10</span><br><span class="line">xor eax,eax</span><br><span class="line">in al, 0x70</span><br><span class="line">or al, 0x80</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>题外话（汇编编译器将汇编代码翻译为机器指令，那汇编编译器又怎么来呢）</p>

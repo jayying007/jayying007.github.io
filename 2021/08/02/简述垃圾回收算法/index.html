@@ -176,14 +176,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -294,7 +294,7 @@
     <div class="post-body" itemprop="articleBody">
         <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>垃圾回收(Garbage Collection),简称GC,主要是对那些已经分配的空间进行回收利用,实现再分配.</p>
 <p>比如下面的Java代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">	list.add(<span class="number">1</span>);</span><br><span class="line">	System.out.println(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">	list.add(<span class="number">1</span>);</span><br><span class="line">	System.out.println(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>在这个函数中,我创建了一个ArrayList对象,Java则在内存堆上为其分配空间.但是一旦出了这个函数,我们就再也访问不到这块空间了,如果不进行回收,那么内存堆的这个位置就浪费了.</p>
 <p><strong>所以GC要完成的主要有两件事:</strong></p>
@@ -332,7 +332,7 @@
 </ul>
 <p>我们知道计算机是有高速缓存这么个东西.一般而言,具有引用关系的对象之间通常很可能存在连续访问的情况。所以如果在堆中这两个对象存放位置连续,那当读取第一个对象时,后面的对象也跟着被读进了缓存,后续访问的速度就加快了.</p>
 <h3 id="GC算法介绍"><a href="#GC算法介绍" class="headerlink" title="GC算法介绍"></a>GC算法介绍</h3><h4 id="标记清除算法"><a href="#标记清除算法" class="headerlink" title="标记清除算法"></a>标记清除算法</h4><p>这个其实在前面也有提到,从根集合出发,将能访问到的对象打上标记,然后遍历堆,将没有标记的对象清除.伪代码描述如下:</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">mark_sweep() &#123;</span><br><span class="line">	<span class="comment">//标记阶段</span></span><br><span class="line">	<span class="keyword">for</span>(r : $roots) &#123;</span><br><span class="line">		mark(*r)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//清除阶段</span></span><br><span class="line">	sweeping = $heap_start</span><br><span class="line">	while(sweeping &lt; $heap_end)</span><br><span class="line">		<span class="keyword">if</span>(sweeping.mark == TRUE)</span><br><span class="line">			sweeping.mark = FALSE</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			sweeping.next = $free_list</span><br><span class="line">			$free_list = sweeping</span><br><span class="line">		sweeping += sweeping.size</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//标记函数</span></span><br><span class="line">mark(obj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(obj.mark == FALSE) &#123;</span><br><span class="line">		obj.mark = TRUE</span><br><span class="line">		<span class="keyword">for</span>(child : children(obj))</span><br><span class="line">			mark(*child)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">mark_sweep() &#123;</span><br><span class="line">	<span class="comment">//标记阶段</span></span><br><span class="line">	<span class="keyword">for</span>(r : $roots) &#123;</span><br><span class="line">		mark(*r)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//清除阶段</span></span><br><span class="line">	sweeping = $heap_start</span><br><span class="line">	while(sweeping &lt; $heap_end)</span><br><span class="line">		<span class="keyword">if</span>(sweeping.mark == TRUE)</span><br><span class="line">			sweeping.mark = FALSE</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			sweeping.next = $free_list</span><br><span class="line">			$free_list = sweeping</span><br><span class="line">		sweeping += sweeping.size</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//标记函数</span></span><br><span class="line">mark(obj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(obj.mark == FALSE) &#123;</span><br><span class="line">		obj.mark = TRUE</span><br><span class="line">		<span class="keyword">for</span>(child : children(obj))</span><br><span class="line">			mark(*child)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这种方式不会挪动对象在堆中的位置,但是容易产生内存碎片.关于回收后的内存如何分配使用,可以找更相关的资料.比如参考malloc库的实现,在&lt;&lt;深入理解计算机系统&gt;&gt;一书中也有所涉及.</p>
 <h4 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h4><p>顾名思义,在对象头记录有多少个引用了这个对象.当计数变为0的时候,我们就可以立即对这部分内存进行回收.</p>
@@ -354,7 +354,7 @@
 <p>如果遍历老年代去标记,那其实又跟遍历整个堆没区别了.</p>
 <p>所以这里引入了==记录集==和==写入屏障==</p>
 <p>记录集上面保存了老年代对象的指针. 它是在我们更新对象指针的时候,通过写入屏障的方式加入的.</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">write_barrier(obj, field, new_obj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(obj &gt;= $old_start &amp;&amp; new_obj &lt; $old_start &amp;&amp; obj.remembered == FALSE)</span><br><span class="line">		$rs[$rs_index] = obj</span><br><span class="line">		$rs_index++</span><br><span class="line">		obj.remembered = TRUE</span><br><span class="line">	*field = new_obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">write_barrier(obj, field, new_obj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(obj &gt;= $old_start &amp;&amp; new_obj &lt; $old_start &amp;&amp; obj.remembered == FALSE)</span><br><span class="line">		$rs[$rs_index] = obj</span><br><span class="line">		$rs_index++</span><br><span class="line">		obj.remembered = TRUE</span><br><span class="line">	*field = new_obj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>如上述伪代码那样,当老年代对象有某个属性指向新生代对象时,将其加入记录集中.</p>
 <p>这样的好处是当新生代对象的内存位置移动时,能够知道要更新哪个老年代对象的指针</p>
@@ -385,7 +385,7 @@
 <p><img src="https://img-blog.csdnimg.cn/img_convert/416d59030abc0f8a58e550c3c9afe392.png" alt="image-20210323210817028"></p>
 <p>如图,当A标记完所有子对象后,自己变黑. 此时切换回主线程,然后主线程的代码做了个操作,将B–C之间的引用删掉,然后加了A–C的引用.  这时再回来GC的时候,由于A已经黑了,所以不会再对其子对象做标记, 这样就会错过对象C, 这样会误回收对象!!</p>
 <p>解决这个问题的办法同样使用写入屏障, 在添加A指向C的引用时, 如果C是白色的,就将其标黑.</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">write_barrier(obj, field, newobj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(newobj.mark == FALSE) &#123;</span><br><span class="line">		newobj.mark = TRUE</span><br><span class="line">		push(newobj, $mark_stack)</span><br><span class="line">	&#125;</span><br><span class="line">	*field = newobj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">write_barrier(obj, field, newobj) &#123;</span><br><span class="line">	<span class="keyword">if</span>(newobj.mark == FALSE) &#123;</span><br><span class="line">		newobj.mark = TRUE</span><br><span class="line">		push(newobj, $mark_stack)</span><br><span class="line">	&#125;</span><br><span class="line">	*field = newobj</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>问题2</p>
 <p><img src="https://img-blog.csdnimg.cn/img_convert/471c98e4b5c097c01c1480de549093f1.png" alt="image-20210323211416289"></p>

@@ -168,14 +168,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -291,10 +291,10 @@
 <p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg" alt="Operating a custom input source"></p>
 <p>You must be sure to add one or more input sources, timers, or run-loop observers to any modes you create for them to be useful.</p>
 <p>错误做法：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[runLoop run];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[runLoop run];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <p>正确做法：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">  [runLoop run];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">  [runLoop run];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <p>RunLoop有多种Modes，在某一时刻只会运行在一种Mode下，处理这个Mode下对应的sources。</p>
 <p>一般情况下，项目中都不需要我们去使用RunLoop，因为主线程的已经默认开启了。子线程的话，除非你需要Timer、performSelector这类需要运行在RunLoop上的东西时才开启。</p>
