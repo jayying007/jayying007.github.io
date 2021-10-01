@@ -1224,4 +1224,48 @@
         <tag>Objective-C</tag>
       </tags>
   </entry>
+  <entry>
+    <title>OC中的链式语法</title>
+    <url>/2021/10/01/OC%E4%B8%AD%E7%9A%84%E9%93%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h3 id="点语法"><a href="#点语法" class="headerlink" title="点语法"></a>点语法</h3><p>1.在OC中，访问对象的property时，可以使用点语法的方式访问</p>
+<p>2.调用无参数的方法时，也可使用点语法。</p>
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p>输入</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">person.say(<span class="string">@&quot;Hello, World!&quot;</span>).walk();</span><br></pre></td></tr></table></figure>
+
+<p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这个人说：Hello, World!</span><br><span class="line">绕了地球两圈</span><br></pre></td></tr></table></figure>
+
+<p>这在其他语言中是很容易实现的，比如C++和Java，其调用方法本身就是通过点语法的方式进行，只要返回值是self就行。</p>
+<h3 id="OC如何实现这种效果"><a href="#OC如何实现这种效果" class="headerlink" title="OC如何实现这种效果"></a>OC如何实现这种效果</h3><p>答案是借助Block。</p>
+<hr>
+<p>拿上面的代码进行拆分：</p>
+<p><code>person.say(@&quot;Hello, World!&quot;).walk();</code></p>
+<p>前半段<code>person.say</code>可以理解为调用了无参数的say方法，而后面还有小括号和参数<code>(@&quot;Hello, World!&quot;)</code>。那只要say方法返回一个Block，这个Block需要一个执行参数即可。相当于前半段代码执行了这个Block。</p>
+<p>而后面还需要调用walk方法，则需要这个Block返回对象本身。</p>
+<p>需要注意的是，后半段是<code>.walk()</code>而不是<code>.walk</code>，后者执行执行了walk方法，但却没有执行对应返回的Block。</p>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">Person</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> Person* (^Sayback)(<span class="built_in">NSString</span> *);</span><br><span class="line"><span class="keyword">typedef</span> Person* (^Walkback)(<span class="keyword">void</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line">- (Sayback)say;</span><br><span class="line">- (Walkback)walk;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&quot;Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line">- (Sayback)say &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *(<span class="built_in">NSString</span> *word) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;这个人说：%@&quot;</span>, word);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (Walkback)walk &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *() &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;绕了地球两圈&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>链式语法让代码写得更简洁了，但是其调用次数也翻倍了</p>
+<blockquote>
+<p>原先是直接调用方法，现在变成调用方法会返回Block，然后再执行这个Block</p>
+</blockquote>
+<p>在Java8中出现了流式编程<code>Java Stream</code>，可将代码写得很精致，如下面所示，也好奇🤔OC能否也实现这种效果</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Stream.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;banana&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;waltermaleon&quot;</span>, <span class="string">&quot;grape&quot;</span>)</span><br><span class="line">                .mapToInt(e -&gt; e.length()) <span class="comment">//转成int</span></span><br><span class="line">                .forEach(e -&gt; System.out.println(e));</span><br></pre></td></tr></table></figure>
+
+<img src="https://upload-images.jianshu.io/upload_images/3830893-c797daeb0f7f1e3e.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1156/format/webp" alt="img" style="zoom: 67%;" />
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Stream.of(1,2,3,1,2,5,6,7,8,0,0,1,2,3,1)</span><br><span class="line">                .filter(e-&gt;e&gt;=5) //过滤小于5的</span><br><span class="line">                .forEach(e-&gt;System.out.println(e));</span><br></pre></td></tr></table></figure>
+
+<img src="https://upload-images.jianshu.io/upload_images/3830893-39f0bf8f2e45bb12.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1176/format/webp" alt="img" style="zoom:67%;" />
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+        <category>ObjC</category>
+      </categories>
+  </entry>
 </search>

@@ -20,33 +20,30 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="NSTimer在IOS中用于设置定时器，但在使用时也有一些坑点">
+<meta name="description" content="看如何在ObjC中灵活使用点语法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="NSTimer的一些理解&amp;RunLoop简介">
-<meta property="og:url" content="http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/index.html">
+<meta property="og:title" content="OC中的链式语法">
+<meta property="og:url" content="http://example.com/2021/10/01/OC%E4%B8%AD%E7%9A%84%E9%93%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/index.html">
 <meta property="og:site_name" content="Jayying007的网络日志">
-<meta property="og:description" content="NSTimer在IOS中用于设置定时器，但在使用时也有一些坑点">
+<meta property="og:description" content="看如何在ObjC中灵活使用点语法">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg">
-<meta property="og:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg">
-<meta property="og:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png">
-<meta property="article:published_time" content="2021-09-04T07:04:29.000Z">
-<meta property="article:modified_time" content="2021-09-04T07:04:29.000Z">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/3830893-c797daeb0f7f1e3e.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1156/format/webp">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/3830893-39f0bf8f2e45bb12.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1176/format/webp">
+<meta property="article:published_time" content="2021-10-01T15:40:56.000Z">
+<meta property="article:modified_time" content="2021-10-01T15:40:56.000Z">
 <meta property="article:author" content="Jayying007">
-<meta property="article:tag" content="定时">
-<meta property="article:tag" content="RunLoop">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/3830893-c797daeb0f7f1e3e.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1156/format/webp">
 
 
-<link rel="canonical" href="http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/">
+<link rel="canonical" href="http://example.com/2021/10/01/OC%E4%B8%AD%E7%9A%84%E9%93%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/","path":"2021/09/04/对NSTimer的一些理解/","title":"NSTimer的一些理解&RunLoop简介"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/10/01/OC%E4%B8%AD%E7%9A%84%E9%93%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/","path":"2021/10/01/OC中的链式语法/","title":"OC中的链式语法"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>NSTimer的一些理解&RunLoop简介 | Jayying007的网络日志</title>
+<title>OC中的链式语法 | Jayying007的网络日志</title>
   
 
 
@@ -151,7 +148,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop"><span class="nav-number">1.</span> <span class="nav-text">RunLoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NSTimer"><span class="nav-number">2.</span> <span class="nav-text">NSTimer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="nav-number">2.1.</span> <span class="nav-text">注意点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C"><span class="nav-number">2.2.</span> <span class="nav-text">关于后台运行</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%B9%E8%AF%AD%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">点语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text">最终效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OC%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%BF%99%E7%A7%8D%E6%95%88%E6%9E%9C"><span class="nav-number">3.</span> <span class="nav-text">OC如何实现这种效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">代码示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -230,7 +227,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/01/OC%E4%B8%AD%E7%9A%84%E9%93%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
@@ -243,7 +240,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          NSTimer的一些理解&RunLoop简介
+          OC中的链式语法
         </h1>
 
         <div class="post-meta-container">
@@ -254,7 +251,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-09-04 15:04:29" itemprop="dateCreated datePublished" datetime="2021-09-04T15:04:29+08:00">2021-09-04</time>
+      <time title="创建时间：2021-10-01 23:40:56" itemprop="dateCreated datePublished" datetime="2021-10-01T23:40:56+08:00">2021-10-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -263,6 +260,10 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/IOS/" itemprop="url" rel="index"><span itemprop="name">IOS</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/IOS/ObjC/" itemprop="url" rel="index"><span itemprop="name">ObjC</span></a>
         </span>
     </span>
 
@@ -276,7 +277,7 @@
     </span>
 </div>
 
-            <div class="post-description">NSTimer在IOS中用于设置定时器，但在使用时也有一些坑点</div>
+            <div class="post-description">看如何在ObjC中灵活使用点语法</div>
         </div>
       </header>
 
@@ -284,47 +285,41 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h3 id="RunLoop"><a href="#RunLoop" class="headerlink" title="RunLoop"></a>RunLoop</h3><p>The purpose of a run loop is to keep your thread busy when there is work to do and put your thread to sleep when there is none.</p>
-<p>The app frameworks automatically set up and run the run loop on the main thread as part of the application startup process.</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg" alt="Structure of a run loop and its sources"></p>
+        <h3 id="点语法"><a href="#点语法" class="headerlink" title="点语法"></a>点语法</h3><p>1.在OC中，访问对象的property时，可以使用点语法的方式访问</p>
+<p>2.调用无参数的方法时，也可使用点语法。</p>
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p>输入</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">person.say(<span class="string">@&quot;Hello, World!&quot;</span>).walk();</span><br></pre></td></tr></table></figure>
+
+<p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这个人说：Hello, World!</span><br><span class="line">绕了地球两圈</span><br></pre></td></tr></table></figure>
+
+<p>这在其他语言中是很容易实现的，比如C++和Java，其调用方法本身就是通过点语法的方式进行，只要返回值是self就行。</p>
+<h3 id="OC如何实现这种效果"><a href="#OC如何实现这种效果" class="headerlink" title="OC如何实现这种效果"></a>OC如何实现这种效果</h3><p>答案是借助Block。</p>
 <hr>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg" alt="Operating a custom input source"></p>
-<p>You must be sure to add one or more input sources, timers, or run-loop observers to any modes you create for them to be useful.</p>
-<p>错误做法：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[runLoop run];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>拿上面的代码进行拆分：</p>
+<p><code>person.say(@&quot;Hello, World!&quot;).walk();</code></p>
+<p>前半段<code>person.say</code>可以理解为调用了无参数的say方法，而后面还有小括号和参数<code>(@&quot;Hello, World!&quot;)</code>。那只要say方法返回一个Block，这个Block需要一个执行参数即可。相当于前半段代码执行了这个Block。</p>
+<p>而后面还需要调用walk方法，则需要这个Block返回对象本身。</p>
+<p>需要注意的是，后半段是<code>.walk()</code>而不是<code>.walk</code>，后者执行执行了walk方法，但却没有执行对应返回的Block。</p>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">Person</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> Person* (^Sayback)(<span class="built_in">NSString</span> *);</span><br><span class="line"><span class="keyword">typedef</span> Person* (^Walkback)(<span class="keyword">void</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line">- (Sayback)say;</span><br><span class="line">- (Walkback)walk;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 
-<p>正确做法：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">  [runLoop run];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&quot;Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line">- (Sayback)say &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *(<span class="built_in">NSString</span> *word) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;这个人说：%@&quot;</span>, word);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (Walkback)walk &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *() &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;绕了地球两圈&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 
-<p>RunLoop有多种Modes，在某一时刻只会运行在一种Mode下，处理这个Mode下对应的sources。</p>
-<p>一般情况下，项目中都不需要我们去使用RunLoop，因为主线程的已经默认开启了。子线程的话，除非你需要Timer、performSelector这类需要运行在RunLoop上的东西时才开启。</p>
-<h3 id="NSTimer"><a href="#NSTimer" class="headerlink" title="NSTimer"></a>NSTimer</h3><p>从RunLoop的特性我们知道，一般情况下NSTimer运行在NSDefaultRunLoopMode模式，当scrollview滑动时，RunLoop是运行在UITrackingRunLoopMode模式下的，此时NSTimer就不工作了，到了指定时间也不会触发事件。</p>
-<p>If a timer is not in the mode currently being monitored by the run loop, it does not fire until you run the run loop in one of the timer’s supported modes.</p>
-<p>NSTimer并不是实时的，如果当前RunLoop有任务在执行，Timer将等任务结束再处理。如果你是一个重复的Timer，在5秒、10秒、15秒这些时间点触发，第一次因为延迟而在7秒的时候才执行，那么下次执行时间还是10秒。</p>
-<p>If the firing time is delayed so much that it misses one or more of the scheduled firing times, the timer is fired only once for the missed time period. </p>
-<p>比如下面每隔十秒执行的Timer：</p>
-<p>49秒的时候delay，直到53秒执行；</p>
-<p>59秒的时候delay，直到08秒执行；</p>
-<p>39秒、49秒的时候delay，也只在56秒执行一次。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png" alt="image-20210904155650452"></p>
-<p>延迟后要不要执行，可以通过设置<code>tolerance</code>去做</p>
-<h4 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h4><blockquote>
-<p>Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>链式语法让代码写得更简洁了，但是其调用次数也翻倍了</p>
+<blockquote>
+<p>原先是直接调用方法，现在变成调用方法会返回Block，然后再执行这个Block</p>
 </blockquote>
-<p>RunLoop强引用Timer，Timer强引用Target，所以Timer存在的话，Target就不会消亡。通过invalidate方法可以从RunLoop中移除Timer。不过如果你把invalidate写在target的dealloc里面，那就是<strong>循环引用</strong>了</p>
-<h4 id="关于后台运行"><a href="#关于后台运行" class="headerlink" title="关于后台运行"></a>关于后台运行</h4><p>理论上，app进入后台，短暂待一会就进入挂起状态。你可以在项目中设置一个重复的Timer去验证。</p>
-<p>所以问题是，如果你想在几个小时后（比如你的App是类似闹钟之类的东西）执行某些代码逻辑？</p>
-<p>这里有一些方法供参考：</p>
-<ol>
-<li>设置本地通知。通知是由IOS管理的，所以不用担心App被kill掉，只要时间一到，IOS就会触发通知</li>
-<li>类似于后台播放音乐、定位、VOIP这些（这些可能需要申请权限，而且滥用的话苹果审核估计也不通过），可以后台播放静音文件（伪装你在播放音乐，实际是做它用），这样你的App就能一直运行了。。</li>
-<li>如果不是要精确的时间的话，可以在下次App启动的时候去做个时间检查，过了时间点的就可以执行相关的逻辑。</li>
-</ol>
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1">https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501">https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/11fae16ab622">https://www.jianshu.com/p/11fae16ab622</a></p>
-<p><a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/foundation/nstimer">https://developer.apple.com/documentation/foundation/nstimer</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/totogo2010/article/details/8048652/">ios应用程序状态变迁</a></p>
+<p>在Java8中出现了流式编程<code>Java Stream</code>，可将代码写得很精致，如下面所示，也好奇🤔OC能否也实现这种效果</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Stream.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;banana&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;waltermaleon&quot;</span>, <span class="string">&quot;grape&quot;</span>)</span><br><span class="line">                .mapToInt(e -&gt; e.length()) <span class="comment">//转成int</span></span><br><span class="line">                .forEach(e -&gt; System.out.println(e));</span><br></pre></td></tr></table></figure>
+
+<img src="https://upload-images.jianshu.io/upload_images/3830893-c797daeb0f7f1e3e.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1156/format/webp" alt="img" style="zoom: 67%;" />
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Stream.of(1,2,3,1,2,5,6,7,8,0,0,1,2,3,1)</span><br><span class="line">                .filter(e-&gt;e&gt;=5) //过滤小于5的</span><br><span class="line">                .forEach(e-&gt;System.out.println(e));</span><br></pre></td></tr></table></figure>
+
+<img src="https://upload-images.jianshu.io/upload_images/3830893-39f0bf8f2e45bb12.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1176/format/webp" alt="img" style="zoom:67%;" />
+
 
     </div>
 
@@ -333,23 +328,16 @@
     
 
     <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/%E5%AE%9A%E6%97%B6/" rel="tag"><i class="fa fa-tag"></i> 定时</a>
-              <a href="/tags/RunLoop/" rel="tag"><i class="fa fa-tag"></i> RunLoop</a>
-          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/08/31/%E5%88%86%E4%BA%AB%E5%87%A0%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9B%B8%E5%85%B3%E7%9A%84%E7%BD%91%E7%AB%99/" rel="prev" title="分享几个计算机相关的网站">
-                  <i class="fa fa-chevron-left"></i> 分享几个计算机相关的网站
+                <a href="/2021/09/21/Objective-C%E4%B8%AD%E7%9A%84block%E8%AF%AD%E6%B3%95/" rel="prev" title="Objective-C中的block语法">
+                  <i class="fa fa-chevron-left"></i> Objective-C中的block语法
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/09/05/ios%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E5%8A%A8%E7%94%BB/" rel="next" title="ios自定义转场动画">
-                  ios自定义转场动画 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -420,7 +408,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"jayying007","repo":"blog-comment","client_id":"b60444c924a7ff9cd4be","client_secret":"d8e594664bac872d936849ed506d7df834dd9754","admin_user":"jayying007","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"00fdbab9605dd113d614dec5211eb1f5"}</script>
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"jayying007","repo":"blog-comment","client_id":"b60444c924a7ff9cd4be","client_secret":"d8e594664bac872d936849ed506d7df834dd9754","admin_user":"jayying007","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"9086ded08aee3387b90d8b1a88821381"}</script>
 <script src="/js/third-party/comments/gitalk.js"></script>
 
 </body>
