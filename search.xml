@@ -1285,4 +1285,139 @@
         <category>IOS</category>
       </categories>
   </entry>
+  <entry>
+    <title>IOS15导航栏透明的问题</title>
+    <url>/2021/12/12/IOS15%E5%AF%BC%E8%88%AA%E6%A0%8F%E9%80%8F%E6%98%8E%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h4 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h4><p>当我写上以下代码时，导航栏看起来就是透明的</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> () &lt;<span class="title">UITableViewDataSource</span>&gt;</span></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line">- (<span class="keyword">void</span>)viewWillAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    <span class="keyword">self</span>.navigationController.navigationBar.backgroundColor = <span class="built_in">UIColor</span>.redColor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    <span class="keyword">self</span>.title = <span class="string">@&quot;Title&quot;</span>;</span><br><span class="line">    <span class="built_in">UITableView</span> *tableView = [[<span class="built_in">UITableView</span> alloc] initWithFrame:<span class="keyword">self</span>.view.bounds];</span><br><span class="line">    tableView.backgroundColor = <span class="built_in">UIColor</span>.lightGrayColor;</span><br><span class="line">    tableView.dataSource = <span class="keyword">self</span>;</span><br><span class="line">    [<span class="keyword">self</span>.view addSubview:tableView];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSInteger</span>)tableView:(<span class="built_in">UITableView</span> *)tableView numberOfRowsInSection:(<span class="built_in">NSInteger</span>)section &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">UITableViewCell</span> *)tableView:(<span class="built_in">UITableView</span> *)tableView cellForRowAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">    <span class="built_in">UITableViewCell</span> *cell = [[<span class="built_in">UITableViewCell</span> alloc] init];</span><br><span class="line">    cell.textLabel.text = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;%ld&quot;</span>, indexPath.row];</span><br><span class="line">    <span class="keyword">return</span> cell;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211203133944275.png" alt="image-20211203133944275" style="zoom:50%;" />
+
+<p>只有当我滚动tableView时，导航栏才会出现。</p>
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211203134001703.png" alt="image-20211203134001703" style="zoom:50%;" />
+
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewWillAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    <span class="keyword">if</span> (@available(iOS <span class="number">13.0</span>, *)) &#123;</span><br><span class="line">        <span class="built_in">UINavigationBarAppearance</span> *appearance = [[<span class="built_in">UINavigationBarAppearance</span> alloc] init];</span><br><span class="line">        [appearance configureWithOpaqueBackground];</span><br><span class="line">        appearance.backgroundColor = <span class="built_in">UIColor</span>.redColor;</span><br><span class="line">        <span class="keyword">self</span>.navigationController.navigationBar.standardAppearance = appearance;</span><br><span class="line">        <span class="keyword">self</span>.navigationController.navigationBar.scrollEdgeAppearance = appearance;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.navigationController.navigationBar.backgroundColor = <span class="built_in">UIColor</span>.redColor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>还有一个比较常见的就是显示or隐藏导航栏底部的那条线</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211203134747880.png" alt="image-20211203134747880" style="zoom:50%;" /> <img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211203134813404.png" alt="image-20211203134813404" style="zoom:50%;" /></p>
+<p>代码：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewWillAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    <span class="keyword">if</span> (@available(iOS <span class="number">13.0</span>, *)) &#123;</span><br><span class="line">        <span class="built_in">UINavigationBarAppearance</span> *appearance = [[<span class="built_in">UINavigationBarAppearance</span> alloc] init];</span><br><span class="line">        [appearance configureWithOpaqueBackground];</span><br><span class="line">        appearance.backgroundColor = <span class="built_in">UIColor</span>.whiteColor;</span><br><span class="line">        appearance.shadowColor = <span class="built_in">UIColor</span>.clearColor; <span class="comment">// 隐藏线</span></span><br><span class="line">        <span class="keyword">self</span>.navigationController.navigationBar.standardAppearance = appearance;</span><br><span class="line">        <span class="keyword">self</span>.navigationController.navigationBar.scrollEdgeAppearance = appearance;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.navigationController.navigationBar.backgroundColor = <span class="built_in">UIColor</span>.whiteColor;</span><br><span class="line">        [<span class="keyword">self</span>.navigationController.navigationBar setShadowImage:<span class="literal">nil</span>]; <span class="comment">//隐藏线</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>IOS中使用HealthKit获取步数、运动记录等数据</title>
+    <url>/2021/12/12/IOS%E4%B8%AD%E4%BD%BF%E7%94%A8HealthKit%E8%8E%B7%E5%8F%96%E6%AD%A5%E6%95%B0%E3%80%81%E8%BF%90%E5%8A%A8%E8%AE%B0%E5%BD%95%E7%AD%89%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<p>在IOS中想要获取步数等信息，需要借助HealthKit，其本质上是从手机的健康App上获取数据。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113143412355.png" alt="image-20211113143412355"></p>
+<blockquote>
+<p>只要用户授权了，你的App就可以读取和写入数据到健康App中</p>
+</blockquote>
+<h3 id="框架导入"><a href="#框架导入" class="headerlink" title="框架导入"></a>框架导入</h3><p>首先你需要引入HealthKit到你的项目中。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113144305488.png" alt="image-20211113144305488"></p>
+<h3 id="授权文案"><a href="#授权文案" class="headerlink" title="授权文案"></a>授权文案</h3><p>另外需要在info.plist配置一下授权说明，否则请求授权时就会crash。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150624316.png" alt="image-20211113150624316"></p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150736171.png" alt="image-20211113150736171"></p>
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150832560.png" alt="image-20211113150832560" style="zoom: 33%;" />
+
+<p>Apple提供了HKActivityRingView来绘制运动环，之前不知道，还自己画了一个😓</p>
+<h3 id="注意⚠️的问题"><a href="#注意⚠️的问题" class="headerlink" title="注意⚠️的问题"></a>注意⚠️的问题</h3><ol>
+<li>HealthKit在IOS13下有一个bug，会导致crash</li>
+</ol>
+<p><a href="https://developer.apple.com/forums/thread/693289">https://developer.apple.com/forums/thread/693289</a></p>
+<ol start="2">
+<li><p>获取授权状态应该在子线程做，因为其内部会wait semaphore，不然会导致卡顿</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113161142489.png"></p>
+</li>
+<li><p>代码已同步Github</p>
+</li>
+</ol>
+<p><a href="https://github.com/jayying007/ios-kit/tree/master/healthkit">https://github.com/jayying007/ios-kit/tree/master/healthkit</a></p>
+<ol start="4">
+<li>HKActivityRingView的表示：在Apple自带的健身App中，数值是向下取整来表示的，但是环的绘制还是用原来的值（浮点数）</li>
+<li>无法通过系统API确认用户是否同意or拒绝授权，只能知道之前是否出现过弹窗</li>
+</ol>
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/wecom-temp-6b81964660f8cc72ddce35358807a258.png" alt="wecom-temp-6b81964660f8cc72ddce35358807a258" style="zoom: 67%;" />
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>IOS中的hitTest和pointInside</title>
+    <url>/2021/12/12/IOS%E4%B8%AD%E7%9A%84hitTest%E5%92%8CpointInside/</url>
+    <content><![CDATA[<h4 id="事件处理流程"><a href="#事件处理流程" class="headerlink" title="事件处理流程"></a>事件处理流程</h4><p>1.当用户点击屏幕时，会产生一个触摸事件，系统会将该事件加入到一个由UIApplication管理的事件队列中</p>
+<p>2.UIApplication会从事件队列中取出最前面的事件进行分发以便处理，通常，先发送事件给应用程序的主窗口(UIWindow)</p>
+<p>3.主窗口会调用hitTest:withEvent:方法在视图(UIView)层次结构中找到一个最合适的UIView来处理触摸事件<br> (hitTest:withEvent:其实是UIView的一个方法，UIWindow继承自UIView，因此主窗口UIWindow也是属于视图的一种)</p>
+<p>这个过程可以用下面的代码描述</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSString</span> *viewID;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> pointInside:point withEvent:event] == <span class="literal">NO</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSArray</span> *subviews = <span class="keyword">self</span>.subviews;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (<span class="keyword">int</span>)subviews.count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="built_in">UIView</span> *view = subviews[i];</span><br><span class="line">        <span class="built_in">CGPoint</span> viewPoint = [view convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">UIView</span> *hitSubview = [view hitTest:viewPoint withEvent:event];</span><br><span class="line">        <span class="keyword">if</span> (hitSubview) &#123;</span><br><span class="line">            <span class="keyword">return</span> hitSubview;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span>.bounds, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h4><p>通过合理的重载在两个方法，可以实现一些特殊的效果。</p>
+<h5 id="1-扩大点击区域"><a href="#1-扩大点击区域" class="headerlink" title="1. 扩大点击区域"></a>1. 扩大点击区域</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UIEdgeInsets</span> touchInsets;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">CGRect</span> responsibleRect = <span class="built_in">CGRectMake</span>(-<span class="keyword">self</span>.touchInsets.left,</span><br><span class="line">                                        -<span class="keyword">self</span>.touchInsets.top,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.width + <span class="keyword">self</span>.touchInsets.left + <span class="keyword">self</span>.touchInsets.right,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.height + <span class="keyword">self</span>.touchInsets.top + <span class="keyword">self</span>.touchInsets.bottom);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(responsibleRect, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-子View超出父View部分仍可响应"><a href="#2-子View超出父View部分仍可响应" class="headerlink" title="2. 子View超出父View部分仍可响应"></a>2. 子View超出父View部分仍可响应</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">UIView</span> *view <span class="keyword">in</span> <span class="keyword">self</span>.subviews) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(view.frame, point))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+  </entry>
 </search>

@@ -159,7 +159,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -211,6 +211,252 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/21/Objective-C%E4%B8%AD%E7%9A%84block%E8%AF%AD%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
+      <meta itemprop="name" content="Jayying007">
+      <meta itemprop="description" content="好好学习，天天向上">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jayying007的网络日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/09/21/Objective-C%E4%B8%AD%E7%9A%84block%E8%AF%AD%E6%B3%95/" class="post-title-link" itemprop="url">Objective-C中的block语法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-09-21 19:00:27" itemprop="dateCreated datePublished" datetime="2021-09-21T19:00:27+08:00">2021-09-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Objective-C/" itemprop="url" rel="index"><span itemprop="name">Objective-C</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Objective-C中的block语法"><a href="#Objective-C中的block语法" class="headerlink" title="Objective-C中的block语法"></a>Objective-C中的block语法</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前学习Obj-C的时候，看过《Objective-C高级编程》，是中文翻译版的，读起来总感觉少了些味道。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921191536098.png" alt="image-20210921191536098" style="zoom:67%;" />
+
+<p>不过作者是日本的，原版日文我更看不懂，幸好英文版的翻译好了很多，而且英语六级也过了🐶，这次看得下去。Block的知识在第四章和第五章。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921193334781.png" alt="image-20210921193334781" style="zoom:67%;" />
+
+<p>本篇文章大部分图片也是从里面摘过来的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/21/Objective-C%E4%B8%AD%E7%9A%84block%E8%AF%AD%E6%B3%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/05/ios%E6%92%AD%E6%94%BE%E5%8A%A8%E6%80%81%E5%9B%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
+      <meta itemprop="name" content="Jayying007">
+      <meta itemprop="description" content="好好学习，天天向上">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jayying007的网络日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/09/05/ios%E6%92%AD%E6%94%BE%E5%8A%A8%E6%80%81%E5%9B%BE/" class="post-title-link" itemprop="url">ios播放动态图</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-09-05 13:04:47" itemprop="dateCreated datePublished" datetime="2021-09-05T13:04:47+08:00">2021-09-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/IOS/" itemprop="url" rel="index"><span itemprop="name">IOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>项目中偶尔会需要播放动态图片，比如一些动态的表情包。常见的动态图格式大家可能都知道Gif，但其实还有一个APNG格式也是动态的，这也是设计师给我设计稿时我才知道有这种格式的动态图。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/05/ios%E6%92%AD%E6%94%BE%E5%8A%A8%E6%80%81%E5%9B%BE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/05/ios%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E5%8A%A8%E7%94%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
+      <meta itemprop="name" content="Jayying007">
+      <meta itemprop="description" content="好好学习，天天向上">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jayying007的网络日志">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/09/05/ios%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E5%8A%A8%E7%94%BB/" class="post-title-link" itemprop="url">ios自定义转场动画</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-09-05 00:23:24" itemprop="dateCreated datePublished" datetime="2021-09-05T00:23:24+08:00">2021-09-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/IOS/" itemprop="url" rel="index"><span itemprop="name">IOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>在两个VC之间跳转，能不能自己搞些花样</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/05/ios%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BD%AC%E5%9C%BA%E5%8A%A8%E7%94%BB/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -350,249 +596,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/08/31/%E5%88%86%E4%BA%AB%E5%87%A0%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9B%B8%E5%85%B3%E7%9A%84%E7%BD%91%E7%AB%99/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%B8%89%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
-      <meta itemprop="name" content="Jayying007">
-      <meta itemprop="description" content="好好学习，天天向上">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Jayying007的网络日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%B8%89%EF%BC%89/" class="post-title-link" itemprop="url">计算机简史（三）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-08-28 17:47:59" itemprop="dateCreated datePublished" datetime="2021-08-28T17:47:59+08:00">2021-08-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2/" itemprop="url" rel="index"><span itemprop="name">计算机简史</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>讲讲计算机一些分支</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%B8%89%EF%BC%89/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%BA%8C%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
-      <meta itemprop="name" content="Jayying007">
-      <meta itemprop="description" content="好好学习，天天向上">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Jayying007的网络日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">计算机简史（二）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-08-28 11:21:47" itemprop="dateCreated datePublished" datetime="2021-08-28T11:21:47+08:00">2021-08-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2/" itemprop="url" rel="index"><span itemprop="name">计算机简史</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>接通电源后从内存开始读指令，但是内存一开始也没有数据，本篇对此做解答</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%BA%8C%EF%BC%89/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%B8%80%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
-      <meta itemprop="name" content="Jayying007">
-      <meta itemprop="description" content="好好学习，天天向上">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Jayying007的网络日志">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">计算机简史（一）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-08-15 14:16:27" itemprop="dateCreated datePublished" datetime="2021-08-15T14:16:27+08:00">2021-08-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2/" itemprop="url" rel="index"><span itemprop="name">计算机简史</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="这个系列什么？"><a href="#这个系列什么？" class="headerlink" title="这个系列什么？"></a>这个系列什么？</h2><p>我觉得，既然是学计算机的，那么应该对计算机体系有一些认识。当然，这跟你会不会修电脑无关。。。</p>
-<p>作为计算机专业的，计算机的一些核心课程想必都学过（虽然我们学院没开编译原理、数字电路这些课程。。），但是很少把它们串起来的。这里是我当时准备面试前，把自己对计算机的认知体系梳理了一遍，也是对我大学四年学的东西的总结，希望对你也有帮助。当然，由于个人能力有限，可能有些地方讲的不大对，所以也请你辩证地看。</p>
-<p>这里我不会特别深入讲某个东西，但是我会推荐一些不错的资源，那些要学习的话也是挺费时间的。</p>
-<p>另外，这个系列更多的是总结，而不是零基础入门。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%B8%80%EF%BC%89/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
