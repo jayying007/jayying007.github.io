@@ -20,25 +20,29 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"hide","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="在鹅厂打工的IOS开发者">
-<meta property="og:type" content="website">
-<meta property="og:title" content="木灬匕禾页的个人博客">
-<meta property="og:url" content="http://example.com/tags/%E4%BA%8C%E7%BB%B4%E7%A0%81/index.html">
+<meta name="description" content="hh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IOS音频技术（一）Audio Session">
+<meta property="og:url" content="http://example.com/2021/12/13/IOS%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Audio-Session/index.html">
 <meta property="og:site_name" content="木灬匕禾页的个人博客">
-<meta property="og:description" content="在鹅厂打工的IOS开发者">
+<meta property="og:description" content="hh">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://faithlove.github.io/pic/2018/HexoThumb/topPicPre.png">
+<meta property="article:published_time" content="2021-12-13T13:28:56.000Z">
+<meta property="article:modified_time" content="2021-12-13T13:28:56.000Z">
 <meta property="article:author" content="木灬匕禾页">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://faithlove.github.io/pic/2018/HexoThumb/topPicPre.png">
 
 
-<link rel="canonical" href="http://example.com/tags/%E4%BA%8C%E7%BB%B4%E7%A0%81/">
+<link rel="canonical" href="http://example.com/2021/12/13/IOS%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Audio-Session/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"tags/二维码/index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/12/13/IOS%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Audio-Session/","path":"2021/12/13/IOS音频技术（一）Audio-Session/","title":"IOS音频技术（一）Audio Session"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>标签: 二维码 | 木灬匕禾页的个人博客</title>
+<title>IOS音频技术（一）Audio Session | 木灬匕禾页的个人博客</title>
   
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-137794400-1","only_pageview":true}</script>
   <script src="/js/third-party/analytics/google-analytics.js"></script>
@@ -133,7 +137,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -146,6 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEAudio-Session"><span class="nav-number">2.</span> <span class="nav-text">配置Audio Session</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E9%BB%98%E8%AE%A4%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">系统默认配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -216,51 +221,165 @@
 </noscript>
 
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
 
 
   
-  
-  
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h2 class="collection-header">二维码
-          <small>标签</small>
-        </h2>
-      </div>
 
-      
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+
+<div class="post-block">
+  
+  <div class="post-gallery" itemscope itemtype="http://schema.org/ImageGallery">
+    
+    <div class="post-gallery-image">
+      <img src="https://faithlove.github.io/pic/2018/HexoThumb/topPicPre.png" itemprop="contentUrl">
+    </div>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2021-08-02T00:04:02+08:00"
-              content="2021-08-02">
-          08-02
-        </time>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/13/IOS%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Audio-Session/">
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/08/02/%E8%87%AA%E5%B7%B1%E6%89%8B%E5%8A%A8%E7%94%9F%E6%88%90%E4%BA%8C%E7%BB%B4%E7%A0%81/" itemprop="url">
-            <span itemprop="name">自己手动生成二维码</span>
-          </a>
-      </div>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg">
+      <meta itemprop="name" content="木灬匕禾页">
+      <meta itemprop="description" content="在鹅厂打工的IOS开发者">
+    </span>
 
-      
-    </header>
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="木灬匕禾页的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IOS音频技术（一）Audio Session
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-12-13 21:28:56" itemprop="dateCreated datePublished" datetime="2021-12-13T21:28:56+08:00">2021-12-13</time>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">hh</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Audio Session是一个用来管理音频的类，你的App通过Audio Session来告诉系统你将如何使用硬件设备，比如麦克风、扬声器。Audio Session的表现就像是一个中介者。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/ASPG_intro_2x.png" alt="ASPG_intro_2x.png"></p>
+<p>系统提供了<code>AVAudioSession</code>这个类来实现对应的功能：</p>
+<ul>
+<li><p>设置你的App的Audio Session表现行为（设置Category和Mode）</p>
+</li>
+<li><p>接受通知，比如Audio中断、或者路由改变（如用户插入耳机）</p>
+</li>
+<li><p>配置音频设备（采样率、通道数等）</p>
+</li>
+</ul>
+<p>这个AVAudioSession是单例的，在App启动之后系统会自动初始化。</p>
+<h2 id="配置Audio-Session"><a href="#配置Audio-Session" class="headerlink" title="配置Audio Session"></a>配置Audio Session</h2><p>系统提供了很多种Category，通过设置不同的Category，可以表明你的App的音频表现，比如当你的App播放音频时是否停止其他App的音频、用户打开静音键后你的App是否还能播放。具体看下面这张表：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Category</th>
+<th align="left">按下静音键or锁屏的时候静音</th>
+<th align="left">中断其他无法混合播放的App</th>
+<th align="left">Allows audio input (recording) and output (playback)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>AVAudioSessionCategoryAmbient</code></td>
+<td align="left">Yes</td>
+<td align="left">No</td>
+<td align="left">Output only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategorySoloAmbient</code> (Default)</td>
+<td align="left">Yes</td>
+<td align="left">Yes</td>
+<td align="left">Output only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryPlayback</code></td>
+<td align="left">No</td>
+<td align="left">Yes by default; no by using override switch</td>
+<td align="left">Output only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryRecord</code></td>
+<td align="left">No (锁屏时录音继续)</td>
+<td align="left">Yes</td>
+<td align="left">Input only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryPlayAndRecord</code></td>
+<td align="left">No</td>
+<td align="left">Yes by default; no by using override switch</td>
+<td align="left">Input and output</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryMultiRoute</code></td>
+<td align="left">No</td>
+<td align="left">Yes</td>
+<td align="left">Input and output</td>
+</tr>
+</tbody></table>
+<p>通过<code>setCategory:mode:options:error:</code>这个API来配置。比如你要实现音频可以在后台播放，则使用Category为<code>AVAudioSessionCategoryPlayback</code>，同时在Xcode的Capabilities中开启Background Mode</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/background_modes_2x.png" alt="../Art/background_modes.shot/Resources/shot_2x.png"></p>
+<p>最后通过<code>setActive:error:</code>来让配置生效。</p>
+<p>Apple官网文档给了一张图来描述这个过程：</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/competing_audio_demands_2x.png" alt="A comic-book representation of the sequence of events surrounding the activation of an audio session."></p>
+<h3 id="系统默认配置"><a href="#系统默认配置" class="headerlink" title="系统默认配置"></a>系统默认配置</h3><p>系统默认实现的Audio Session配置如下：</p>
+<ul>
+<li>支持播放、不支持录音</li>
+<li>打开静音键后，App的音频变为静音</li>
+<li>锁屏后，App的音频变为静音</li>
+<li>当App的音频在播放时，其他App的音频静音</li>
+</ul>
+<blockquote>
+<p>有时我们要播放App时，需要判断其他App是否在使用Audio，这时可通过secondaryAudioShouldBeSilencedHint这个属性来获取，为true时说明在playing</p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007875-CH1-SW1">https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007875-CH1-SW1</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/12/12/%E6%95%B0%E5%AD%97%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%E4%BB%8B%E7%BB%8D/" rel="prev" title="数字音频技术介绍">
+                  <i class="fa fa-chevron-left"></i> 数字音频技术介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-    </div>
-  </div>
-  
-  
-  
 
+
+
+
+
+    <div class="comments gitalk-container"></div>
 </div>
   </main>
 
@@ -300,7 +419,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"jayying007","repo":"blog-comment","client_id":"b60444c924a7ff9cd4be","client_secret":"d8e594664bac872d936849ed506d7df834dd9754","admin_user":"jayying007","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"3d04bec3531d5f7e3e6b4d8102bf004c"}</script>
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"jayying007","repo":"blog-comment","client_id":"b60444c924a7ff9cd4be","client_secret":"d8e594664bac872d936849ed506d7df834dd9754","admin_user":"jayying007","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"dee63923cdb317b396ec0eb6cfcfaf2e"}</script>
 <script src="/js/third-party/comments/gitalk.js"></script>
 
 
