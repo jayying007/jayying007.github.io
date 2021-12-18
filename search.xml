@@ -1,84 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>IOS音频技术（一）Audio Session</title>
-    <url>/2021/12/13/IOS%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Audio-Session/</url>
-    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Audio Session是一个用来管理音频的类，你的App通过Audio Session来告诉系统你将如何使用硬件设备，比如麦克风、扬声器。Audio Session的表现就像是一个中介者。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/ASPG_intro_2x.png" alt="ASPG_intro_2x.png"></p>
-<p>系统提供了<code>AVAudioSession</code>这个类来实现对应的功能：</p>
-<ul>
-<li><p>设置你的App的Audio Session表现行为（设置Category和Mode）</p>
-</li>
-<li><p>接受通知，比如Audio中断、或者路由改变（如用户插入耳机）</p>
-</li>
-<li><p>配置音频设备（采样率、通道数等）</p>
-</li>
-</ul>
-<p>这个AVAudioSession是单例的，在App启动之后系统会自动初始化。</p>
-<h2 id="配置Audio-Session"><a href="#配置Audio-Session" class="headerlink" title="配置Audio Session"></a>配置Audio Session</h2><p>系统提供了很多种Category，通过设置不同的Category，可以表明你的App的音频表现，比如当你的App播放音频时是否停止其他App的音频、用户打开静音键后你的App是否还能播放。具体看下面这张表：</p>
-<table>
-<thead>
-<tr>
-<th align="left">Category</th>
-<th align="left">按下静音键or锁屏的时候静音</th>
-<th align="left">中断其他无法混合播放的App</th>
-<th align="left">Allows audio input (recording) and output (playback)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><code>AVAudioSessionCategoryAmbient</code></td>
-<td align="left">Yes</td>
-<td align="left">No</td>
-<td align="left">Output only</td>
-</tr>
-<tr>
-<td align="left"><code>AVAudioSessionCategorySoloAmbient</code> (Default)</td>
-<td align="left">Yes</td>
-<td align="left">Yes</td>
-<td align="left">Output only</td>
-</tr>
-<tr>
-<td align="left"><code>AVAudioSessionCategoryPlayback</code></td>
-<td align="left">No</td>
-<td align="left">Yes by default; no by using override switch</td>
-<td align="left">Output only</td>
-</tr>
-<tr>
-<td align="left"><code>AVAudioSessionCategoryRecord</code></td>
-<td align="left">No (锁屏时录音继续)</td>
-<td align="left">Yes</td>
-<td align="left">Input only</td>
-</tr>
-<tr>
-<td align="left"><code>AVAudioSessionCategoryPlayAndRecord</code></td>
-<td align="left">No</td>
-<td align="left">Yes by default; no by using override switch</td>
-<td align="left">Input and output</td>
-</tr>
-<tr>
-<td align="left"><code>AVAudioSessionCategoryMultiRoute</code></td>
-<td align="left">No</td>
-<td align="left">Yes</td>
-<td align="left">Input and output</td>
-</tr>
-</tbody></table>
-<p>通过<code>setCategory:mode:options:error:</code>这个API来配置。比如你要实现音频可以在后台播放，则使用Category为<code>AVAudioSessionCategoryPlayback</code>，同时在Xcode的Capabilities中开启Background Mode</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/background_modes_2x.png" alt="../Art/background_modes.shot/Resources/shot_2x.png"></p>
-<p>最后通过<code>setActive:error:</code>来让配置生效。</p>
-<p>Apple官网文档给了一张图来描述这个过程：</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/competing_audio_demands_2x.png" alt="A comic-book representation of the sequence of events surrounding the activation of an audio session."></p>
-<h3 id="系统默认配置"><a href="#系统默认配置" class="headerlink" title="系统默认配置"></a>系统默认配置</h3><p>系统默认实现的Audio Session配置如下：</p>
-<ul>
-<li>支持播放、不支持录音</li>
-<li>打开静音键后，App的音频变为静音</li>
-<li>锁屏后，App的音频变为静音</li>
-<li>当App的音频在播放时，其他App的音频静音</li>
-</ul>
+    <title>IOS中使用HealthKit获取步数、运动记录等数据</title>
+    <url>/2021/12/12/IOS%E4%B8%AD%E4%BD%BF%E7%94%A8HealthKit%E8%8E%B7%E5%8F%96%E6%AD%A5%E6%95%B0%E3%80%81%E8%BF%90%E5%8A%A8%E8%AE%B0%E5%BD%95%E7%AD%89%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<p>在IOS中想要获取步数等信息，需要借助HealthKit，其本质上是从手机的健康App上获取数据。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113143412355.png" alt="image-20211113143412355"></p>
 <blockquote>
-<p>有时我们要播放App时，需要判断其他App是否在使用Audio，这时可通过secondaryAudioShouldBeSilencedHint这个属性来获取，为true时说明在playing</p>
+<p>只要用户授权了，你的App就可以读取和写入数据到健康App中</p>
 </blockquote>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007875-CH1-SW1">https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007875-CH1-SW1</a></p>
+<h3 id="框架导入"><a href="#框架导入" class="headerlink" title="框架导入"></a>框架导入</h3><p>首先你需要引入HealthKit到你的项目中。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113144305488.png" alt="image-20211113144305488"></p>
+<h3 id="授权文案"><a href="#授权文案" class="headerlink" title="授权文案"></a>授权文案</h3><p>另外需要在info.plist配置一下授权说明，否则请求授权时就会crash。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150624316.png" alt="image-20211113150624316"></p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150736171.png" alt="image-20211113150736171"></p>
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150832560.png" alt="image-20211113150832560" style="zoom: 33%;" />
+
+<p>Apple提供了HKActivityRingView来绘制运动环，之前不知道，还自己画了一个😓</p>
+<h3 id="注意⚠️的问题"><a href="#注意⚠️的问题" class="headerlink" title="注意⚠️的问题"></a>注意⚠️的问题</h3><ol>
+<li>HealthKit在IOS13下有一个bug，会导致crash</li>
+</ol>
+<p><a href="https://developer.apple.com/forums/thread/693289">https://developer.apple.com/forums/thread/693289</a></p>
+<ol start="2">
+<li><p>获取授权状态应该在子线程做，因为其内部会wait semaphore，不然会导致卡顿</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113161142489.png"></p>
+</li>
+<li><p>代码已同步Github</p>
+</li>
+</ol>
+<p><a href="https://github.com/jayying007/ios-kit/tree/master/healthkit">https://github.com/jayying007/ios-kit/tree/master/healthkit</a></p>
+<ol start="4">
+<li>HKActivityRingView的表示：在Apple自带的健身App中，数值是向下取整来表示的，但是环的绘制还是用原来的值（浮点数）</li>
+<li>无法通过系统API确认用户是否同意or拒绝授权，只能知道之前是否出现过弹窗</li>
+</ol>
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/wecom-temp-6b81964660f8cc72ddce35358807a258.png" alt="wecom-temp-6b81964660f8cc72ddce35358807a258" style="zoom: 67%;" />
+
 ]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
   </entry>
   <entry>
     <title>IOS15导航栏透明的问题</title>
@@ -155,253 +114,6 @@
 ]]></content>
       <categories>
         <category>IOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>IOS中的hitTest和pointInside</title>
-    <url>/2021/12/12/IOS%E4%B8%AD%E7%9A%84hitTest%E5%92%8CpointInside/</url>
-    <content><![CDATA[<h4 id="事件处理流程"><a href="#事件处理流程" class="headerlink" title="事件处理流程"></a>事件处理流程</h4><p>1.当用户点击屏幕时，会产生一个触摸事件，系统会将该事件加入到一个由UIApplication管理的事件队列中</p>
-<p>2.UIApplication会从事件队列中取出最前面的事件进行分发以便处理，通常，先发送事件给应用程序的主窗口(UIWindow)</p>
-<p>3.主窗口会调用hitTest:withEvent:方法在视图(UIView)层次结构中找到一个最合适的UIView来处理触摸事件<br> (hitTest:withEvent:其实是UIView的一个方法，UIWindow继承自UIView，因此主窗口UIWindow也是属于视图的一种)</p>
-<p>这个过程可以用下面的代码描述</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSString</span> *viewID;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> pointInside:point withEvent:event] == <span class="literal">NO</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSArray</span> *subviews = <span class="keyword">self</span>.subviews;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (<span class="keyword">int</span>)subviews.count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="built_in">UIView</span> *view = subviews[i];</span><br><span class="line">        <span class="built_in">CGPoint</span> viewPoint = [view convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">UIView</span> *hitSubview = [view hitTest:viewPoint withEvent:event];</span><br><span class="line">        <span class="keyword">if</span> (hitSubview) &#123;</span><br><span class="line">            <span class="keyword">return</span> hitSubview;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span>.bounds, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h4><p>通过合理的重载在两个方法，可以实现一些特殊的效果。</p>
-<h5 id="1-扩大点击区域"><a href="#1-扩大点击区域" class="headerlink" title="1. 扩大点击区域"></a>1. 扩大点击区域</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UIEdgeInsets</span> touchInsets;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">CGRect</span> responsibleRect = <span class="built_in">CGRectMake</span>(-<span class="keyword">self</span>.touchInsets.left,</span><br><span class="line">                                        -<span class="keyword">self</span>.touchInsets.top,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.width + <span class="keyword">self</span>.touchInsets.left + <span class="keyword">self</span>.touchInsets.right,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.height + <span class="keyword">self</span>.touchInsets.top + <span class="keyword">self</span>.touchInsets.bottom);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(responsibleRect, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-子View超出父View部分仍可响应"><a href="#2-子View超出父View部分仍可响应" class="headerlink" title="2. 子View超出父View部分仍可响应"></a>2. 子View超出父View部分仍可响应</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">UIView</span> *view <span class="keyword">in</span> <span class="keyword">self</span>.subviews) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(view.frame, point))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>IOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>IOS中使用HealthKit获取步数、运动记录等数据</title>
-    <url>/2021/12/12/IOS%E4%B8%AD%E4%BD%BF%E7%94%A8HealthKit%E8%8E%B7%E5%8F%96%E6%AD%A5%E6%95%B0%E3%80%81%E8%BF%90%E5%8A%A8%E8%AE%B0%E5%BD%95%E7%AD%89%E6%95%B0%E6%8D%AE/</url>
-    <content><![CDATA[<p>在IOS中想要获取步数等信息，需要借助HealthKit，其本质上是从手机的健康App上获取数据。</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113143412355.png" alt="image-20211113143412355"></p>
-<blockquote>
-<p>只要用户授权了，你的App就可以读取和写入数据到健康App中</p>
-</blockquote>
-<h3 id="框架导入"><a href="#框架导入" class="headerlink" title="框架导入"></a>框架导入</h3><p>首先你需要引入HealthKit到你的项目中。</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113144305488.png" alt="image-20211113144305488"></p>
-<h3 id="授权文案"><a href="#授权文案" class="headerlink" title="授权文案"></a>授权文案</h3><p>另外需要在info.plist配置一下授权说明，否则请求授权时就会crash。</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150624316.png" alt="image-20211113150624316"></p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150736171.png" alt="image-20211113150736171"></p>
-<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150832560.png" alt="image-20211113150832560" style="zoom: 33%;" />
-
-<p>Apple提供了HKActivityRingView来绘制运动环，之前不知道，还自己画了一个😓</p>
-<h3 id="注意⚠️的问题"><a href="#注意⚠️的问题" class="headerlink" title="注意⚠️的问题"></a>注意⚠️的问题</h3><ol>
-<li>HealthKit在IOS13下有一个bug，会导致crash</li>
-</ol>
-<p><a href="https://developer.apple.com/forums/thread/693289">https://developer.apple.com/forums/thread/693289</a></p>
-<ol start="2">
-<li><p>获取授权状态应该在子线程做，因为其内部会wait semaphore，不然会导致卡顿</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113161142489.png"></p>
-</li>
-<li><p>代码已同步Github</p>
-</li>
-</ol>
-<p><a href="https://github.com/jayying007/ios-kit/tree/master/healthkit">https://github.com/jayying007/ios-kit/tree/master/healthkit</a></p>
-<ol start="4">
-<li>HKActivityRingView的表示：在Apple自带的健身App中，数值是向下取整来表示的，但是环的绘制还是用原来的值（浮点数）</li>
-<li>无法通过系统API确认用户是否同意or拒绝授权，只能知道之前是否出现过弹窗</li>
-</ol>
-<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/wecom-temp-6b81964660f8cc72ddce35358807a258.png" alt="wecom-temp-6b81964660f8cc72ddce35358807a258" style="zoom: 67%;" />
-
-]]></content>
-      <categories>
-        <category>IOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Objective-C中的block语法</title>
-    <url>/2021/09/21/Objective-C%E4%B8%AD%E7%9A%84block%E8%AF%AD%E6%B3%95/</url>
-    <content><![CDATA[<h1 id="Objective-C中的block语法"><a href="#Objective-C中的block语法" class="headerlink" title="Objective-C中的block语法"></a>Objective-C中的block语法</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前学习Obj-C的时候，看过《Objective-C高级编程》，是中文翻译版的，读起来总感觉少了些味道。</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921191536098.png" alt="image-20210921191536098" style="zoom:67%;" />
-
-<p>不过作者是日本的，原版日文我更看不懂，幸好英文版的翻译好了很多，而且英语六级也过了🐶，这次看得下去。Block的知识在第四章和第五章。</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921193334781.png" alt="image-20210921193334781" style="zoom:67%;" />
-
-<p>本篇文章大部分图片也是从里面摘过来的。</p>
-<span id="more"></span>
-
-<h2 id="Block简介"><a href="#Block简介" class="headerlink" title="Block简介"></a>Block简介</h2><h3 id="简单回顾一下Block的用法"><a href="#简单回顾一下Block的用法" class="headerlink" title="简单回顾一下Block的用法"></a>简单回顾一下Block的用法</h3><p><code>Block</code>可以算是对C语言语法的一种扩展，借助结构体和函数指针的技术即可实现。如果你对函数指针比较熟悉，那你很容易理解<code>Block</code>。不过跟函数指针稍微有些区别，函数指针需要对应函数的函数名，但是Block不需要，它只要一个匿名函数即可。</p>
-<p>废话不多说，直接看代码：</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">		printf(<span class="string">&quot;Hello world.&quot;</span>);</span><br><span class="line">	&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里的<code>blk_t</code>就是存放Block的变量，通过<code>blk_t()</code>就可以执行这个Block，输出Hello world。声明Block变量的方式跟声明函数指针有点像，看起来就是把*换成了^。Block的基本格式如下：</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921194833343.png" alt="image-20210921194833343" style="zoom: 50%;" />
-
-<p>如果没有返回值，没有参数列表，则可以进一步省略。</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921195017730.png" alt="image-20210921195017730" style="zoom:50%;" />
-
-<p>Block内部可以使用外面的局部变量，当然也包括静态变量、全局变量等。但是这个使用的变量的值只是在Block创建那一刻复制的，后面修改是不会改变的，而且你也不能在Block内部对这个变量进行修改。</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	<span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">		printf(<span class="string">&quot;value is :%d&quot;</span>, val);</span><br><span class="line">	&#125;;</span><br><span class="line">	val = <span class="number">2222</span>;</span><br><span class="line">	blk_t();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>此时输出为<code>value is 10</code></p>
-<p>要想在Block内部修改这个变量，只需要在变量前加上<code>__block</code>即可，变成<code>__block int val = 10;</code>。或者还有一种方式是通过指针，就好比调用函数时的实参和形参，传的参数是指针就可修改到对应的数值。</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	<span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">	<span class="keyword">int</span> *p = &amp;val;</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">	  *p = <span class="number">2222</span>;</span><br><span class="line">	&#125;;</span><br><span class="line">	printf(<span class="string">&quot;value is :%d&quot;</span>, val);</span><br><span class="line">	blk_t();</span><br><span class="line">  printf(<span class="string">&quot;value is :%d&quot;</span>, val);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>指针的这种方式，只要你不在Block内部修改变量p的值就不会报错，至于修改变量p指向的内存，则无所谓。同理可得下面这种也是正确的：</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	<span class="keyword">id</span> array = [[<span class="built_in">NSMutableArray</span> alloc] init];</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">	  <span class="keyword">id</span> obj = [[<span class="built_in">NSObject</span> alloc] init];</span><br><span class="line">    [array addObject:obj];</span><br><span class="line">	&#125;;</span><br><span class="line">	blk_t();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Block的实现原理"><a href="#Block的实现原理" class="headerlink" title="Block的实现原理"></a>Block的实现原理</h3><p>借助Clang，我们可以将OC的代码转换为C++代码，从而看到Block在C层面上是如何实现的。</p>
-<p><code>clang -rewrite-objc filename.m</code></p>
-<blockquote>
-<p>后面如果代码含有<code>__weak</code>，则需要补充多几个参数</p>
-<p><code>clang -rewrite-objc -fobjc-arc -fobjc-runtime=ios-14.0.0 filename.m</code></p>
-</blockquote>
-<h4 id="第一组（使用局部变量，但是不使用-block）"><a href="#第一组（使用局部变量，但是不使用-block）" class="headerlink" title="第一组（使用局部变量，但是不使用__block）"></a>第一组（使用局部变量，但是不使用<code>__block</code>）</h4><p>源代码</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">    <span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">void</span> (^blk)(<span class="keyword">void</span>) = ^ &#123;</span><br><span class="line">        printf(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">    &#125;;</span><br><span class="line">    blk();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>clang转换后的代码（省略一些无关的，都是import带来的东西…）</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">void</span> *isa;</span><br><span class="line">  <span class="keyword">int</span> Flags;</span><br><span class="line">  <span class="keyword">int</span> Reserved;</span><br><span class="line">  <span class="keyword">void</span> *FuncPtr;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">main_block_impl_0</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> <span class="title">impl</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span>* <span class="title">Desc</span>;</span></span><br><span class="line">  <span class="keyword">int</span> val;</span><br><span class="line">  __main_block_impl_0(<span class="keyword">void</span> *fp, struct __main_block_desc_0 *desc, <span class="keyword">int</span> _val, <span class="keyword">int</span> flags=<span class="number">0</span>) : <span class="built_in">val</span>(_val) &#123;</span><br><span class="line">    impl.isa = &amp;_NSConcreteStackBlock;</span><br><span class="line">    impl.Flags = flags;</span><br><span class="line">    impl.FuncPtr = fp;</span><br><span class="line">    Desc = desc;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_func_0(struct __main_block_impl_0 *__cself) &#123;</span><br><span class="line">  <span class="keyword">int</span> val = __cself-&gt;val; <span class="comment">// bound by copy</span></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span> &#123;</span></span><br><span class="line">  <span class="keyword">size_t</span> reserved;</span><br><span class="line">  <span class="keyword">size_t</span> Block_size;</span><br><span class="line">&#125; __main_block_desc_0_DATA = &#123; <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(struct __main_block_impl_0)&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in"><span class="keyword">void</span></span> (*blk)(<span class="keyword">void</span>) = ((<span class="built_in"><span class="keyword">void</span></span> (*)())&amp;__main_block_impl_0((<span class="keyword">void</span> *)__main_block_func_0, &amp;__main_block_desc_0_DATA, val));</span><br><span class="line">    ((<span class="built_in"><span class="keyword">void</span></span> (*)(__block_impl *))((__block_impl *)blk)-&gt;FuncPtr)((__block_impl *)blk);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>第一次看起来确实有点头疼，不过书中讲的也比较详细，多看几遍就好了。</p>
-<p>看到结构体<code>__main_block_impl_0</code>，这就是Block在C层面下的面目了。里面有个字段<code>val</code>，通过构造函数传递过来的<code>_val</code>进行赋值。</p>
-<p>而原本block的代码，可以看到被放到函数<code>__main_block_func_0</code>里面去了，而且里面的<code>val</code>也不是原先的局部变量的，就是结构体自己的变量而已。这也就解释了为什么局部变量的值改了，Block执行的输出确还是之前的，因为这已经是两个不同的变量了。</p>
-<h4 id="第二组（使用-block）"><a href="#第二组（使用-block）" class="headerlink" title="第二组（使用__block）"></a>第二组（使用<code>__block</code>）</h4><p>源代码</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">    __block <span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">void</span> (^blk)(<span class="keyword">void</span>) = ^ &#123;</span><br><span class="line">        val = <span class="number">222</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">    printf(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">    blk();</span><br><span class="line">    printf(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>clang转换后的代码</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">void</span> *isa;</span><br><span class="line">  <span class="keyword">int</span> Flags;</span><br><span class="line">  <span class="keyword">int</span> Reserved;</span><br><span class="line">  <span class="keyword">void</span> *FuncPtr;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">Block_byref_val_0</span> &#123;</span></span><br><span class="line">  <span class="keyword">void</span> *__isa;</span><br><span class="line">	__Block_byref_val_0 *__forwarding;</span><br><span class="line"> 	<span class="keyword">int</span> __flags;</span><br><span class="line"> 	<span class="keyword">int</span> __size;</span><br><span class="line"> 	<span class="keyword">int</span> val;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">main_block_impl_0</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> <span class="title">impl</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span>* <span class="title">Desc</span>;</span></span><br><span class="line">  __Block_byref_val_0 *val; <span class="comment">// by ref</span></span><br><span class="line">  __main_block_impl_0(<span class="keyword">void</span> *fp, struct __main_block_desc_0 *desc, __Block_byref_val_0 *_val, <span class="keyword">int</span> flags=<span class="number">0</span>) : <span class="built_in">val</span>(_val-&gt;__forwarding) &#123;</span><br><span class="line">    impl.isa = &amp;_NSConcreteStackBlock;</span><br><span class="line">    impl.Flags = flags;</span><br><span class="line">    impl.FuncPtr = fp;</span><br><span class="line">    Desc = desc;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_func_0(struct __main_block_impl_0 *__cself) &#123;</span><br><span class="line">  __Block_byref_val_0 *val = __cself-&gt;val; <span class="comment">// bound by ref</span></span><br><span class="line">	(val-&gt;__forwarding-&gt;val) = <span class="number">222</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) &#123;</span><br><span class="line">  _Block_object_assign((<span class="keyword">void</span>*)&amp;dst-&gt;val, (<span class="keyword">void</span>*)src-&gt;val, <span class="number">8</span><span class="comment">/*BLOCK_FIELD_IS_BYREF*/</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_dispose_0(struct __main_block_impl_0*src) &#123;</span><br><span class="line">  _Block_object_dispose((<span class="keyword">void</span>*)src-&gt;val, <span class="number">8</span><span class="comment">/*BLOCK_FIELD_IS_BYREF*/</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span> &#123;</span></span><br><span class="line">  <span class="keyword">size_t</span> reserved;</span><br><span class="line">  <span class="keyword">size_t</span> Block_size;</span><br><span class="line">  <span class="built_in"><span class="keyword">void</span></span> (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*);</span><br><span class="line">  <span class="built_in"><span class="keyword">void</span></span> (*dispose)(struct __main_block_impl_0*);</span><br><span class="line">&#125; __main_block_desc_0_DATA = &#123; <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(struct __main_block_impl_0), __main_block_copy_0, __main_block_dispose_0&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    __attribute__((__blocks__(byref))) __Block_byref_val_0 val = &#123;(<span class="keyword">void</span>*)<span class="number">0</span>,(__Block_byref_val_0 *)&amp;val, <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(__Block_byref_val_0), <span class="number">10</span>&#125;;</span><br><span class="line">    <span class="built_in"><span class="keyword">void</span></span> (*blk)(<span class="keyword">void</span>) = ((<span class="built_in"><span class="keyword">void</span></span> (*)())&amp;__main_block_impl_0((<span class="keyword">void</span> *)__main_block_func_0, &amp;__main_block_desc_0_DATA, (__Block_byref_val_0 *)&amp;val, <span class="number">570425344</span>));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;val:%d&quot;</span>, (val.__forwarding-&gt;val));</span><br><span class="line">    ((<span class="built_in"><span class="keyword">void</span></span> (*)(__block_impl *))((__block_impl *)blk)-&gt;FuncPtr)((__block_impl *)blk);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;val:%d&quot;</span>, (val.__forwarding-&gt;val));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>代码又复杂了一些，其实主要是多了一个结构体<code>__Block_byref_val_0</code>，细看这个结构体，你会发现它记录了之前局部变量的值。所以<code>__block</code>基本上就把变量包装成一个结构体了。</p>
-<p>对<code>val</code>的访问就变成了<code>val.__forwarding-&gt;val</code>，为什么有这个<code>__forwarding</code>,这主要因为Block可以在栈、堆、全局上，具体细节看书。</p>
-<h3 id="关于Block内部对变量的读写"><a href="#关于Block内部对变量的读写" class="headerlink" title="关于Block内部对变量的读写"></a>关于Block内部对变量的读写</h3><p>前面我们知道可通过添加<code>__block</code>实现，但也有一些情况是不需要的。</p>
-<p>比如当你这个变量是全局变量、静态全局变量、静态局部变量，不需要在变量名前增加修饰符也可以读写。</p>
-<p>前两个容易理解，因为Block最终还是转换成函数，在函数内部访问全局变量是OK的，Block结构体不用新增什么字段；</p>
-<p>静态局部变量则多了些工作量，通过clang转换代码后，发现Block的结构体内部会有一个指针变量指向这个静态局部变量。</p>
-<h3 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h3><p>前面我们在Block中用的都是一些基础数据类型，如果我们使用object的会怎样呢？</p>
-<p>答案是会造成循环引用。比如下面这种写法</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210540085.png" alt="image-20210921210540085" style="zoom: 67%;" />
-
-<p>我们看看Clang转换后的代码，其中带上了<code>__strong</code>标记，引用计数+1</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210517036.png" alt="image-20210921210517036" style="zoom: 50%;" />
-
-<p>在前面加上<code>__block</code>也是一样的，都是强引用</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210917823.png" alt="image-20210921210917823" style="zoom: 50%;" />
-
-<p>解决方法也比较简单，改为弱引用即可</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921211111472.png" alt="image-20210921211111472" style="zoom: 67%;" />
-
-<hr>
-<h4 id="补充一"><a href="#补充一" class="headerlink" title="补充一"></a>补充一</h4><p>实际开发中一般遇到的是下面这种情况，一个Object对象有一个属性Block，相互持有。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921211551509.png" alt="image-20210921211551509"></p>
-<p>或者把self用<code>__block</code>修饰，形成下面这种循环引用。</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921212056815.png" alt="image-20210921212056815" style="zoom: 50%;" />
-
-<p>这种比较有意思，你可以在Block内部特定时机将<code>__block variable</code>释放，从而解除循环引用，这种用法比较高级。</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921212317578.png" alt="image-20210921212317578" style="zoom:50%;" />
-
-<h4 id="补充二"><a href="#补充二" class="headerlink" title="补充二"></a>补充二</h4><p>一般在Block前使用__weak就可以了，但是对于访问成员变量却行不通，而修改成员变量一般都是通过指针操作。</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">blk = ^(<span class="keyword">id</span> obj) &#123;</span><br><span class="line">	weakSelf.money = <span class="number">100000</span>;</span><br><span class="line">	weakSelf-&gt;height = <span class="number">222</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>这里第二句<code>weakSelf-&gt;height = 222;</code>编译器会提示错误，因为weakSelf有可能变成nil，会导致非法的内存访问。</p>
-<blockquote>
-<p>另一种修改成员变量的方法是通过<code>__block</code>的方式</p>
-</blockquote>
-<p>也为了防止Block执行过程中self突然释放了，在Block中一般会先强引用一下self，而离开了Block作用域，强引用自然消失了；</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">blk = ^(<span class="keyword">id</span> obj) &#123;</span><br><span class="line">  __<span class="keyword">strong</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) strongSelf = weakSelf;</span><br><span class="line">	strongSelf.money = <span class="number">100000</span>;</span><br><span class="line">	strongSelf-&gt;height = <span class="number">222</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>不过上面这种也有一定概率crash，即有可能strongSelf是nil；</p>
-<p>比如当Block是一个全局变量的时候，而Object生命周期先结束变成nil，此时再执行Block就会crash。如果Block是Object的一个属性或成员变量，也不会有这个问题。</p>
-<p>另外，在开发中一般也不会去写这么长的weakSelf和strongSelf，我们是希望直接用self。(比如你灵机一动，想从其他地方copy一份代码直接放到Block，结果发现得一步步把self替换成strongSelf，过程相当痛苦😖)</p>
-<p>这部分内容RAC有相关的实现，通过@weakify(self)和@strongify(self)。这里我简化了一下实现，代码如下：</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> weakify(VAR) __weak typeof(VAR) _weak_ = VAR;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> strongify(VAR) __strong typeof(VAR) VAR = _weak_;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用宏定义后的效果</span></span><br><span class="line">weakify(<span class="keyword">self</span>);</span><br><span class="line">blk = ^(<span class="keyword">id</span> obj) &#123;</span><br><span class="line">  strongify(<span class="keyword">self</span>);</span><br><span class="line">	<span class="keyword">self</span>.money = <span class="number">100000</span>;</span><br><span class="line">	<span class="keyword">self</span>-&gt;height = <span class="number">222</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>Objective-C</category>
-      </categories>
-      <tags>
-        <tag>IOS</tag>
-        <tag>Objective-C</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>UISwitch在IOS12下的Bug</title>
-    <url>/2021/12/12/UISwitch%E5%9C%A8IOS12%E4%B8%8B%E7%9A%84Bug/</url>
-    <content><![CDATA[<h4 id="重现方式"><a href="#重现方式" class="headerlink" title="重现方式"></a>重现方式</h4><p>在UISwitch的ValueChange事件中，修改UISwitch的on属性。</p>
-<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UISwitch</span> *oSwitch;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    <span class="keyword">self</span>.view.backgroundColor = <span class="built_in">UIColor</span>.whiteColor;</span><br><span class="line">    </span><br><span class="line">    _oSwitch = [[<span class="built_in">UISwitch</span> alloc] initWithFrame:<span class="built_in">CGRectMake</span>(<span class="number">50</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">60</span>)];</span><br><span class="line">    [<span class="keyword">self</span>.view addSubview:_oSwitch];</span><br><span class="line">    [_oSwitch addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(valueChange:) forControlEvents:<span class="built_in">UIControlEventValueChanged</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    oSwitch.on = !oSwitch.on;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2021-12-01 20:21:31.674948+0800 demo-switch[56902:576481] change</span><br><span class="line">2021-12-01 20:21:31.675095+0800 demo-switch[56902:576481] change</span><br></pre></td></tr></table></figure>
-
-<p>点击开关切换，可以看到valueChange方法被调用了两次！！</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>把UISwitch中on属性的修改放到下一个Runloop中</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        oSwitch.on = !oSwitch.on;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>IOS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>OC中的链式语法</title>
-    <url>/2021/10/01/OC%E4%B8%AD%E7%9A%84%E9%93%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/</url>
-    <content><![CDATA[<h3 id="点语法"><a href="#点语法" class="headerlink" title="点语法"></a>点语法</h3><p>1.在OC中，访问对象的property时，可以使用点语法的方式访问</p>
-<p>2.调用无参数的方法时，也可使用点语法。</p>
-<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p>输入</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">person.say(<span class="string">@&quot;Hello, World!&quot;</span>).walk();</span><br></pre></td></tr></table></figure>
-
-<p>输出</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这个人说：Hello, World!</span><br><span class="line">绕了地球两圈</span><br></pre></td></tr></table></figure>
-
-<p>这在其他语言中是很容易实现的，比如C++和Java，其调用方法本身就是通过点语法的方式进行，只要返回值是self就行。</p>
-<h3 id="OC如何实现这种效果"><a href="#OC如何实现这种效果" class="headerlink" title="OC如何实现这种效果"></a>OC如何实现这种效果</h3><p>答案是借助Block。</p>
-<hr>
-<p>拿上面的代码进行拆分：</p>
-<p><code>person.say(@&quot;Hello, World!&quot;).walk();</code></p>
-<p>前半段<code>person.say</code>可以理解为调用了无参数的say方法，而后面还有小括号和参数<code>(@&quot;Hello, World!&quot;)</code>。那只要say方法返回一个Block，这个Block需要一个执行参数即可。相当于前半段代码执行了这个Block。</p>
-<p>而后面还需要调用walk方法，则需要这个Block返回对象本身。</p>
-<p>需要注意的是，后半段是<code>.walk()</code>而不是<code>.walk</code>，后者执行执行了walk方法，但却没有执行对应返回的Block。</p>
-<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">Person</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> Person* (^Sayback)(<span class="built_in">NSString</span> *);</span><br><span class="line"><span class="keyword">typedef</span> Person* (^Walkback)(<span class="keyword">void</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line">- (Sayback)say;</span><br><span class="line">- (Walkback)walk;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&quot;Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line">- (Sayback)say &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *(<span class="built_in">NSString</span> *word) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;这个人说：%@&quot;</span>, word);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (Walkback)walk &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *() &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;绕了地球两圈&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>链式语法让代码写得更简洁了，但是其调用次数也翻倍了</p>
-<blockquote>
-<p>原先是直接调用方法，现在变成调用方法会返回Block，然后再执行这个Block</p>
-</blockquote>
-<p>在Java8中出现了流式编程<code>Java Stream</code>，可将代码写得很精致，如下面所示，也好奇🤔OC能否也实现这种效果</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Stream.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;banana&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;waltermaleon&quot;</span>, <span class="string">&quot;grape&quot;</span>)</span><br><span class="line">                .mapToInt(e -&gt; e.length()) <span class="comment">//转成int</span></span><br><span class="line">                .forEach(e -&gt; System.out.println(e));</span><br></pre></td></tr></table></figure>
-
-<img src="https://upload-images.jianshu.io/upload_images/3830893-c797daeb0f7f1e3e.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1156/format/webp" alt="img" style="zoom: 67%;" />
-
-
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Stream.of(1,2,3,1,2,5,6,7,8,0,0,1,2,3,1)</span><br><span class="line">                .filter(e-&gt;e&gt;=5) //过滤小于5的</span><br><span class="line">                .forEach(e-&gt;System.out.println(e));</span><br></pre></td></tr></table></figure>
-
-<img src="https://upload-images.jianshu.io/upload_images/3830893-39f0bf8f2e45bb12.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1176/format/webp" alt="img" style="zoom:67%;" />
-
-]]></content>
-      <categories>
-        <category>IOS</category>
-        <category>ObjC</category>
       </categories>
   </entry>
   <entry>
@@ -537,28 +249,275 @@
       </tags>
   </entry>
   <entry>
-    <title>k-means算法</title>
-    <url>/2021/08/01/k-means%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h5><p>据说是机器学习中最简单的一种方法，属于<strong>非监督学习</strong>这一类。通俗一点讲，给机器一堆数据，告诉机器要分成多少种类别，然后机器就根据算法进行各种操作。</p>
-<h5 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h5><p>需要我们确定变量k，即最终 的数据会有几种类别。</p>
-<p>总共有k个中心坐标，一开始可以随机赋值，通过计算目标点坐标与所有中心坐标的距离，将其归类在距离较近的类别中。</p>
-<p>之后根据类别中的目标点计算平均值重新得到中心坐标，再重复上面的工作。</p>
-<h5 id="距离公式"><a href="#距离公式" class="headerlink" title="距离公式"></a>距离公式</h5><p>常用的距离公式如欧式距离，马氏距离，曼哈顿距离。</p>
-<p>借助科学计算库可以帮我们节省一些时间。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line">pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)<span class="comment">#欧氏距离</span></span><br></pre></td></tr></table></figure>
+    <title>Objective-C中的block语法</title>
+    <url>/2021/09/21/Objective-C%E4%B8%AD%E7%9A%84block%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="Objective-C中的block语法"><a href="#Objective-C中的block语法" class="headerlink" title="Objective-C中的block语法"></a>Objective-C中的block语法</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前学习Obj-C的时候，看过《Objective-C高级编程》，是中文翻译版的，读起来总感觉少了些味道。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921191536098.png" alt="image-20210921191536098" style="zoom:67%;" />
 
-<h5 id="小小示例"><a href="#小小示例" class="headerlink" title="小小示例"></a>小小示例</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line"></span><br><span class="line">dimension = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机点，范围[0,10)</span></span><br><span class="line">dot_num = <span class="number">100</span></span><br><span class="line">dot = np.random.rand(dot_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机中心点，范围[0,10)</span></span><br><span class="line">center_num = <span class="number">4</span></span><br><span class="line">center = np.random.rand(center_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 循环迭代</span></span><br><span class="line">times = <span class="number">50</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(times):</span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 数据映射</span></span><br><span class="line">    belong = np.zeros([dot_num])</span><br><span class="line">    <span class="comment"># 计算随机点与中心点的距离，将其归属于距离近的中心点</span></span><br><span class="line">    dist = np.zeros([dot_num,center_num])</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">            dist[j][k] = pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)</span><br><span class="line">        belong[j] = np.argmax(dist[j])</span><br><span class="line">    <span class="comment"># 绘图</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">        temp_dot = []</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">            <span class="keyword">if</span>(belong[k] == j):</span><br><span class="line">                temp_dot.append(dot[k])</span><br><span class="line">        <span class="comment"># 根据随机点求取均值，得出新的中心点</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">len</span>(temp_dot) != <span class="number">0</span>):</span><br><span class="line">            temp_dot = np.array(temp_dot)</span><br><span class="line">            plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dimension):</span><br><span class="line">                center[j][k] = np.<span class="built_in">sum</span>(temp_dot[:,k])/<span class="built_in">len</span>(temp_dot)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            center[j] = np.zeros([dimension])</span><br><span class="line">    <span class="comment"># print(center)</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 满足迭代次数或中心点不再改变，结束命令</span></span><br></pre></td></tr></table></figure>
+<p>不过作者是日本的，原版日文我更看不懂，幸好英文版的翻译好了很多，而且英语六级也过了🐶，这次看得下去。Block的知识在第四章和第五章。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921193334781.png" alt="image-20210921193334781" style="zoom:67%;" />
 
-<h5 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h5><p>上述代码为动态实时更新画板内容，其中的关键代码如下</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">    <span class="comment"># 清除画布</span></span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 绘制散点</span></span><br><span class="line">    plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">    <span class="comment"># 暂停间隔</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>本篇文章大部分图片也是从里面摘过来的。</p>
+<span id="more"></span>
+
+<h2 id="Block简介"><a href="#Block简介" class="headerlink" title="Block简介"></a>Block简介</h2><h3 id="简单回顾一下Block的用法"><a href="#简单回顾一下Block的用法" class="headerlink" title="简单回顾一下Block的用法"></a>简单回顾一下Block的用法</h3><p><code>Block</code>可以算是对C语言语法的一种扩展，借助结构体和函数指针的技术即可实现。如果你对函数指针比较熟悉，那你很容易理解<code>Block</code>。不过跟函数指针稍微有些区别，函数指针需要对应函数的函数名，但是Block不需要，它只要一个匿名函数即可。</p>
+<p>废话不多说，直接看代码：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">		printf(<span class="string">&quot;Hello world.&quot;</span>);</span><br><span class="line">	&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>blk_t</code>就是存放Block的变量，通过<code>blk_t()</code>就可以执行这个Block，输出Hello world。声明Block变量的方式跟声明函数指针有点像，看起来就是把*换成了^。Block的基本格式如下：</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921194833343.png" alt="image-20210921194833343" style="zoom: 50%;" />
+
+<p>如果没有返回值，没有参数列表，则可以进一步省略。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921195017730.png" alt="image-20210921195017730" style="zoom:50%;" />
+
+<p>Block内部可以使用外面的局部变量，当然也包括静态变量、全局变量等。但是这个使用的变量的值只是在Block创建那一刻复制的，后面修改是不会改变的，而且你也不能在Block内部对这个变量进行修改。</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	<span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">		printf(<span class="string">&quot;value is :%d&quot;</span>, val);</span><br><span class="line">	&#125;;</span><br><span class="line">	val = <span class="number">2222</span>;</span><br><span class="line">	blk_t();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时输出为<code>value is 10</code></p>
+<p>要想在Block内部修改这个变量，只需要在变量前加上<code>__block</code>即可，变成<code>__block int val = 10;</code>。或者还有一种方式是通过指针，就好比调用函数时的实参和形参，传的参数是指针就可修改到对应的数值。</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	<span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">	<span class="keyword">int</span> *p = &amp;val;</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">	  *p = <span class="number">2222</span>;</span><br><span class="line">	&#125;;</span><br><span class="line">	printf(<span class="string">&quot;value is :%d&quot;</span>, val);</span><br><span class="line">	blk_t();</span><br><span class="line">  printf(<span class="string">&quot;value is :%d&quot;</span>, val);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>指针的这种方式，只要你不在Block内部修改变量p的值就不会报错，至于修改变量p指向的内存，则无所谓。同理可得下面这种也是正确的：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">	<span class="keyword">id</span> array = [[<span class="built_in">NSMutableArray</span> alloc] init];</span><br><span class="line">	(<span class="keyword">void</span>)(^blk_t)(<span class="keyword">void</span>) = ^<span class="keyword">void</span> (<span class="keyword">void</span>) &#123;</span><br><span class="line">	  <span class="keyword">id</span> obj = [[<span class="built_in">NSObject</span> alloc] init];</span><br><span class="line">    [array addObject:obj];</span><br><span class="line">	&#125;;</span><br><span class="line">	blk_t();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Block的实现原理"><a href="#Block的实现原理" class="headerlink" title="Block的实现原理"></a>Block的实现原理</h3><p>借助Clang，我们可以将OC的代码转换为C++代码，从而看到Block在C层面上是如何实现的。</p>
+<p><code>clang -rewrite-objc filename.m</code></p>
+<blockquote>
+<p>后面如果代码含有<code>__weak</code>，则需要补充多几个参数</p>
+<p><code>clang -rewrite-objc -fobjc-arc -fobjc-runtime=ios-14.0.0 filename.m</code></p>
+</blockquote>
+<h4 id="第一组（使用局部变量，但是不使用-block）"><a href="#第一组（使用局部变量，但是不使用-block）" class="headerlink" title="第一组（使用局部变量，但是不使用__block）"></a>第一组（使用局部变量，但是不使用<code>__block</code>）</h4><p>源代码</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">    <span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">void</span> (^blk)(<span class="keyword">void</span>) = ^ &#123;</span><br><span class="line">        printf(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">    &#125;;</span><br><span class="line">    blk();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>clang转换后的代码（省略一些无关的，都是import带来的东西…）</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">void</span> *isa;</span><br><span class="line">  <span class="keyword">int</span> Flags;</span><br><span class="line">  <span class="keyword">int</span> Reserved;</span><br><span class="line">  <span class="keyword">void</span> *FuncPtr;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">main_block_impl_0</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> <span class="title">impl</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span>* <span class="title">Desc</span>;</span></span><br><span class="line">  <span class="keyword">int</span> val;</span><br><span class="line">  __main_block_impl_0(<span class="keyword">void</span> *fp, struct __main_block_desc_0 *desc, <span class="keyword">int</span> _val, <span class="keyword">int</span> flags=<span class="number">0</span>) : <span class="built_in">val</span>(_val) &#123;</span><br><span class="line">    impl.isa = &amp;_NSConcreteStackBlock;</span><br><span class="line">    impl.Flags = flags;</span><br><span class="line">    impl.FuncPtr = fp;</span><br><span class="line">    Desc = desc;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_func_0(struct __main_block_impl_0 *__cself) &#123;</span><br><span class="line">  <span class="keyword">int</span> val = __cself-&gt;val; <span class="comment">// bound by copy</span></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span> &#123;</span></span><br><span class="line">  <span class="keyword">size_t</span> reserved;</span><br><span class="line">  <span class="keyword">size_t</span> Block_size;</span><br><span class="line">&#125; __main_block_desc_0_DATA = &#123; <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(struct __main_block_impl_0)&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in"><span class="keyword">void</span></span> (*blk)(<span class="keyword">void</span>) = ((<span class="built_in"><span class="keyword">void</span></span> (*)())&amp;__main_block_impl_0((<span class="keyword">void</span> *)__main_block_func_0, &amp;__main_block_desc_0_DATA, val));</span><br><span class="line">    ((<span class="built_in"><span class="keyword">void</span></span> (*)(__block_impl *))((__block_impl *)blk)-&gt;FuncPtr)((__block_impl *)blk);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第一次看起来确实有点头疼，不过书中讲的也比较详细，多看几遍就好了。</p>
+<p>看到结构体<code>__main_block_impl_0</code>，这就是Block在C层面下的面目了。里面有个字段<code>val</code>，通过构造函数传递过来的<code>_val</code>进行赋值。</p>
+<p>而原本block的代码，可以看到被放到函数<code>__main_block_func_0</code>里面去了，而且里面的<code>val</code>也不是原先的局部变量的，就是结构体自己的变量而已。这也就解释了为什么局部变量的值改了，Block执行的输出确还是之前的，因为这已经是两个不同的变量了。</p>
+<h4 id="第二组（使用-block）"><a href="#第二组（使用-block）" class="headerlink" title="第二组（使用__block）"></a>第二组（使用<code>__block</code>）</h4><p>源代码</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> main() &#123;</span><br><span class="line">    __block <span class="keyword">int</span> val = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">void</span> (^blk)(<span class="keyword">void</span>) = ^ &#123;</span><br><span class="line">        val = <span class="number">222</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">    printf(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">    blk();</span><br><span class="line">    printf(<span class="string">&quot;val:%d&quot;</span>, val);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>clang转换后的代码</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> &#123;</span></span><br><span class="line">  <span class="keyword">void</span> *isa;</span><br><span class="line">  <span class="keyword">int</span> Flags;</span><br><span class="line">  <span class="keyword">int</span> Reserved;</span><br><span class="line">  <span class="keyword">void</span> *FuncPtr;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">Block_byref_val_0</span> &#123;</span></span><br><span class="line">  <span class="keyword">void</span> *__isa;</span><br><span class="line">	__Block_byref_val_0 *__forwarding;</span><br><span class="line"> 	<span class="keyword">int</span> __flags;</span><br><span class="line"> 	<span class="keyword">int</span> __size;</span><br><span class="line"> 	<span class="keyword">int</span> val;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">main_block_impl_0</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">block_impl</span> <span class="title">impl</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span>* <span class="title">Desc</span>;</span></span><br><span class="line">  __Block_byref_val_0 *val; <span class="comment">// by ref</span></span><br><span class="line">  __main_block_impl_0(<span class="keyword">void</span> *fp, struct __main_block_desc_0 *desc, __Block_byref_val_0 *_val, <span class="keyword">int</span> flags=<span class="number">0</span>) : <span class="built_in">val</span>(_val-&gt;__forwarding) &#123;</span><br><span class="line">    impl.isa = &amp;_NSConcreteStackBlock;</span><br><span class="line">    impl.Flags = flags;</span><br><span class="line">    impl.FuncPtr = fp;</span><br><span class="line">    Desc = desc;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_func_0(struct __main_block_impl_0 *__cself) &#123;</span><br><span class="line">  __Block_byref_val_0 *val = __cself-&gt;val; <span class="comment">// bound by ref</span></span><br><span class="line">	(val-&gt;__forwarding-&gt;val) = <span class="number">222</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) &#123;</span><br><span class="line">  _Block_object_assign((<span class="keyword">void</span>*)&amp;dst-&gt;val, (<span class="keyword">void</span>*)src-&gt;val, <span class="number">8</span><span class="comment">/*BLOCK_FIELD_IS_BYREF*/</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __main_block_dispose_0(struct __main_block_impl_0*src) &#123;</span><br><span class="line">  _Block_object_dispose((<span class="keyword">void</span>*)src-&gt;val, <span class="number">8</span><span class="comment">/*BLOCK_FIELD_IS_BYREF*/</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> __<span class="title">main_block_desc_0</span> &#123;</span></span><br><span class="line">  <span class="keyword">size_t</span> reserved;</span><br><span class="line">  <span class="keyword">size_t</span> Block_size;</span><br><span class="line">  <span class="built_in"><span class="keyword">void</span></span> (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*);</span><br><span class="line">  <span class="built_in"><span class="keyword">void</span></span> (*dispose)(struct __main_block_impl_0*);</span><br><span class="line">&#125; __main_block_desc_0_DATA = &#123; <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(struct __main_block_impl_0), __main_block_copy_0, __main_block_dispose_0&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    __attribute__((__blocks__(byref))) __Block_byref_val_0 val = &#123;(<span class="keyword">void</span>*)<span class="number">0</span>,(__Block_byref_val_0 *)&amp;val, <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(__Block_byref_val_0), <span class="number">10</span>&#125;;</span><br><span class="line">    <span class="built_in"><span class="keyword">void</span></span> (*blk)(<span class="keyword">void</span>) = ((<span class="built_in"><span class="keyword">void</span></span> (*)())&amp;__main_block_impl_0((<span class="keyword">void</span> *)__main_block_func_0, &amp;__main_block_desc_0_DATA, (__Block_byref_val_0 *)&amp;val, <span class="number">570425344</span>));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;val:%d&quot;</span>, (val.__forwarding-&gt;val));</span><br><span class="line">    ((<span class="built_in"><span class="keyword">void</span></span> (*)(__block_impl *))((__block_impl *)blk)-&gt;FuncPtr)((__block_impl *)blk);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;val:%d&quot;</span>, (val.__forwarding-&gt;val));</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码又复杂了一些，其实主要是多了一个结构体<code>__Block_byref_val_0</code>，细看这个结构体，你会发现它记录了之前局部变量的值。所以<code>__block</code>基本上就把变量包装成一个结构体了。</p>
+<p>对<code>val</code>的访问就变成了<code>val.__forwarding-&gt;val</code>，为什么有这个<code>__forwarding</code>,这主要因为Block可以在栈、堆、全局上，具体细节看书。</p>
+<h3 id="关于Block内部对变量的读写"><a href="#关于Block内部对变量的读写" class="headerlink" title="关于Block内部对变量的读写"></a>关于Block内部对变量的读写</h3><p>前面我们知道可通过添加<code>__block</code>实现，但也有一些情况是不需要的。</p>
+<p>比如当你这个变量是全局变量、静态全局变量、静态局部变量，不需要在变量名前增加修饰符也可以读写。</p>
+<p>前两个容易理解，因为Block最终还是转换成函数，在函数内部访问全局变量是OK的，Block结构体不用新增什么字段；</p>
+<p>静态局部变量则多了些工作量，通过clang转换代码后，发现Block的结构体内部会有一个指针变量指向这个静态局部变量。</p>
+<h3 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h3><p>前面我们在Block中用的都是一些基础数据类型，如果我们使用object的会怎样呢？</p>
+<p>答案是会造成循环引用。比如下面这种写法</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210540085.png" alt="image-20210921210540085" style="zoom: 67%;" />
+
+<p>我们看看Clang转换后的代码，其中带上了<code>__strong</code>标记，引用计数+1</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210517036.png" alt="image-20210921210517036" style="zoom: 50%;" />
+
+<p>在前面加上<code>__block</code>也是一样的，都是强引用</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210917823.png" alt="image-20210921210917823" style="zoom: 50%;" />
+
+<p>解决方法也比较简单，改为弱引用即可</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921211111472.png" alt="image-20210921211111472" style="zoom: 67%;" />
+
+<hr>
+<h4 id="补充一"><a href="#补充一" class="headerlink" title="补充一"></a>补充一</h4><p>实际开发中一般遇到的是下面这种情况，一个Object对象有一个属性Block，相互持有。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921211551509.png" alt="image-20210921211551509"></p>
+<p>或者把self用<code>__block</code>修饰，形成下面这种循环引用。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921212056815.png" alt="image-20210921212056815" style="zoom: 50%;" />
+
+<p>这种比较有意思，你可以在Block内部特定时机将<code>__block variable</code>释放，从而解除循环引用，这种用法比较高级。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921212317578.png" alt="image-20210921212317578" style="zoom:50%;" />
+
+<h4 id="补充二"><a href="#补充二" class="headerlink" title="补充二"></a>补充二</h4><p>一般在Block前使用__weak就可以了，但是对于访问成员变量却行不通，而修改成员变量一般都是通过指针操作。</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">blk = ^(<span class="keyword">id</span> obj) &#123;</span><br><span class="line">	weakSelf.money = <span class="number">100000</span>;</span><br><span class="line">	weakSelf-&gt;height = <span class="number">222</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这里第二句<code>weakSelf-&gt;height = 222;</code>编译器会提示错误，因为weakSelf有可能变成nil，会导致非法的内存访问。</p>
+<blockquote>
+<p>另一种修改成员变量的方法是通过<code>__block</code>的方式</p>
+</blockquote>
+<p>也为了防止Block执行过程中self突然释放了，在Block中一般会先强引用一下self，而离开了Block作用域，强引用自然消失了；</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">__<span class="keyword">weak</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) weakSelf = <span class="keyword">self</span>;</span><br><span class="line">blk = ^(<span class="keyword">id</span> obj) &#123;</span><br><span class="line">  __<span class="keyword">strong</span> <span class="keyword">typeof</span>(<span class="keyword">self</span>) strongSelf = weakSelf;</span><br><span class="line">	strongSelf.money = <span class="number">100000</span>;</span><br><span class="line">	strongSelf-&gt;height = <span class="number">222</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>不过上面这种也有一定概率crash，即有可能strongSelf是nil；</p>
+<p>比如当Block是一个全局变量的时候，而Object生命周期先结束变成nil，此时再执行Block就会crash。如果Block是Object的一个属性或成员变量，也不会有这个问题。</p>
+<p>另外，在开发中一般也不会去写这么长的weakSelf和strongSelf，我们是希望直接用self。(比如你灵机一动，想从其他地方copy一份代码直接放到Block，结果发现得一步步把self替换成strongSelf，过程相当痛苦😖)</p>
+<p>这部分内容RAC有相关的实现，通过@weakify(self)和@strongify(self)。这里我简化了一下实现，代码如下：</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> weakify(VAR) __weak typeof(VAR) _weak_ = VAR;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> strongify(VAR) __strong typeof(VAR) VAR = _weak_;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//使用宏定义后的效果</span></span><br><span class="line">weakify(<span class="keyword">self</span>);</span><br><span class="line">blk = ^(<span class="keyword">id</span> obj) &#123;</span><br><span class="line">  strongify(<span class="keyword">self</span>);</span><br><span class="line">	<span class="keyword">self</span>.money = <span class="number">100000</span>;</span><br><span class="line">	<span class="keyword">self</span>-&gt;height = <span class="number">222</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ]]></content>
       <categories>
-        <category>机器学习</category>
+        <category>Objective-C</category>
       </categories>
       <tags>
-        <tag>机器学习</tag>
-        <tag>算法</tag>
+        <tag>IOS</tag>
+        <tag>Objective-C</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>IOS音频技术（一）Audio Session</title>
+    <url>/2021/12/13/IOS%E9%9F%B3%E9%A2%91%E6%8A%80%E6%9C%AF%EF%BC%88%E4%B8%80%EF%BC%89Audio-Session/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Audio Session是一个用来管理音频的类，你的App通过Audio Session来告诉系统你将如何使用硬件设备，比如麦克风、扬声器。Audio Session的表现就像是一个中介者。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/ASPG_intro_2x.png" alt="ASPG_intro_2x.png"></p>
+<p>系统提供了<code>AVAudioSession</code>这个类来实现对应的功能：</p>
+<ul>
+<li><p>设置你的App的Audio Session表现行为（设置Category和Mode）</p>
+</li>
+<li><p>接受通知，比如Audio中断、或者路由改变（如用户插入耳机）</p>
+</li>
+<li><p>配置音频设备（采样率、通道数等）</p>
+</li>
+</ul>
+<p>这个AVAudioSession是单例的，在App启动之后系统会自动初始化。</p>
+<h2 id="配置Audio-Session"><a href="#配置Audio-Session" class="headerlink" title="配置Audio Session"></a>配置Audio Session</h2><p>系统提供了很多种Category，通过设置不同的Category，可以表明你的App的音频表现，比如当你的App播放音频时是否停止其他App的音频、用户打开静音键后你的App是否还能播放。具体看下面这张表：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Category</th>
+<th align="left">按下静音键or锁屏的时候静音</th>
+<th align="left">中断其他无法混合播放的App</th>
+<th align="left">Allows audio input (recording) and output (playback)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>AVAudioSessionCategoryAmbient</code></td>
+<td align="left">Yes</td>
+<td align="left">No</td>
+<td align="left">Output only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategorySoloAmbient</code> (Default)</td>
+<td align="left">Yes</td>
+<td align="left">Yes</td>
+<td align="left">Output only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryPlayback</code></td>
+<td align="left">No</td>
+<td align="left">Yes by default; no by using override switch</td>
+<td align="left">Output only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryRecord</code></td>
+<td align="left">No (锁屏时录音继续)</td>
+<td align="left">Yes</td>
+<td align="left">Input only</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryPlayAndRecord</code></td>
+<td align="left">No</td>
+<td align="left">Yes by default; no by using override switch</td>
+<td align="left">Input and output</td>
+</tr>
+<tr>
+<td align="left"><code>AVAudioSessionCategoryMultiRoute</code></td>
+<td align="left">No</td>
+<td align="left">Yes</td>
+<td align="left">Input and output</td>
+</tr>
+</tbody></table>
+<p>通过<code>setCategory:mode:options:error:</code>这个API来配置。比如你要实现音频可以在后台播放，则使用Category为<code>AVAudioSessionCategoryPlayback</code>，同时在Xcode的Capabilities中开启Background Mode</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/background_modes_2x.png" alt="../Art/background_modes.shot/Resources/shot_2x.png"></p>
+<p>最后通过<code>setActive:error:</code>来让配置生效。</p>
+<p>Apple官网文档给了一张图来描述这个过程：</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/competing_audio_demands_2x.png" alt="A comic-book representation of the sequence of events surrounding the activation of an audio session."></p>
+<h3 id="系统默认配置"><a href="#系统默认配置" class="headerlink" title="系统默认配置"></a>系统默认配置</h3><p>系统默认实现的Audio Session配置如下：</p>
+<ul>
+<li>支持播放、不支持录音</li>
+<li>打开静音键后，App的音频变为静音</li>
+<li>锁屏后，App的音频变为静音</li>
+<li>当App的音频在播放时，其他App的音频静音</li>
+</ul>
+<blockquote>
+<p>有时我们要播放App时，需要判断其他App是否在使用Audio，这时可通过secondaryAudioShouldBeSilencedHint这个属性来获取，为true时说明在playing</p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007875-CH1-SW1">https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007875-CH1-SW1</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>IOS中的hitTest和pointInside</title>
+    <url>/2021/12/12/IOS%E4%B8%AD%E7%9A%84hitTest%E5%92%8CpointInside/</url>
+    <content><![CDATA[<h4 id="事件处理流程"><a href="#事件处理流程" class="headerlink" title="事件处理流程"></a>事件处理流程</h4><p>1.当用户点击屏幕时，会产生一个触摸事件，系统会将该事件加入到一个由UIApplication管理的事件队列中</p>
+<p>2.UIApplication会从事件队列中取出最前面的事件进行分发以便处理，通常，先发送事件给应用程序的主窗口(UIWindow)</p>
+<p>3.主窗口会调用hitTest:withEvent:方法在视图(UIView)层次结构中找到一个最合适的UIView来处理触摸事件<br> (hitTest:withEvent:其实是UIView的一个方法，UIWindow继承自UIView，因此主窗口UIWindow也是属于视图的一种)</p>
+<p>这个过程可以用下面的代码描述</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSString</span> *viewID;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> pointInside:point withEvent:event] == <span class="literal">NO</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSArray</span> *subviews = <span class="keyword">self</span>.subviews;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (<span class="keyword">int</span>)subviews.count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="built_in">UIView</span> *view = subviews[i];</span><br><span class="line">        <span class="built_in">CGPoint</span> viewPoint = [view convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">UIView</span> *hitSubview = [view hitTest:viewPoint withEvent:event];</span><br><span class="line">        <span class="keyword">if</span> (hitSubview) &#123;</span><br><span class="line">            <span class="keyword">return</span> hitSubview;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span>.bounds, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h4><p>通过合理的重载在两个方法，可以实现一些特殊的效果。</p>
+<h5 id="1-扩大点击区域"><a href="#1-扩大点击区域" class="headerlink" title="1. 扩大点击区域"></a>1. 扩大点击区域</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UIEdgeInsets</span> touchInsets;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">CGRect</span> responsibleRect = <span class="built_in">CGRectMake</span>(-<span class="keyword">self</span>.touchInsets.left,</span><br><span class="line">                                        -<span class="keyword">self</span>.touchInsets.top,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.width + <span class="keyword">self</span>.touchInsets.left + <span class="keyword">self</span>.touchInsets.right,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.height + <span class="keyword">self</span>.touchInsets.top + <span class="keyword">self</span>.touchInsets.bottom);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(responsibleRect, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-子View超出父View部分仍可响应"><a href="#2-子View超出父View部分仍可响应" class="headerlink" title="2. 子View超出父View部分仍可响应"></a>2. 子View超出父View部分仍可响应</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">UIView</span> *view <span class="keyword">in</span> <span class="keyword">self</span>.subviews) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(view.frame, point))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>OC中的链式语法</title>
+    <url>/2021/10/01/OC%E4%B8%AD%E7%9A%84%E9%93%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h3 id="点语法"><a href="#点语法" class="headerlink" title="点语法"></a>点语法</h3><p>1.在OC中，访问对象的property时，可以使用点语法的方式访问</p>
+<p>2.调用无参数的方法时，也可使用点语法。</p>
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p>输入</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">person.say(<span class="string">@&quot;Hello, World!&quot;</span>).walk();</span><br></pre></td></tr></table></figure>
+
+<p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这个人说：Hello, World!</span><br><span class="line">绕了地球两圈</span><br></pre></td></tr></table></figure>
+
+<p>这在其他语言中是很容易实现的，比如C++和Java，其调用方法本身就是通过点语法的方式进行，只要返回值是self就行。</p>
+<h3 id="OC如何实现这种效果"><a href="#OC如何实现这种效果" class="headerlink" title="OC如何实现这种效果"></a>OC如何实现这种效果</h3><p>答案是借助Block。</p>
+<hr>
+<p>拿上面的代码进行拆分：</p>
+<p><code>person.say(@&quot;Hello, World!&quot;).walk();</code></p>
+<p>前半段<code>person.say</code>可以理解为调用了无参数的say方法，而后面还有小括号和参数<code>(@&quot;Hello, World!&quot;)</code>。那只要say方法返回一个Block，这个Block需要一个执行参数即可。相当于前半段代码执行了这个Block。</p>
+<p>而后面还需要调用walk方法，则需要这个Block返回对象本身。</p>
+<p>需要注意的是，后半段是<code>.walk()</code>而不是<code>.walk</code>，后者执行执行了walk方法，但却没有执行对应返回的Block。</p>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">Person</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> Person* (^Sayback)(<span class="built_in">NSString</span> *);</span><br><span class="line"><span class="keyword">typedef</span> Person* (^Walkback)(<span class="keyword">void</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line">- (Sayback)say;</span><br><span class="line">- (Walkback)walk;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="meta">#import <span class="meta-string">&quot;Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line">- (Sayback)say &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *(<span class="built_in">NSString</span> *word) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;这个人说：%@&quot;</span>, word);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (Walkback)walk &#123;</span><br><span class="line">    <span class="keyword">return</span> ^Person *() &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;绕了地球两圈&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>链式语法让代码写得更简洁了，但是其调用次数也翻倍了</p>
+<blockquote>
+<p>原先是直接调用方法，现在变成调用方法会返回Block，然后再执行这个Block</p>
+</blockquote>
+<p>在Java8中出现了流式编程<code>Java Stream</code>，可将代码写得很精致，如下面所示，也好奇🤔OC能否也实现这种效果</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Stream.of(<span class="string">&quot;apple&quot;</span>, <span class="string">&quot;banana&quot;</span>, <span class="string">&quot;orange&quot;</span>, <span class="string">&quot;waltermaleon&quot;</span>, <span class="string">&quot;grape&quot;</span>)</span><br><span class="line">                .mapToInt(e -&gt; e.length()) <span class="comment">//转成int</span></span><br><span class="line">                .forEach(e -&gt; System.out.println(e));</span><br></pre></td></tr></table></figure>
+
+<img src="https://upload-images.jianshu.io/upload_images/3830893-c797daeb0f7f1e3e.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1156/format/webp" alt="img" style="zoom: 67%;" />
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Stream.of(1,2,3,1,2,5,6,7,8,0,0,1,2,3,1)</span><br><span class="line">                .filter(e-&gt;e&gt;=5) //过滤小于5的</span><br><span class="line">                .forEach(e-&gt;System.out.println(e));</span><br></pre></td></tr></table></figure>
+
+<img src="https://upload-images.jianshu.io/upload_images/3830893-39f0bf8f2e45bb12.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/1176/format/webp" alt="img" style="zoom:67%;" />
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+        <category>ObjC</category>
+      </categories>
   </entry>
   <entry>
     <title>ios播放动态图</title>
@@ -598,47 +557,20 @@
       </categories>
   </entry>
   <entry>
-    <title>分享一道算法设计题</title>
-    <url>/2021/08/02/%E5%88%86%E4%BA%AB%E4%B8%80%E9%81%93%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E9%A2%98/</url>
-    <content><![CDATA[<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>有一个函数rand()能生成1-65536之间的整数，利用这个函数，让30万人中有5万人中奖，要求保证公平（即每个人的中奖几率一样）。</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="首先解决如何做到30万人抽出5万人，还保证公平。"><a href="#首先解决如何做到30万人抽出5万人，还保证公平。" class="headerlink" title="首先解决如何做到30万人抽出5万人，还保证公平。"></a>首先解决如何做到30万人抽出5万人，还保证公平。</h4><p>假设能实现一个函数randX()，他能返回1-30万之间的整数，那么我可以制定一个策略，从随机到的数向后取5万个。如下图所示</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472709130-4d0d4a54-46a1-45e5-8322-ba832fddb6de.png" alt="img"></p>
-<p>当后面不足5万个时，从头部补一些</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472845433-aba9cff7-fe04-49b4-90e2-cb071439853b.png" alt="img"></p>
-<p>这种方式真的能保证公平吗，让我们来验证一下</p>
-<p>每个人的中奖概率为 5万/30万 = 1/6</p>
-<p>上面的这种方法，红色部分共有30万种可能（初始位置从1-30万），而每一个位置，比如5万这个位置，红色部分共有5万种可能会覆盖到这个数，所以这个位置被选到的概率也是 5万/30万 = 1/6</p>
-<h4 id="现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平"><a href="#现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平" class="headerlink" title="现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平"></a>现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平</h4><p>一个错误方式是将rand() * (300000/65536)，这种方式虽然能得到1-300000之间的整数，但是有些数却永远取不到。</p>
-<p>rand()=1时，rand()*(300000/65536)=4.5776,那么无论如何你就取不到1，2，3了</p>
-<p>那么该如何解决呢？一种方法是分区间</p>
-<p>比如把30万划分为5个一样大的区别，每个区间只有6万</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615474782637-741cfe45-dcba-4c01-86b4-8ae1910a1c29.jpeg" alt="img"></p>
-<p>我们先随机取1-5之间的数，从而确定在那个区间取。</p>
-<p>一个区间只有6万，所以我们可以用rand()来取1-6万之间的整数了，最后加上区间起始位置的数就可以了。</p>
-<p>这样就没问题了吗？</p>
-<p>其实如果选择不慎，还是不公平的。</p>
-<p>比如一个能生成1-10随机数的函数rand，用它来生成1-4的随机数，如果写成rand%4+1，那结果就是错的。</p>
-<p>我们可以列出所有计算的可能情况</p>
-<p>生成1: 1 5 9</p>
-<p>生成2: 2 6 10</p>
-<p>生成3: 3 7</p>
-<p>生成4: 4 8</p>
-<p>可见生成不同随机数的概率其实是不一样的，生成1的概率是十分之三，生成4的概率是十分之二。</p>
-<p>要实现一个公平的随机数生成器，需要保证生成的最大数为原来随机器最大数的因数。比如1-10对应能制造生成1-2和1-5两种随机器，且保证公平。</p>
-<p>而针对上面这种情况，我们能做的是拒绝采样（reject sampling），当得到的数为9或10时，让它重新生成一个随机数直到满足条件。</p>
-<p>对于本文的题，65536的因数都是2的指数次幂，而30万不是，所以也只能采用拒绝采样的方法。</p>
+    <title>UISwitch在IOS12下的Bug</title>
+    <url>/2021/12/12/UISwitch%E5%9C%A8IOS12%E4%B8%8B%E7%9A%84Bug/</url>
+    <content><![CDATA[<h4 id="重现方式"><a href="#重现方式" class="headerlink" title="重现方式"></a>重现方式</h4><p>在UISwitch的ValueChange事件中，修改UISwitch的on属性。</p>
+<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UISwitch</span> *oSwitch;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    <span class="keyword">self</span>.view.backgroundColor = <span class="built_in">UIColor</span>.whiteColor;</span><br><span class="line">    </span><br><span class="line">    _oSwitch = [[<span class="built_in">UISwitch</span> alloc] initWithFrame:<span class="built_in">CGRectMake</span>(<span class="number">50</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">60</span>)];</span><br><span class="line">    [<span class="keyword">self</span>.view addSubview:_oSwitch];</span><br><span class="line">    [_oSwitch addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(valueChange:) forControlEvents:<span class="built_in">UIControlEventValueChanged</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    oSwitch.on = !oSwitch.on;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2021-12-01 20:21:31.674948+0800 demo-switch[56902:576481] change</span><br><span class="line">2021-12-01 20:21:31.675095+0800 demo-switch[56902:576481] change</span><br></pre></td></tr></table></figure>
+
+<p>点击开关切换，可以看到valueChange方法被调用了两次！！</p>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>把UISwitch中on属性的修改放到下一个Runloop中</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        oSwitch.on = !oSwitch.on;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
-        <category>算法</category>
+        <category>IOS</category>
       </categories>
   </entry>
   <entry>
@@ -745,27 +677,27 @@
       </tags>
   </entry>
   <entry>
-    <title>二分查找</title>
-    <url>/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/</url>
-    <content><![CDATA[<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>二分查找，又称折半查找。顾名思义，就是在一堆<strong>有序排列</strong>的元素中查找某一指定数值。返回数值对应的下标或-1（查不到）。</p>
-<h2 id="场景模拟"><a href="#场景模拟" class="headerlink" title="场景模拟"></a>场景模拟</h2><p>看其他文章都是千篇一律的猜数字，我们换一换风格，来猜一猜价格吧。这不是一样的吗？</p>
-<p>比如说现在让你猜一件商品的价格，已知商品的价格在1-1000元之间，且为整数，现在让你尽快猜中商品的价格，你要怎么做呢？（你每猜一个价格，都能得知这个价格与正确价格相比是相同的，还是小了或大了）</p>
-<p>鲁莽的方法：从1元开始猜到1000元，总会猜到的。运气好的话，价格刚好是1元，猜一次就中了。运气不好的话，价格是1000元，要猜1000次才能猜中。</p>
-<p><strong>这种方法其实没有充分利用猜价格得到的反馈信息，即从1元开始猜到1000元的过程中，你得到的反馈只有正确或者小了，绝对不会出现大了。</strong></p>
-<p>睿智的方法：既然价格在1元到1000元之间，那我就猜500元，即（1+1000）/2。这时可能的反馈信息分别有</p>
-<p>比正确价格小：这样我们就知道商品的价格不在1元到500元之间，而是在501元到1000元之间。</p>
-<p>与正确价格相同：即我们猜中了，所以就直接返回这个结果就可以了。</p>
-<p>比正确价格大：所以商品价格不在500元到1000元之间，而是在1元到499元之间。</p>
-<p><strong>不难看出，只经过一次猜测，可能猜中或者把猜测范围缩小一半。后面用同样的方式猜测，则又可以将猜测范围缩小一半。</strong>这个不就是递归吗？虽然用循环也可以做</p>
-<p><strong>用二分查找的时间复杂度为O（logN）</strong></p>
-<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="keyword">int</span>&gt; arr,<span class="keyword">int</span> aim)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 参数说明：arr即查找的容器序列，aim为需要查找的元素</span></span><br><span class="line"><span class="comment">     * 要求：arr容器需保证元素升序</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> left=<span class="number">0</span>,right=arr.<span class="built_in">size</span>()<span class="number">-1</span>,mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span>(left&lt;=right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid]&lt;aim)&#123;</span><br><span class="line">            left=mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]==aim)&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;找到了&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]&gt;aim)&#123;</span><br><span class="line">            right=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;找不到&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; arr;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">        arr.<span class="built_in">push_back</span>(i*<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">binarySearch</span>(arr,<span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <title>k-means算法</title>
+    <url>/2021/08/01/k-means%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h5><p>据说是机器学习中最简单的一种方法，属于<strong>非监督学习</strong>这一类。通俗一点讲，给机器一堆数据，告诉机器要分成多少种类别，然后机器就根据算法进行各种操作。</p>
+<h5 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h5><p>需要我们确定变量k，即最终 的数据会有几种类别。</p>
+<p>总共有k个中心坐标，一开始可以随机赋值，通过计算目标点坐标与所有中心坐标的距离，将其归类在距离较近的类别中。</p>
+<p>之后根据类别中的目标点计算平均值重新得到中心坐标，再重复上面的工作。</p>
+<h5 id="距离公式"><a href="#距离公式" class="headerlink" title="距离公式"></a>距离公式</h5><p>常用的距离公式如欧式距离，马氏距离，曼哈顿距离。</p>
+<p>借助科学计算库可以帮我们节省一些时间。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line">pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)<span class="comment">#欧氏距离</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="小小示例"><a href="#小小示例" class="headerlink" title="小小示例"></a>小小示例</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> scipy.spatial.distance <span class="keyword">import</span> pdist</span><br><span class="line"></span><br><span class="line">dimension = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机点，范围[0,10)</span></span><br><span class="line">dot_num = <span class="number">100</span></span><br><span class="line">dot = np.random.rand(dot_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成多个随机中心点，范围[0,10)</span></span><br><span class="line">center_num = <span class="number">4</span></span><br><span class="line">center = np.random.rand(center_num,dimension)*<span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 循环迭代</span></span><br><span class="line">times = <span class="number">50</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(times):</span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 数据映射</span></span><br><span class="line">    belong = np.zeros([dot_num])</span><br><span class="line">    <span class="comment"># 计算随机点与中心点的距离，将其归属于距离近的中心点</span></span><br><span class="line">    dist = np.zeros([dot_num,center_num])</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">            dist[j][k] = pdist(np.array([dot[j], center[k]]), <span class="string">&#x27;euclidean&#x27;</span>)</span><br><span class="line">        belong[j] = np.argmax(dist[j])</span><br><span class="line">    <span class="comment"># 绘图</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(center_num):</span><br><span class="line">        temp_dot = []</span><br><span class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dot_num):</span><br><span class="line">            <span class="keyword">if</span>(belong[k] == j):</span><br><span class="line">                temp_dot.append(dot[k])</span><br><span class="line">        <span class="comment"># 根据随机点求取均值，得出新的中心点</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">len</span>(temp_dot) != <span class="number">0</span>):</span><br><span class="line">            temp_dot = np.array(temp_dot)</span><br><span class="line">            plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(dimension):</span><br><span class="line">                center[j][k] = np.<span class="built_in">sum</span>(temp_dot[:,k])/<span class="built_in">len</span>(temp_dot)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            center[j] = np.zeros([dimension])</span><br><span class="line">    <span class="comment"># print(center)</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 满足迭代次数或中心点不再改变，结束命令</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h5><p>上述代码为动态实时更新画板内容，其中的关键代码如下</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">    <span class="comment"># 清除画布</span></span><br><span class="line">    plt.clf()</span><br><span class="line">    <span class="comment"># 绘制散点</span></span><br><span class="line">    plt.scatter(temp_dot[:,<span class="number">0</span>],temp_dot[:,<span class="number">1</span>])</span><br><span class="line">    <span class="comment"># 暂停间隔</span></span><br><span class="line">    plt.pause(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>算法</category>
+        <category>机器学习</category>
       </categories>
       <tags>
-        <tag>二分</tag>
-        <tag>数据结构</tag>
+        <tag>机器学习</tag>
+        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
@@ -789,6 +721,123 @@
       <categories>
         <category>其他</category>
       </categories>
+  </entry>
+  <entry>
+    <title>分享一道算法设计题</title>
+    <url>/2021/08/02/%E5%88%86%E4%BA%AB%E4%B8%80%E9%81%93%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E9%A2%98/</url>
+    <content><![CDATA[<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>有一个函数rand()能生成1-65536之间的整数，利用这个函数，让30万人中有5万人中奖，要求保证公平（即每个人的中奖几率一样）。</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="首先解决如何做到30万人抽出5万人，还保证公平。"><a href="#首先解决如何做到30万人抽出5万人，还保证公平。" class="headerlink" title="首先解决如何做到30万人抽出5万人，还保证公平。"></a>首先解决如何做到30万人抽出5万人，还保证公平。</h4><p>假设能实现一个函数randX()，他能返回1-30万之间的整数，那么我可以制定一个策略，从随机到的数向后取5万个。如下图所示</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472709130-4d0d4a54-46a1-45e5-8322-ba832fddb6de.png" alt="img"></p>
+<p>当后面不足5万个时，从头部补一些</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472845433-aba9cff7-fe04-49b4-90e2-cb071439853b.png" alt="img"></p>
+<p>这种方式真的能保证公平吗，让我们来验证一下</p>
+<p>每个人的中奖概率为 5万/30万 = 1/6</p>
+<p>上面的这种方法，红色部分共有30万种可能（初始位置从1-30万），而每一个位置，比如5万这个位置，红色部分共有5万种可能会覆盖到这个数，所以这个位置被选到的概率也是 5万/30万 = 1/6</p>
+<h4 id="现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平"><a href="#现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平" class="headerlink" title="现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平"></a>现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平</h4><p>一个错误方式是将rand() * (300000/65536)，这种方式虽然能得到1-300000之间的整数，但是有些数却永远取不到。</p>
+<p>rand()=1时，rand()*(300000/65536)=4.5776,那么无论如何你就取不到1，2，3了</p>
+<p>那么该如何解决呢？一种方法是分区间</p>
+<p>比如把30万划分为5个一样大的区别，每个区间只有6万</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615474782637-741cfe45-dcba-4c01-86b4-8ae1910a1c29.jpeg" alt="img"></p>
+<p>我们先随机取1-5之间的数，从而确定在那个区间取。</p>
+<p>一个区间只有6万，所以我们可以用rand()来取1-6万之间的整数了，最后加上区间起始位置的数就可以了。</p>
+<p>这样就没问题了吗？</p>
+<p>其实如果选择不慎，还是不公平的。</p>
+<p>比如一个能生成1-10随机数的函数rand，用它来生成1-4的随机数，如果写成rand%4+1，那结果就是错的。</p>
+<p>我们可以列出所有计算的可能情况</p>
+<p>生成1: 1 5 9</p>
+<p>生成2: 2 6 10</p>
+<p>生成3: 3 7</p>
+<p>生成4: 4 8</p>
+<p>可见生成不同随机数的概率其实是不一样的，生成1的概率是十分之三，生成4的概率是十分之二。</p>
+<p>要实现一个公平的随机数生成器，需要保证生成的最大数为原来随机器最大数的因数。比如1-10对应能制造生成1-2和1-5两种随机器，且保证公平。</p>
+<p>而针对上面这种情况，我们能做的是拒绝采样（reject sampling），当得到的数为9或10时，让它重新生成一个随机数直到满足条件。</p>
+<p>对于本文的题，65536的因数都是2的指数次幂，而30万不是，所以也只能采用拒绝采样的方法。</p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>基于消息表的分布式事务</title>
+    <url>/2021/08/02/%E5%9F%BA%E4%BA%8E%E6%B6%88%E6%81%AF%E8%A1%A8%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</url>
+    <content><![CDATA[<p><strong>在分布式数据库中，通过避免强一致性可以带来伸缩性的巨大提升。</strong></p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>随着你公司Web应用的发展，数据库容易陷入瓶颈。通常有两种方法解决这个问题，垂直扩展和水平扩展。</p>
+<ul>
+<li>垂直扩展通过提升硬件性能，但一般比较昂贵。</li>
+<li>水平扩展是本文主要讨论的方法，相比垂直扩展要复杂一些。</li>
+</ul>
+<p>水平扩展的方式通常也有两种：按模块切分，数据表做切片（Sharding）</p>
+<ul>
+<li>按模块切分的方式，将 Users, products, and transactions切分到不同的数据库。不同模块通过设计合适的外键进行关联访问。</li>
+<li>每个模块可以根据具体容量再进行切分</li>
+</ul>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612706617125-07dd0bb7-f24e-4c31-9449-e7c3e9ee74c1.png" alt="img"></p>
+<h3 id="ACID与BASE"><a href="#ACID与BASE" class="headerlink" title="ACID与BASE"></a>ACID与BASE</h3><p>我们知道，在单个数据库下，是可以实现ACID的。而在跨多个数据库的情况下，一般是通过2PC实现。2PC保证了强一致性，而根据CAP理论可以得知，其可用性则无法完全实现。</p>
+<p>那如果我们想要可用性，不要求强一致性呢？可以试试BASE。</p>
+<p>如果说ACID是悲观的，要求每个操作都严格一致，那么BASE则是乐观的，允许流动（flux）的状态。</p>
+<p>BASE的高可用并不是保证每个用户请求都被执行。比如有5台数据库服务器，当有一台服务器宕机了，那么大约只有20%的用户访问不了，这种情况下我们仍然认为系统是可用的。</p>
+<p>下面我们以一个例子演示从单机到多机的变化。</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>假设我们有以下数据表User和Transaction，它们存放在同一个数据库中。每当有一件商品卖出时，向Transaction表插入一条数据，然后更新买家和卖家的user表。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612708581417-c4fcd3cb-fe28-4adc-82e8-30552553f1dd.png" alt="img"></p>
+<p>上面这个过程可以通过下面的SQL事务表示</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612708777051-5ff679c3-47a6-4bba-80c8-672b994dee77.png" alt="img"></p>
+<p>当我们按模块划分后，user和transaction位于不同的数据库服务器上，此时再执行则变成了两个独立的事务。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612709344023-95ba9210-1d7f-4d85-8b2f-d17041173c7f.png" alt="img"></p>
+<p>这种情况下，若事务1执行成功，事务2执行失败，就出现了数据不一致的情况。怎么解决这种问题呢？这里就引入了我们本文的主角，消息表。</p>
+<p>实现消息表的方法可能有很多，但不管怎样，我们需要将消息的执行也划归到我们的事务内。引入消息表后，我们的SQL语句会变成下面这样。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612709759494-0704876f-bc14-4a72-8f01-5c3985384ff6.png" alt="img"></p>
+<p>可以创建一个后台进程，查询消息表，然后根据消息内容更新user表。</p>
+<p>不过上述的代码其实有问题，因为消息表是和transaction表一起的，跟user表在不同的数据库服务器上，如果按照上面那种方法，一个事务中有update消息表和user表，又回到了使用2PC。</p>
+<p>如何解决这个问题？这里要先引入一个概念，幂等性。</p>
+<p>如果一个操作执行一次或几次的结果都是一样的，那么它就是幂等的。如果一个操作是幂等的，那么可以实现：即使操作失败了，我们可以重试直到成功，而重试不会影响最终结果。</p>
+<p>我们上面的这个例子则不支持幂等，每次操作都会改变购买量或销售量。怎么解决呢？可以在user表所在数据库服务器上再加一个表</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612710768983-7970e275-52d4-4a75-b846-030d42ecc7bd.png" alt="img"></p>
+<p>然后将SQL语句改为下面这种</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612710796277-0112dc19-e601-4a1b-b7f0-838c2775bb68.png" alt="img"></p>
+<p>从上面的SQL语句中可以看出，message被移到了事务外面，这样使得只有在事务操作成功的时候才将其从消息表中移除。</p>
+<p>当事务执行成功，在移除消息表之前宕机，重启之后又重新消费这条消息。而事务中有对已消费信息的判断，从而解决了重复消费的问题。这样保证了数据在最后能达到一致性。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://queue.acm.org/detail.cfm?id=1394128">https://queue.acm.org/detail.cfm?id=1394128</a></p>
+]]></content>
+      <categories>
+        <category>系统架构</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+        <tag>消息表</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>二分查找</title>
+    <url>/2021/08/01/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/</url>
+    <content><![CDATA[<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>二分查找，又称折半查找。顾名思义，就是在一堆<strong>有序排列</strong>的元素中查找某一指定数值。返回数值对应的下标或-1（查不到）。</p>
+<h2 id="场景模拟"><a href="#场景模拟" class="headerlink" title="场景模拟"></a>场景模拟</h2><p>看其他文章都是千篇一律的猜数字，我们换一换风格，来猜一猜价格吧。这不是一样的吗？</p>
+<p>比如说现在让你猜一件商品的价格，已知商品的价格在1-1000元之间，且为整数，现在让你尽快猜中商品的价格，你要怎么做呢？（你每猜一个价格，都能得知这个价格与正确价格相比是相同的，还是小了或大了）</p>
+<p>鲁莽的方法：从1元开始猜到1000元，总会猜到的。运气好的话，价格刚好是1元，猜一次就中了。运气不好的话，价格是1000元，要猜1000次才能猜中。</p>
+<p><strong>这种方法其实没有充分利用猜价格得到的反馈信息，即从1元开始猜到1000元的过程中，你得到的反馈只有正确或者小了，绝对不会出现大了。</strong></p>
+<p>睿智的方法：既然价格在1元到1000元之间，那我就猜500元，即（1+1000）/2。这时可能的反馈信息分别有</p>
+<p>比正确价格小：这样我们就知道商品的价格不在1元到500元之间，而是在501元到1000元之间。</p>
+<p>与正确价格相同：即我们猜中了，所以就直接返回这个结果就可以了。</p>
+<p>比正确价格大：所以商品价格不在500元到1000元之间，而是在1元到499元之间。</p>
+<p><strong>不难看出，只经过一次猜测，可能猜中或者把猜测范围缩小一半。后面用同样的方式猜测，则又可以将猜测范围缩小一半。</strong>这个不就是递归吗？虽然用循环也可以做</p>
+<p><strong>用二分查找的时间复杂度为O（logN）</strong></p>
+<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="keyword">int</span>&gt; arr,<span class="keyword">int</span> aim)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 参数说明：arr即查找的容器序列，aim为需要查找的元素</span></span><br><span class="line"><span class="comment">     * 要求：arr容器需保证元素升序</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> left=<span class="number">0</span>,right=arr.<span class="built_in">size</span>()<span class="number">-1</span>,mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span>(left&lt;=right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid]&lt;aim)&#123;</span><br><span class="line">            left=mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]==aim)&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;找到了&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]&gt;aim)&#123;</span><br><span class="line">            right=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;找不到&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; arr;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">        arr.<span class="built_in">push_back</span>(i*<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">binarySearch</span>(arr,<span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>二分</tag>
+        <tag>数据结构</tag>
+      </tags>
   </entry>
   <entry>
     <title>字典树</title>
@@ -818,65 +867,57 @@
       </tags>
   </entry>
   <entry>
-    <title>快速幂</title>
-    <url>/2021/08/01/%E5%BF%AB%E9%80%9F%E5%B9%82/</url>
-    <content><![CDATA[<p>​    今天介绍一个在中低难度算法竞赛中经常碰到的算法—快速幂，于此相匹配的还有一个叫矩阵快速幂的东西。不过这篇文章只介绍快速幂，矩阵快速幂只是把两个数的乘法换成两个矩阵的乘法而已。</p>
-<p>快速幂，顾名思义，就是快速求解某一个数的指数次方结果为多少。</p>
-<h2 id="普通求解"><a href="#普通求解" class="headerlink" title="普通求解"></a>普通求解</h2><p>如让你求2^5次方，你可以很快计算出结果为2*2*2*2*2=32。</p>
-<blockquote>
-<p>这种方式在计算机中可以使用pow函数解决，即pow（2,5）=32。引入头文件cmath就行了，当然你也可以手写。</p>
-</blockquote>
-<p>pow函数的实现方式大致如下</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="function">ll <span class="title">pow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b--)&#123;</span><br><span class="line">        d=d*a%c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>不难看出，这种计算方式的速度是由b决定的，即时间复杂度为O（b），而如果b很大的，那就超时了啊！</strong></p>
+    <title>NSTimer的一些理解&amp;RunLoop简介</title>
+    <url>/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h3 id="RunLoop"><a href="#RunLoop" class="headerlink" title="RunLoop"></a>RunLoop</h3><p>The purpose of a run loop is to keep your thread busy when there is work to do and put your thread to sleep when there is none.</p>
+<p>The app frameworks automatically set up and run the run loop on the main thread as part of the application startup process.</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg" alt="Structure of a run loop and its sources"></p>
 <hr>
-<h2 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h2><p>下面就进入本节的主要内容，用快速幂求解，这其实是对二进制的巧妙使用。</p>
-<p>讲一个例子，现在要求3^11，按上述方法需要计算11次，但快速幂可以将求3^11简化为(3^8)<em>(3^2)</em>(3^1)，这样就只计算了3次，其实总共比较了4次，往下看就懂了。</p>
-<p>来一波分析：</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg" alt="Operating a custom input source"></p>
+<p>You must be sure to add one or more input sources, timers, or run-loop observers to any modes you create for them to be useful.</p>
+<p>错误做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[runLoop run];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>正确做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">  [runLoop run];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>RunLoop有多种Modes，在某一时刻只会运行在一种Mode下，处理这个Mode下对应的sources。</p>
+<p>一般情况下，项目中都不需要我们去使用RunLoop，因为主线程的已经默认开启了。子线程的话，除非你需要Timer、performSelector这类需要运行在RunLoop上的东西时才开启。</p>
+<h3 id="NSTimer"><a href="#NSTimer" class="headerlink" title="NSTimer"></a>NSTimer</h3><p>从RunLoop的特性我们知道，一般情况下NSTimer运行在NSDefaultRunLoopMode模式，当scrollview滑动时，RunLoop是运行在UITrackingRunLoopMode模式下的，此时NSTimer就不工作了，到了指定时间也不会触发事件。</p>
+<p>If a timer is not in the mode currently being monitored by the run loop, it does not fire until you run the run loop in one of the timer’s supported modes.</p>
+<p>NSTimer并不是实时的，如果当前RunLoop有任务在执行，Timer将等任务结束再处理。如果你是一个重复的Timer，在5秒、10秒、15秒这些时间点触发，第一次因为延迟而在7秒的时候才执行，那么下次执行时间还是10秒。</p>
+<p>If the firing time is delayed so much that it misses one or more of the scheduled firing times, the timer is fired only once for the missed time period. </p>
+<p>比如下面每隔十秒执行的Timer：</p>
+<p>49秒的时候delay，直到53秒执行；</p>
+<p>59秒的时候delay，直到08秒执行；</p>
+<p>39秒、49秒的时候delay，也只在56秒执行一次。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png" alt="image-20210904155650452"></p>
+<p>延迟后要不要执行，可以通过设置<code>tolerance</code>去做</p>
+<h4 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h4><blockquote>
+<p>Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop</p>
+</blockquote>
+<p>RunLoop强引用Timer，Timer强引用Target，所以Timer存在的话，Target就不会消亡。通过invalidate方法可以从RunLoop中移除Timer。不过如果你把invalidate写在target的dealloc里面，那就是<strong>循环引用</strong>了</p>
+<h4 id="关于后台运行"><a href="#关于后台运行" class="headerlink" title="关于后台运行"></a>关于后台运行</h4><p>理论上，app进入后台，短暂待一会就进入挂起状态。你可以在项目中设置一个重复的Timer去验证。</p>
+<p>所以问题是，如果你想在几个小时后（比如你的App是类似闹钟之类的东西）执行某些代码逻辑？</p>
+<p>这里有一些方法供参考：</p>
 <ol>
-<li>将指数11转化为二进制，即00…001011（32位，前面的0我就省略不写了，太多容易看乱）</li>
-<li>从右到左开始，32位的01串我们在下面给它们一个数值标识，从3^1开始，以平方的方式不断递增，如下面的表格所示（注意只给出最后边的6位，int类型总共应该有32位） </li>
+<li>设置本地通知。通知是由IOS管理的，所以不用担心App被kill掉，只要时间一到，IOS就会触发通知</li>
+<li>类似于后台播放音乐、定位、VOIP这些（这些可能需要申请权限，而且滥用的话苹果审核估计也不通过），可以后台播放静音文件（伪装你在播放音乐，实际是做它用），这样你的App就能一直运行了。。</li>
+<li>如果不是要精确的时间的话，可以在下次App启动的时候去做个时间检查，过了时间点的就可以执行相关的逻辑。</li>
 </ol>
-<table>
-<thead>
-<tr>
-<th>0</th>
-<th>0</th>
-<th>1</th>
-<th>0</th>
-<th>1</th>
-<th>1</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>3^32</td>
-<td>3^16</td>
-<td>3^8</td>
-<td>3^4</td>
-<td>3^2</td>
-<td>3^1</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p> 其实下面的指数也可以有另外一种方式理解，即当前位置的1表示十进制的哪个数，指数就是哪个。</p>
-</blockquote>
-<p>所以下面的操作就很简单了，3^11=3^(8+2+1)，为什么要拆成这几个数呢，因为他们就是11转成二进制后，对应的1的位置数值的表示啊（上面的表格），而这些位置的1代表的数加起来就是11. </p>
-<p>那么计算的思路就是，读取11的二进制数，若该位置为1，就乘上该位置所代表的数，若为0则不作处理。</p>
-<p><strong>时间复杂度从O(N)降到了O(logN)</strong></p>
-<blockquote>
-<p>具体方法：将11与1做按位与位运算，若结果为1，说明11二进制最后的数为1，所以乘上。</p>
-<p>然后下一步我们让11做右移位运算，即将32个01集体往右移动1位，这时最左侧会补上0，而最右侧的1已经不见了。相当于继续比较下一位，若当前数值为0，即二进制32个都为0，说明已经没有1了，就可以结束循环。</p>
-</blockquote>
-<h2 id="具体的代码实现"><a href="#具体的代码实现" class="headerlink" title="具体的代码实现"></a>具体的代码实现</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">quickPow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)&#123;</span><br><span class="line">            d=d*a%c;</span><br><span class="line">        &#125;</span><br><span class="line">        a=a*a%c;<span class="comment">//更新当前位置代表的数</span></span><br><span class="line">        b=b&gt;&gt;<span class="number">1</span>;<span class="comment">//右移1位</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;10的1亿次方mod3的结果为: &quot;</span>&lt;&lt;<span class="built_in">quickPow</span>(<span class="number">10</span>,<span class="number">1e9</span>,<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="矩阵快速幂"><a href="#矩阵快速幂" class="headerlink" title="矩阵快速幂"></a>矩阵快速幂</h2><p>这里放一下矩阵快速幂的模板</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">typedef long long ll;</span><br><span class="line">const int mod=1e9+7;</span><br><span class="line">const int MaxN=105;//矩阵大小</span><br><span class="line">struct Mat&#123;</span><br><span class="line">    ll m[MaxN][MaxN];</span><br><span class="line">&#125;ans,a;//结果与输入矩阵</span><br><span class="line">Mat Mul(Mat a,Mat b,int n)&#123;</span><br><span class="line">    Mat c;</span><br><span class="line">    memset(c.m,0,sizeof(c.m));</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        <span class="keyword">for</span>(int j=1;j&lt;=n;j++)</span><br><span class="line">            <span class="keyword">for</span>(int k=1;k&lt;=n;k++)</span><br><span class="line">                c.m[i][j]=(c.m[i][j]+(a.m[i][k]*b.m[k][j])%mod)%mod;</span><br><span class="line">    <span class="built_in">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line">Mat _power(Mat a,ll b,int n)&#123;</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        ans.m[i][i]=1;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;1)</span><br><span class="line">            ans=Mul(ans,a,n);</span><br><span class="line">        a=Mul(a,a,n);</span><br><span class="line">        b&gt;&gt;=1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1">https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1</a></p>
+<p><a href="https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501">https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501</a></p>
+<p><a href="https://www.jianshu.com/p/11fae16ab622">https://www.jianshu.com/p/11fae16ab622</a></p>
+<p><a href="https://developer.apple.com/documentation/foundation/nstimer">https://developer.apple.com/documentation/foundation/nstimer</a></p>
+<p><a href="https://blog.csdn.net/totogo2010/article/details/8048652/">ios应用程序状态变迁</a></p>
 ]]></content>
       <categories>
-        <category>算法</category>
+        <category>IOS</category>
       </categories>
+      <tags>
+        <tag>定时</tag>
+        <tag>RunLoop</tag>
+      </tags>
   </entry>
   <entry>
     <title>搭建个人博客</title>
@@ -958,106 +999,65 @@
       </tags>
   </entry>
   <entry>
-    <title>基于消息表的分布式事务</title>
-    <url>/2021/08/02/%E5%9F%BA%E4%BA%8E%E6%B6%88%E6%81%AF%E8%A1%A8%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</url>
-    <content><![CDATA[<p><strong>在分布式数据库中，通过避免强一致性可以带来伸缩性的巨大提升。</strong></p>
-<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>随着你公司Web应用的发展，数据库容易陷入瓶颈。通常有两种方法解决这个问题，垂直扩展和水平扩展。</p>
-<ul>
-<li>垂直扩展通过提升硬件性能，但一般比较昂贵。</li>
-<li>水平扩展是本文主要讨论的方法，相比垂直扩展要复杂一些。</li>
-</ul>
-<p>水平扩展的方式通常也有两种：按模块切分，数据表做切片（Sharding）</p>
-<ul>
-<li>按模块切分的方式，将 Users, products, and transactions切分到不同的数据库。不同模块通过设计合适的外键进行关联访问。</li>
-<li>每个模块可以根据具体容量再进行切分</li>
-</ul>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612706617125-07dd0bb7-f24e-4c31-9449-e7c3e9ee74c1.png" alt="img"></p>
-<h3 id="ACID与BASE"><a href="#ACID与BASE" class="headerlink" title="ACID与BASE"></a>ACID与BASE</h3><p>我们知道，在单个数据库下，是可以实现ACID的。而在跨多个数据库的情况下，一般是通过2PC实现。2PC保证了强一致性，而根据CAP理论可以得知，其可用性则无法完全实现。</p>
-<p>那如果我们想要可用性，不要求强一致性呢？可以试试BASE。</p>
-<p>如果说ACID是悲观的，要求每个操作都严格一致，那么BASE则是乐观的，允许流动（flux）的状态。</p>
-<p>BASE的高可用并不是保证每个用户请求都被执行。比如有5台数据库服务器，当有一台服务器宕机了，那么大约只有20%的用户访问不了，这种情况下我们仍然认为系统是可用的。</p>
-<p>下面我们以一个例子演示从单机到多机的变化。</p>
-<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>假设我们有以下数据表User和Transaction，它们存放在同一个数据库中。每当有一件商品卖出时，向Transaction表插入一条数据，然后更新买家和卖家的user表。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612708581417-c4fcd3cb-fe28-4adc-82e8-30552553f1dd.png" alt="img"></p>
-<p>上面这个过程可以通过下面的SQL事务表示</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612708777051-5ff679c3-47a6-4bba-80c8-672b994dee77.png" alt="img"></p>
-<p>当我们按模块划分后，user和transaction位于不同的数据库服务器上，此时再执行则变成了两个独立的事务。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612709344023-95ba9210-1d7f-4d85-8b2f-d17041173c7f.png" alt="img"></p>
-<p>这种情况下，若事务1执行成功，事务2执行失败，就出现了数据不一致的情况。怎么解决这种问题呢？这里就引入了我们本文的主角，消息表。</p>
-<p>实现消息表的方法可能有很多，但不管怎样，我们需要将消息的执行也划归到我们的事务内。引入消息表后，我们的SQL语句会变成下面这样。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612709759494-0704876f-bc14-4a72-8f01-5c3985384ff6.png" alt="img"></p>
-<p>可以创建一个后台进程，查询消息表，然后根据消息内容更新user表。</p>
-<p>不过上述的代码其实有问题，因为消息表是和transaction表一起的，跟user表在不同的数据库服务器上，如果按照上面那种方法，一个事务中有update消息表和user表，又回到了使用2PC。</p>
-<p>如何解决这个问题？这里要先引入一个概念，幂等性。</p>
-<p>如果一个操作执行一次或几次的结果都是一样的，那么它就是幂等的。如果一个操作是幂等的，那么可以实现：即使操作失败了，我们可以重试直到成功，而重试不会影响最终结果。</p>
-<p>我们上面的这个例子则不支持幂等，每次操作都会改变购买量或销售量。怎么解决呢？可以在user表所在数据库服务器上再加一个表</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612710768983-7970e275-52d4-4a75-b846-030d42ecc7bd.png" alt="img"></p>
-<p>然后将SQL语句改为下面这种</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1612710796277-0112dc19-e601-4a1b-b7f0-838c2775bb68.png" alt="img"></p>
-<p>从上面的SQL语句中可以看出，message被移到了事务外面，这样使得只有在事务操作成功的时候才将其从消息表中移除。</p>
-<p>当事务执行成功，在移除消息表之前宕机，重启之后又重新消费这条消息。而事务中有对已消费信息的判断，从而解决了重复消费的问题。这样保证了数据在最后能达到一致性。</p>
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://queue.acm.org/detail.cfm?id=1394128">https://queue.acm.org/detail.cfm?id=1394128</a></p>
-]]></content>
-      <categories>
-        <category>系统架构</category>
-      </categories>
-      <tags>
-        <tag>分布式</tag>
-        <tag>消息表</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>NSTimer的一些理解&amp;RunLoop简介</title>
-    <url>/2021/09/04/%E5%AF%B9NSTimer%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h3 id="RunLoop"><a href="#RunLoop" class="headerlink" title="RunLoop"></a>RunLoop</h3><p>The purpose of a run loop is to keep your thread busy when there is work to do and put your thread to sleep when there is none.</p>
-<p>The app frameworks automatically set up and run the run loop on the main thread as part of the application startup process.</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg" alt="Structure of a run loop and its sources"></p>
-<hr>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg" alt="Operating a custom input source"></p>
-<p>You must be sure to add one or more input sources, timers, or run-loop observers to any modes you create for them to be useful.</p>
-<p>错误做法：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[runLoop run];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>正确做法：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];</span><br><span class="line">	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">		NSLog(@&quot;in other thread.&quot;);</span><br><span class="line">	&#125;];</span><br><span class="line">  [runLoop run];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>RunLoop有多种Modes，在某一时刻只会运行在一种Mode下，处理这个Mode下对应的sources。</p>
-<p>一般情况下，项目中都不需要我们去使用RunLoop，因为主线程的已经默认开启了。子线程的话，除非你需要Timer、performSelector这类需要运行在RunLoop上的东西时才开启。</p>
-<h3 id="NSTimer"><a href="#NSTimer" class="headerlink" title="NSTimer"></a>NSTimer</h3><p>从RunLoop的特性我们知道，一般情况下NSTimer运行在NSDefaultRunLoopMode模式，当scrollview滑动时，RunLoop是运行在UITrackingRunLoopMode模式下的，此时NSTimer就不工作了，到了指定时间也不会触发事件。</p>
-<p>If a timer is not in the mode currently being monitored by the run loop, it does not fire until you run the run loop in one of the timer’s supported modes.</p>
-<p>NSTimer并不是实时的，如果当前RunLoop有任务在执行，Timer将等任务结束再处理。如果你是一个重复的Timer，在5秒、10秒、15秒这些时间点触发，第一次因为延迟而在7秒的时候才执行，那么下次执行时间还是10秒。</p>
-<p>If the firing time is delayed so much that it misses one or more of the scheduled firing times, the timer is fired only once for the missed time period. </p>
-<p>比如下面每隔十秒执行的Timer：</p>
-<p>49秒的时候delay，直到53秒执行；</p>
-<p>59秒的时候delay，直到08秒执行；</p>
-<p>39秒、49秒的时候delay，也只在56秒执行一次。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png" alt="image-20210904155650452"></p>
-<p>延迟后要不要执行，可以通过设置<code>tolerance</code>去做</p>
-<h4 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h4><blockquote>
-<p>Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop</p>
+    <title>快速幂</title>
+    <url>/2021/08/01/%E5%BF%AB%E9%80%9F%E5%B9%82/</url>
+    <content><![CDATA[<p>​    今天介绍一个在中低难度算法竞赛中经常碰到的算法—快速幂，于此相匹配的还有一个叫矩阵快速幂的东西。不过这篇文章只介绍快速幂，矩阵快速幂只是把两个数的乘法换成两个矩阵的乘法而已。</p>
+<p>快速幂，顾名思义，就是快速求解某一个数的指数次方结果为多少。</p>
+<h2 id="普通求解"><a href="#普通求解" class="headerlink" title="普通求解"></a>普通求解</h2><p>如让你求2^5次方，你可以很快计算出结果为2*2*2*2*2=32。</p>
+<blockquote>
+<p>这种方式在计算机中可以使用pow函数解决，即pow（2,5）=32。引入头文件cmath就行了，当然你也可以手写。</p>
 </blockquote>
-<p>RunLoop强引用Timer，Timer强引用Target，所以Timer存在的话，Target就不会消亡。通过invalidate方法可以从RunLoop中移除Timer。不过如果你把invalidate写在target的dealloc里面，那就是<strong>循环引用</strong>了</p>
-<h4 id="关于后台运行"><a href="#关于后台运行" class="headerlink" title="关于后台运行"></a>关于后台运行</h4><p>理论上，app进入后台，短暂待一会就进入挂起状态。你可以在项目中设置一个重复的Timer去验证。</p>
-<p>所以问题是，如果你想在几个小时后（比如你的App是类似闹钟之类的东西）执行某些代码逻辑？</p>
-<p>这里有一些方法供参考：</p>
+<p>pow函数的实现方式大致如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="function">ll <span class="title">pow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b--)&#123;</span><br><span class="line">        d=d*a%c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>不难看出，这种计算方式的速度是由b决定的，即时间复杂度为O（b），而如果b很大的，那就超时了啊！</strong></p>
+<hr>
+<h2 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h2><p>下面就进入本节的主要内容，用快速幂求解，这其实是对二进制的巧妙使用。</p>
+<p>讲一个例子，现在要求3^11，按上述方法需要计算11次，但快速幂可以将求3^11简化为(3^8)<em>(3^2)</em>(3^1)，这样就只计算了3次，其实总共比较了4次，往下看就懂了。</p>
+<p>来一波分析：</p>
 <ol>
-<li>设置本地通知。通知是由IOS管理的，所以不用担心App被kill掉，只要时间一到，IOS就会触发通知</li>
-<li>类似于后台播放音乐、定位、VOIP这些（这些可能需要申请权限，而且滥用的话苹果审核估计也不通过），可以后台播放静音文件（伪装你在播放音乐，实际是做它用），这样你的App就能一直运行了。。</li>
-<li>如果不是要精确的时间的话，可以在下次App启动的时候去做个时间检查，过了时间点的就可以执行相关的逻辑。</li>
+<li>将指数11转化为二进制，即00…001011（32位，前面的0我就省略不写了，太多容易看乱）</li>
+<li>从右到左开始，32位的01串我们在下面给它们一个数值标识，从3^1开始，以平方的方式不断递增，如下面的表格所示（注意只给出最后边的6位，int类型总共应该有32位） </li>
 </ol>
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1">https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1</a></p>
-<p><a href="https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501">https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501</a></p>
-<p><a href="https://www.jianshu.com/p/11fae16ab622">https://www.jianshu.com/p/11fae16ab622</a></p>
-<p><a href="https://developer.apple.com/documentation/foundation/nstimer">https://developer.apple.com/documentation/foundation/nstimer</a></p>
-<p><a href="https://blog.csdn.net/totogo2010/article/details/8048652/">ios应用程序状态变迁</a></p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>0</th>
+<th>1</th>
+<th>0</th>
+<th>1</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3^32</td>
+<td>3^16</td>
+<td>3^8</td>
+<td>3^4</td>
+<td>3^2</td>
+<td>3^1</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p> 其实下面的指数也可以有另外一种方式理解，即当前位置的1表示十进制的哪个数，指数就是哪个。</p>
+</blockquote>
+<p>所以下面的操作就很简单了，3^11=3^(8+2+1)，为什么要拆成这几个数呢，因为他们就是11转成二进制后，对应的1的位置数值的表示啊（上面的表格），而这些位置的1代表的数加起来就是11. </p>
+<p>那么计算的思路就是，读取11的二进制数，若该位置为1，就乘上该位置所代表的数，若为0则不作处理。</p>
+<p><strong>时间复杂度从O(N)降到了O(logN)</strong></p>
+<blockquote>
+<p>具体方法：将11与1做按位与位运算，若结果为1，说明11二进制最后的数为1，所以乘上。</p>
+<p>然后下一步我们让11做右移位运算，即将32个01集体往右移动1位，这时最左侧会补上0，而最右侧的1已经不见了。相当于继续比较下一位，若当前数值为0，即二进制32个都为0，说明已经没有1了，就可以结束循环。</p>
+</blockquote>
+<h2 id="具体的代码实现"><a href="#具体的代码实现" class="headerlink" title="具体的代码实现"></a>具体的代码实现</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">quickPow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)&#123;</span><br><span class="line">            d=d*a%c;</span><br><span class="line">        &#125;</span><br><span class="line">        a=a*a%c;<span class="comment">//更新当前位置代表的数</span></span><br><span class="line">        b=b&gt;&gt;<span class="number">1</span>;<span class="comment">//右移1位</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;10的1亿次方mod3的结果为: &quot;</span>&lt;&lt;<span class="built_in">quickPow</span>(<span class="number">10</span>,<span class="number">1e9</span>,<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="矩阵快速幂"><a href="#矩阵快速幂" class="headerlink" title="矩阵快速幂"></a>矩阵快速幂</h2><p>这里放一下矩阵快速幂的模板</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">typedef long long ll;</span><br><span class="line">const int mod=1e9+7;</span><br><span class="line">const int MaxN=105;//矩阵大小</span><br><span class="line">struct Mat&#123;</span><br><span class="line">    ll m[MaxN][MaxN];</span><br><span class="line">&#125;ans,a;//结果与输入矩阵</span><br><span class="line">Mat Mul(Mat a,Mat b,int n)&#123;</span><br><span class="line">    Mat c;</span><br><span class="line">    memset(c.m,0,sizeof(c.m));</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        <span class="keyword">for</span>(int j=1;j&lt;=n;j++)</span><br><span class="line">            <span class="keyword">for</span>(int k=1;k&lt;=n;k++)</span><br><span class="line">                c.m[i][j]=(c.m[i][j]+(a.m[i][k]*b.m[k][j])%mod)%mod;</span><br><span class="line">    <span class="built_in">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line">Mat _power(Mat a,ll b,int n)&#123;</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        ans.m[i][i]=1;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;1)</span><br><span class="line">            ans=Mul(ans,a,n);</span><br><span class="line">        a=Mul(a,a,n);</span><br><span class="line">        b&gt;&gt;=1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
-        <category>IOS</category>
+        <category>算法</category>
       </categories>
-      <tags>
-        <tag>定时</tag>
-        <tag>RunLoop</tag>
-      </tags>
   </entry>
   <entry>
     <title>数字音频技术介绍</title>
@@ -1423,6 +1423,30 @@
       </tags>
   </entry>
   <entry>
+    <title>部署Tensorflow模型到服务器-方法二</title>
+    <url>/2021/08/01/%E9%83%A8%E7%BD%B2Tensorflow%E6%A8%A1%E5%9E%8B%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8-%E6%96%B9%E6%B3%95%E4%BA%8C/</url>
+    <content><![CDATA[<h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>python 3.8.3</p>
+<p>tensorflow 2.4.0</p>
+<h3 id="制作测试模型"><a href="#制作测试模型" class="headerlink" title="制作测试模型"></a>制作测试模型</h3><p><strong>注意</strong>: tensorflow版本1和版本2的接口不同, 我这里套用原来的代码, 修改部分需要兼容的代码.比如 tf.placeholder()  –&gt;  tf.compat.v1.placeholder()。如果你用的是版本1则不用修改</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件夹不存在时,会报utf-8解析错误</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="string">&#x27;./model&#x27;</span>):</span><br><span class="line">    os.mkdir(<span class="string">&#x27;./model&#x27;</span>)</span><br><span class="line"></span><br><span class="line">tf.compat.v1.disable_eager_execution()</span><br><span class="line"></span><br><span class="line">x = tf.compat.v1.placeholder(tf.float32, name=<span class="string">&#x27;inputX&#x27;</span>)</span><br><span class="line">feed = np.random.rand(<span class="number">100</span>)</span><br><span class="line">y = <span class="number">2</span> * x + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">w = tf.Variable(<span class="number">0.</span>)</span><br><span class="line">b = tf.Variable(<span class="number">0.</span>)</span><br><span class="line"></span><br><span class="line">y_ = tf.add(tf.multiply(w, x), b, name=<span class="string">&#x27;outputY&#x27;</span>)</span><br><span class="line"></span><br><span class="line">loss = tf.reduce_mean(tf.square(y - y_))</span><br><span class="line"></span><br><span class="line">optimizer = tf.compat.v1.train.GradientDescentOptimizer(<span class="number">0.2</span>)</span><br><span class="line">train = optimizer.minimize(loss)</span><br><span class="line"></span><br><span class="line">init = tf.compat.v1.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(init)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">200</span>):</span><br><span class="line">        sess.run(train, feed_dict=&#123;x: feed&#125;)</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">5</span> == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(i, sess.run([w, b]))</span><br><span class="line"></span><br><span class="line">    constant_graph = tf.compat.v1.graph_util.convert_variables_to_constants(sess, sess.graph_def, [<span class="string">&#x27;outputY&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, mode=<span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(constant_graph.SerializeToString())</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署上线"><a href="#部署上线" class="headerlink" title="部署上线"></a>部署上线</h3><p>这里使用python的web服务器框架Flask，很容易上手的，而且Pycharm在创建项目时就能选择。<br><img src="https://img-blog.csdnimg.cn/20201217181847852.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>这里直接贴代码</p>
+<h5 id="app-py"><a href="#app-py" class="headerlink" title="app.py"></a>app.py</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    graph_def = tf.compat.v1.GraphDef()</span><br><span class="line">    graph_def.ParseFromString(f.read())</span><br><span class="line">    tf.import_graph_def(graph_def, name=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">sess = tf.compat.v1.Session()</span><br><span class="line">output = sess.graph.get_tensor_by_name(<span class="string">&#x27;outputY:0&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/predict&#x27;</span>, methods=[<span class="string">&quot;GET&quot;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testPredict</span>():</span></span><br><span class="line">    inputX = request.args.get(<span class="string">&quot;inputX&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">str</span>(sess.run(output, feed_dict=&#123;<span class="string">&#x27;inputX:0&#x27;</span>: inputX&#125;))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<h3 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果"></a>验证结果</h3><p>程序启动后，默认监听的是5000端口，我们用浏览器访问 <a href="http://localhost:5000/predict?inputX=2%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E7%BB%93%E6%9E%9C">http://localhost:5000/predict?inputX=2，可以看到结果</a></p>
+<p><img src="https://img-blog.csdnimg.cn/2020121718193840.png#pic_center" alt="在这里插入图片描述"></p>
+<p>完结撒花❀❀❀</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>模型部署</tag>
+        <tag>Tensorflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>计算机简史（二）</title>
     <url>/2021/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%AE%80%E5%8F%B2%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
     <content><![CDATA[<h3 id="持久化的问题"><a href="#持久化的问题" class="headerlink" title="持久化的问题"></a>持久化的问题</h3><p>承接上一节，<mark class="label success">接通电源后从内存开始读指令，但是内存一开始也没有数据</mark>，这个问题。。其实用过电脑的都知道，用硬盘就能实现断电也能保存数据。</p>
@@ -1550,30 +1574,6 @@
         <tag>模型部署</tag>
         <tag>Tensorflow</tag>
         <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>部署Tensorflow模型到服务器-方法二</title>
-    <url>/2021/08/01/%E9%83%A8%E7%BD%B2Tensorflow%E6%A8%A1%E5%9E%8B%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8-%E6%96%B9%E6%B3%95%E4%BA%8C/</url>
-    <content><![CDATA[<h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>python 3.8.3</p>
-<p>tensorflow 2.4.0</p>
-<h3 id="制作测试模型"><a href="#制作测试模型" class="headerlink" title="制作测试模型"></a>制作测试模型</h3><p><strong>注意</strong>: tensorflow版本1和版本2的接口不同, 我这里套用原来的代码, 修改部分需要兼容的代码.比如 tf.placeholder()  –&gt;  tf.compat.v1.placeholder()。如果你用的是版本1则不用修改</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件夹不存在时,会报utf-8解析错误</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="string">&#x27;./model&#x27;</span>):</span><br><span class="line">    os.mkdir(<span class="string">&#x27;./model&#x27;</span>)</span><br><span class="line"></span><br><span class="line">tf.compat.v1.disable_eager_execution()</span><br><span class="line"></span><br><span class="line">x = tf.compat.v1.placeholder(tf.float32, name=<span class="string">&#x27;inputX&#x27;</span>)</span><br><span class="line">feed = np.random.rand(<span class="number">100</span>)</span><br><span class="line">y = <span class="number">2</span> * x + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">w = tf.Variable(<span class="number">0.</span>)</span><br><span class="line">b = tf.Variable(<span class="number">0.</span>)</span><br><span class="line"></span><br><span class="line">y_ = tf.add(tf.multiply(w, x), b, name=<span class="string">&#x27;outputY&#x27;</span>)</span><br><span class="line"></span><br><span class="line">loss = tf.reduce_mean(tf.square(y - y_))</span><br><span class="line"></span><br><span class="line">optimizer = tf.compat.v1.train.GradientDescentOptimizer(<span class="number">0.2</span>)</span><br><span class="line">train = optimizer.minimize(loss)</span><br><span class="line"></span><br><span class="line">init = tf.compat.v1.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(init)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">200</span>):</span><br><span class="line">        sess.run(train, feed_dict=&#123;x: feed&#125;)</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">5</span> == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(i, sess.run([w, b]))</span><br><span class="line"></span><br><span class="line">    constant_graph = tf.compat.v1.graph_util.convert_variables_to_constants(sess, sess.graph_def, [<span class="string">&#x27;outputY&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, mode=<span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(constant_graph.SerializeToString())</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署上线"><a href="#部署上线" class="headerlink" title="部署上线"></a>部署上线</h3><p>这里使用python的web服务器框架Flask，很容易上手的，而且Pycharm在创建项目时就能选择。<br><img src="https://img-blog.csdnimg.cn/20201217181847852.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>这里直接贴代码</p>
-<h5 id="app-py"><a href="#app-py" class="headerlink" title="app.py"></a>app.py</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    graph_def = tf.compat.v1.GraphDef()</span><br><span class="line">    graph_def.ParseFromString(f.read())</span><br><span class="line">    tf.import_graph_def(graph_def, name=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">sess = tf.compat.v1.Session()</span><br><span class="line">output = sess.graph.get_tensor_by_name(<span class="string">&#x27;outputY:0&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/predict&#x27;</span>, methods=[<span class="string">&quot;GET&quot;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testPredict</span>():</span></span><br><span class="line">    inputX = request.args.get(<span class="string">&quot;inputX&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">str</span>(sess.run(output, feed_dict=&#123;<span class="string">&#x27;inputX:0&#x27;</span>: inputX&#125;))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
-
-<h3 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果"></a>验证结果</h3><p>程序启动后，默认监听的是5000端口，我们用浏览器访问 <a href="http://localhost:5000/predict?inputX=2%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E7%BB%93%E6%9E%9C">http://localhost:5000/predict?inputX=2，可以看到结果</a></p>
-<p><img src="https://img-blog.csdnimg.cn/2020121718193840.png#pic_center" alt="在这里插入图片描述"></p>
-<p>完结撒花❀❀❀</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>模型部署</tag>
-        <tag>Tensorflow</tag>
       </tags>
   </entry>
 </search>
