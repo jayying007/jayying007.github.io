@@ -1643,4 +1643,18 @@
         <tag>Tensorflow</tag>
       </tags>
   </entry>
+  <entry>
+    <title>信息安全</title>
+    <url>/2021/12/25/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/</url>
+    <content><![CDATA[<p>信息安全是一个范围很广的话题，这里主要推荐一些东西：</p>
+<h3 id="软件"><a href="#软件" class="headerlink" title="软件"></a>软件</h3><p>有一个开源的库OpenSSL，实现了各类加密算法，具体介绍参考下面链接</p>
+<p><a href="https://www.jiamisoft.com/blog/21652-openssl.html">https://www.jiamisoft.com/blog/21652-openssl.html</a></p>
+<p>基于Json的验证</p>
+<p><a href="https://jwt.io/">https://jwt.io/</a></p>
+<p>IOS的签名流程</p>
+<p>Git远程登录</p>
+<h3 id="书籍"><a href="#书籍" class="headerlink" title="书籍"></a>书籍</h3><p>白帽子讲Web安全</p>
+<p>图解密码技术</p>
+]]></content>
+  </entry>
 </search>
