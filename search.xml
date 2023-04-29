@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>IOS中使用HealthKit获取步数、运动记录等数据</title>
+    <url>/article/6ac3e087.html</url>
+    <content><![CDATA[<p>在IOS中想要获取步数等信息，需要借助HealthKit，其本质上是从手机的健康App上获取数据。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113143412355.png" alt="image-20211113143412355"></p>
+<blockquote>
+<p>只要用户授权了，你的App就可以读取和写入数据到健康App中</p>
+</blockquote>
+<h3 id="框架导入"><a href="#框架导入" class="headerlink" title="框架导入"></a>框架导入</h3><p>首先你需要引入HealthKit到你的项目中。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113144305488.png" alt="image-20211113144305488"></p>
+<h3 id="授权文案"><a href="#授权文案" class="headerlink" title="授权文案"></a>授权文案</h3><p>另外需要在info.plist配置一下授权说明，否则请求授权时就会crash。</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150624316.png" alt="image-20211113150624316"></p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150736171.png" alt="image-20211113150736171"></p>
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150832560.png" alt="image-20211113150832560" style="zoom: 33%;" />
+
+<p>Apple提供了HKActivityRingView来绘制运动环，之前不知道，还自己画了一个😓</p>
+<h3 id="注意⚠️的问题"><a href="#注意⚠️的问题" class="headerlink" title="注意⚠️的问题"></a>注意⚠️的问题</h3><ol>
+<li>HealthKit在IOS13下有一个bug，会导致crash</li>
+</ol>
+<p><a href="https://developer.apple.com/forums/thread/693289">https://developer.apple.com/forums/thread/693289</a></p>
+<ol start="2">
+<li><p>获取授权状态应该在子线程做，因为其内部会wait semaphore，不然会导致卡顿</p>
+<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113161142489.png"></p>
+</li>
+<li><p>代码已同步Github</p>
+</li>
+</ol>
+<p><a href="https://github.com/jayying007/ios-kit/tree/master/healthkit">https://github.com/jayying007/ios-kit/tree/master/healthkit</a></p>
+<ol start="4">
+<li>HKActivityRingView的表示：在Apple自带的健身App中，数值是向下取整来表示的，但是环的绘制还是用原来的值（浮点数）</li>
+<li>无法通过系统API确认用户是否同意or拒绝授权，只能知道之前是否出现过弹窗</li>
+</ol>
+<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/wecom-temp-6b81964660f8cc72ddce35358807a258.png" alt="wecom-temp-6b81964660f8cc72ddce35358807a258" style="zoom: 67%;" />
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+  </entry>
+  <entry>
     <title>IOS15导航栏透明的问题</title>
     <url>/article/c1c2dcc4.html</url>
     <content><![CDATA[<h4 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h4><p>当我写上以下代码时，导航栏看起来就是透明的</p>
@@ -78,43 +117,155 @@
       </categories>
   </entry>
   <entry>
-    <title>IOS中使用HealthKit获取步数、运动记录等数据</title>
-    <url>/article/6ac3e087.html</url>
-    <content><![CDATA[<p>在IOS中想要获取步数等信息，需要借助HealthKit，其本质上是从手机的健康App上获取数据。</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113143412355.png" alt="image-20211113143412355"></p>
-<blockquote>
-<p>只要用户授权了，你的App就可以读取和写入数据到健康App中</p>
-</blockquote>
-<h3 id="框架导入"><a href="#框架导入" class="headerlink" title="框架导入"></a>框架导入</h3><p>首先你需要引入HealthKit到你的项目中。</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113144305488.png" alt="image-20211113144305488"></p>
-<h3 id="授权文案"><a href="#授权文案" class="headerlink" title="授权文案"></a>授权文案</h3><p>另外需要在info.plist配置一下授权说明，否则请求授权时就会crash。</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150624316.png" alt="image-20211113150624316"></p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150736171.png" alt="image-20211113150736171"></p>
-<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113150832560.png" alt="image-20211113150832560" style="zoom: 33%;" />
+    <title>IOS中的hitTest和pointInside</title>
+    <url>/article/b9c88020.html</url>
+    <content><![CDATA[<h4 id="事件处理流程"><a href="#事件处理流程" class="headerlink" title="事件处理流程"></a>事件处理流程</h4><p>1.当用户点击屏幕时，会产生一个触摸事件，系统会将该事件加入到一个由UIApplication管理的事件队列中</p>
+<p>2.UIApplication会从事件队列中取出最前面的事件进行分发以便处理，通常，先发送事件给应用程序的主窗口(UIWindow)</p>
+<p>3.主窗口会调用hitTest:withEvent:方法在视图(UIView)层次结构中找到一个最合适的UIView来处理触摸事件<br> (hitTest:withEvent:其实是UIView的一个方法，UIWindow继承自UIView，因此主窗口UIWindow也是属于视图的一种)</p>
+<p>这个过程可以用下面的代码描述</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSString</span> *viewID;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> pointInside:point withEvent:event] == <span class="literal">NO</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSArray</span> *subviews = <span class="keyword">self</span>.subviews;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (<span class="keyword">int</span>)subviews.count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="built_in">UIView</span> *view = subviews[i];</span><br><span class="line">        <span class="built_in">CGPoint</span> viewPoint = [view convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">UIView</span> *hitSubview = [view hitTest:viewPoint withEvent:event];</span><br><span class="line">        <span class="keyword">if</span> (hitSubview) &#123;</span><br><span class="line">            <span class="keyword">return</span> hitSubview;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span>.bounds, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 
-<p>Apple提供了HKActivityRingView来绘制运动环，之前不知道，还自己画了一个😓</p>
-<h3 id="注意⚠️的问题"><a href="#注意⚠️的问题" class="headerlink" title="注意⚠️的问题"></a>注意⚠️的问题</h3><ol>
-<li>HealthKit在IOS13下有一个bug，会导致crash</li>
-</ol>
-<p><a href="https://developer.apple.com/forums/thread/693289">https://developer.apple.com/forums/thread/693289</a></p>
-<ol start="2">
-<li><p>获取授权状态应该在子线程做，因为其内部会wait semaphore，不然会导致卡顿</p>
-<p><img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211113161142489.png"></p>
-</li>
-<li><p>代码已同步Github</p>
-</li>
-</ol>
-<p><a href="https://github.com/jayying007/ios-kit/tree/master/healthkit">https://github.com/jayying007/ios-kit/tree/master/healthkit</a></p>
-<ol start="4">
-<li>HKActivityRingView的表示：在Apple自带的健身App中，数值是向下取整来表示的，但是环的绘制还是用原来的值（浮点数）</li>
-<li>无法通过系统API确认用户是否同意or拒绝授权，只能知道之前是否出现过弹窗</li>
-</ol>
-<img src="https://tx-img-1256061645.cos.ap-guangzhou.myqcloud.com/wecom-temp-6b81964660f8cc72ddce35358807a258.png" alt="wecom-temp-6b81964660f8cc72ddce35358807a258" style="zoom: 67%;" />
+<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h4><p>通过合理的重载在两个方法，可以实现一些特殊的效果。</p>
+<h5 id="1-扩大点击区域"><a href="#1-扩大点击区域" class="headerlink" title="1. 扩大点击区域"></a>1. 扩大点击区域</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UIEdgeInsets</span> touchInsets;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">CGRect</span> responsibleRect = <span class="built_in">CGRectMake</span>(-<span class="keyword">self</span>.touchInsets.left,</span><br><span class="line">                                        -<span class="keyword">self</span>.touchInsets.top,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.width + <span class="keyword">self</span>.touchInsets.left + <span class="keyword">self</span>.touchInsets.right,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.height + <span class="keyword">self</span>.touchInsets.top + <span class="keyword">self</span>.touchInsets.bottom);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(responsibleRect, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="2-子View超出父View部分仍可响应"><a href="#2-子View超出父View部分仍可响应" class="headerlink" title="2. 子View超出父View部分仍可响应"></a>2. 子View超出父View部分仍可响应</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">UIView</span> *view <span class="keyword">in</span> <span class="keyword">self</span>.subviews) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(view.frame, point))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
         <category>IOS</category>
       </categories>
+  </entry>
+  <entry>
+    <title>KVO&amp;KVOController及其原理</title>
+    <url>/article/efb0498b.html</url>
+    <content><![CDATA[<h3 id="KVO介绍"><a href="#KVO介绍" class="headerlink" title="KVO介绍"></a>KVO介绍</h3><p>KVO全名Key Value Observing，是一种通知机制，使得当某个Object的Property发生变化时，能够得到通知，它基于KVC实现。</p>
+<p>KVO一般代码实现分为三个步骤：</p>
+<span id="more"></span>
+
+<ul>
+<li>添加观察</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@implementation Person</span><br><span class="line">- (void)observeNTESStock &#123;</span><br><span class="line">    [self.stock addObserver:self forKeyPath:@&quot;price&quot; options:NSKeyValueObservingOptionNew context:nil];</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>添加回调</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context &#123;</span><br><span class="line">    // To Do Something···</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>移除观察</li>
+</ul>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">[<span class="keyword">self</span>.stock removeObserver:<span class="keyword">self</span> forKeyPath:<span class="string">@&quot;price&quot;</span>];</span><br></pre></td></tr></table></figure>
+
+<p>但是KVO在使用中也有一些问题：</p>
+<ol>
+<li><p>由于观察者可以观察多个键值，当观察的键值比较多的时候，在回调的方法中会存在大量的if语句去判断被观察者以及KeyPath</p>
+</li>
+<li><p>需要手动移除观察，操作不当容易Crash</p>
+</li>
+<li><p>可重复添加观察（导致多次回调），当移除观察方法 &gt; 添加观察方法的次数时，会crash</p>
+</li>
+<li><p>在多线程并发下，可能存在这样的问题：</p>
+<p>线程一：观察者正在执行dealloc方法，并且还未执行<code>removeObserver</code></p>
+<p>线程二：被观察对象的键值发现改变，触发了KVO的<code>observeValueForKeyPath</code>回调，但此时观察者已经变成野指针了</p>
+</li>
+</ol>
+<h3 id="KVOController介绍"><a href="#KVOController介绍" class="headerlink" title="KVOController介绍"></a>KVOController介绍</h3><p>KVOController是FaceBook开源的基于KVO封装的框架，提高了代码的可读性和安全性。下图是其在Github上的介绍：</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627190457920.png" alt="image-20210627190457920" style="zoom: 50%;" />
+
+<p>引入KVOController以后，键值观察的实现将变得非常简单。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@interface ViewController ()</span><br><span class="line">@property (nonatomic, strong) FBKVOController *KVOController;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation ViewController</span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    self.KVOController = [[FBKVOController alloc] initWithObserver:self];</span><br><span class="line">    Person *person = [[Person alloc] init];</span><br><span class="line">    [self.KVOController observe:person keyPath:@&quot;name&quot; options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary&lt;NSKeyValueChangeKey,id&gt; * _Nonnull change) &#123;</span><br><span class="line">        NSLog(@&quot;%@&quot;, change);</span><br><span class="line">    &#125;];</span><br><span class="line">    person.name = @&quot;Jane&quot;;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line">=====输出=====</span><br><span class="line">&#123;</span><br><span class="line">    FBKVONotificationKeyPathKey = name;</span><br><span class="line">    kind = 1;</span><br><span class="line">    new = Jane;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>KVOController提供了Block、Action、原生方法三种回调方法。</p>
+<p>KVOController也对NSObject做了category，动态绑定了KVOController属性，使用起来更方便。</p>
+<h3 id="KVOController源码分析"><a href="#KVOController源码分析" class="headerlink" title="KVOController源码分析"></a>KVOController源码分析</h3><p>KVOController的源码非常少，一共五个文件。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627192143311.png" alt="image-20210627192143311"></p>
+<p>NSObject+FBKVOController主要是动态增加了NSObject的两个属性，区别在于是否持有被观察对象的强引用，它们都采用了懒加载。</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">FBKVOController</span>)</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) FBKVOController *KVOController;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) FBKVOController *KVOControllerNonRetaining;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> *<span class="built_in">NSObjectKVOControllerKey</span> = &amp;<span class="built_in">NSObjectKVOControllerKey</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> *<span class="built_in">NSObjectKVOControllerNonRetainingKey</span> = &amp;<span class="built_in">NSObjectKVOControllerNonRetainingKey</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">NSObject</span> (<span class="title">FBKVOController</span>)</span></span><br><span class="line">- (FBKVOController *)KVOController</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">id</span> controller = objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerKey</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// lazily create the KVOController</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">nil</span> == controller) &#123;</span><br><span class="line">    controller = [FBKVOController controllerWithObserver:<span class="keyword">self</span>];</span><br><span class="line">    <span class="keyword">self</span>.KVOController = controller;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> controller;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setKVOController:(FBKVOController *)KVOController</span><br><span class="line">&#123;</span><br><span class="line">  objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerKey</span>, KVOController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (FBKVOController *)KVOControllerNonRetaining</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">id</span> controller = objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerNonRetainingKey</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">nil</span> == controller) &#123;</span><br><span class="line">    controller = [[FBKVOController alloc] initWithObserver:<span class="keyword">self</span> retainObserved:<span class="literal">NO</span>];</span><br><span class="line">    <span class="keyword">self</span>.KVOControllerNonRetaining = controller;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> controller;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setKVOControllerNonRetaining:(FBKVOController *)KVOControllerNonRetaining</span><br><span class="line">&#123;</span><br><span class="line">  objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerNonRetainingKey</span>, KVOControllerNonRetaining, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="初始化与销毁代码"><a href="#初始化与销毁代码" class="headerlink" title="初始化与销毁代码"></a>初始化与销毁代码</h4><p>FBKVOController内的属性<code>_objectInfosMap</code> 根据retainObserved是YES还是NO，在初始化时选择对Key值进行强引用还是弱引用。<code>_objectInfosMap</code>的Key记录了被观察者，Value记录了被观察者的所有FBKVOInfo集合。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627194253013.png" alt="image-20210627194253013"></p>
+<p>下图描述了KVOController和KVOInfo的关系：</p>
+<p>KVOController把观察的键值路径、回调block等信息封装到一个KVOInfo中，内部重写了hash和isEqual方法。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210819175158731.png" alt="image-20210819175158731"></p>
+<h4 id="添加观察者"><a href="#添加观察者" class="headerlink" title="添加观察者"></a>添加观察者</h4><p>这里以Block的为例。首先将参数封装到FBKVOInfo中，然后调用内部的_observe:info方法</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627210553489.png" alt="image-20210627210553489"></p>
+<p>内部的_observe:info方法，将FBKVOInfo加入到对应object的集合中。最后调用了_FBKVOSharedController的方法，这个FBKVOSharedController采用单例实现，所有的FBKVOController共享。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627210720980.png" alt="image-20210627210720980"></p>
+<p>在这里，可以看到调用了原生的addObserver方法了。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627211922146.png" alt="image-20210627211922146"></p>
+<p>Observer指定为self，所以当键值发生变化时，就会回调这个FBKVOSharedController里面的方法。这里会依次判断FBKVOInfo中是否有Block、Action、默认回调方法，选择一个执行。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627212422089-20210819235605531.png" alt="image-20210627212422089"></p>
+<p>使用了KVOController进行键值监听的，所有的回调都会回到KVOSharedController这个类中，然后在根据KVOInfo里面的信息进行转发。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/2017-03-06-KVOSharedController.png-1000width" alt="KVOSharedControlle"></p>
+<p>移除观察者的流程和上面类似，这里不再展开。</p>
+<h3 id="KVOController注意事项"><a href="#KVOController注意事项" class="headerlink" title="KVOController注意事项"></a>KVOController注意事项</h3><p>虽然KVOController已经修复了KVO的一些问题，但是如果用得不恰当，还是会有Crash发生。如果在dealloc中第一次调用了KVOController，就会导致Crash。</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">SecondViewController</span></span></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">  	<span class="comment">//模拟一种情况，满足某种条件时才使用KVOController</span></span><br><span class="line">    <span class="keyword">if</span>(arc4random_uniform(<span class="number">4</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>, <span class="keyword">self</span>.KVOController);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dealloc &#123;</span><br><span class="line">    [<span class="keyword">self</span>.KVOController unobserveAll];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>原因也比较简单，KVOController采用了懒加载，在init方法中会把当前对象赋值给其内部属性observer，但是当前对象已经到了dealloc的处理流程，无法赋值。</p>
+<p>不过一般也不需要在当前对象的dealloc方法中移除监听，因为KVOController的dealloc方法已经做了这样的处理。</p>
+<p>又比如当观察的对象是本身时，需要注意避免出现循环引用。</p>
+<h3 id="KVO的基本原理"><a href="#KVO的基本原理" class="headerlink" title="KVO的基本原理"></a>KVO的基本原理</h3><p>KVOController本质是对原有KVO的封装，那么原有KVO又是如何实现的呢？</p>
+<blockquote>
+<p>苹果文档中对其进行了描述：</p>
+<p>Automatic key-value observing is implemented using a technique called <em>isa-swizzling</em>.</p>
+<p>The <code>isa</code> pointer, as the name suggests, points to the object’s class which maintains a dispatch table. This dispatch table essentially contains pointers to the methods the class implements, among other data.</p>
+<p>When an observer is registered for an attribute of an object the isa pointer of the observed object is modified, pointing to an intermediate class rather than at the true class. As a result the value of the isa pointer does not necessarily reflect the actual class of the instance.</p>
+<p>You should never rely on the <code>isa</code> pointer to determine class membership. Instead, you should use the <code>class</code> method to determine the class of an object instance.</p>
+</blockquote>
+<p>当对象添加了KVO监听之后，系统会修改对象的isa指针，这个过程称为isa-swizzling。新isa指针指向的类是原来的子类，通过运行时机制生成，其中重写了set方法。set方法调用了 Fundation框架中C语言函数 _NSsetIntValueAndNotifyset，这个方法的大致调用逻辑为：调用willChangeValueForKey方法，然后调用原来的set方法，最后调用didChangeValueForKey。其中didChangeValueForKey方法内部调用了observeValueForKeyPath:ofObject:change:context:监听方法。</p>
+<p><strong>未添加KVO时</strong></p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/926.png" alt="img"></p>
+<p><strong>添加KVO之后</strong></p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1024.png" alt="img"></p>
+<p>下面通过代码调试来验证上面这个结论。</p>
+<p>创建一个Person类，里面只有一个age属性</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">int</span> age;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<p>代码中创建两个Person对象p1和p2。首先打印出未添加KVO之前的IMP指针，然后给p1添加KVO，再打印IMP指针。我们会看到，在添加KVO监听之后，p1的setAge方法的IMP已经变了。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628003922406.png" alt="image-20210628003922406"></p>
+<p>把这两个IMP打印出来，发现p1的已经变成了NSSetIntValueAndNotify。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628004138336.png" alt="image-20210628004138336"></p>
+<p>下面我们看一下p1指向的类是否已经改变，并查看该类的内部结构。</p>
+<p>可以看到，p1指向的类已经变为NSKVONotifying_Person，里面有四个方法。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628005405029.png" alt="image-20210628005405029"></p>
+<p>为什么有class方法，主要是为了对外屏蔽这个子类的存在。要取得真实的class类型，需要通过object_getClass的方式</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628005924792.png" alt="image-20210628005924792"></p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628010126761.png" alt="image-20210628010126761"></p>
+<p>下面验证didChangeValueForKey:内部会调用observer的observeValueForKeyPath:ofObject:change:context:方法</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628011008650.png" alt="image-20210628011008650"></p>
+<p>知道这个特点后，我们甚至可以在不更新属性的情况下调用KVO回调方法。不过我们一般不会直接这么做，而是先通过+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey置为NO，表示手动触发KVO。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628011343881-20210819235657211.png" alt="image-20210628011343881"></p>
+<h3 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h3><p>KVO位于Foundation框架中，而这部分代码苹果没有开源。不过我们可以参考GNU Step中的相关实现逻辑。</p>
+<p>GNU Step的代码可以从这里获取：<a href="https://github.com/gnustep/libs-base">https://github.com/gnustep/libs-base</a></p>
+<p>这里简单介绍一下其中的逻辑。如下图所示，A观察B中price的变化，C观察B中price和name的变化。KVO会为每一个对象关联一份GSKVOInfo，里面Key为属性名，Value为GSKVOPathInfo，GSKVOPathInfo内部包含一个GSKVOObservation构成的数组，里面弱引用着A和C。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210819200302952.png" alt="image-20210819200302952"></p>
+<p>当然，除了参考GNU Step里面的写法，我们也可以自己仿造写一个KVO。</p>
+<p>这里我写了一个例子：<a href="https://github.com/jayying007/demo-KVO">https://github.com/jayying007/demo-KVO</a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本篇介绍了KVO以及其实现原理，针对KVO在开发过程中的问题，介绍了更好的替代方式–采用KVOController。</p>
+<p>另外，对一些常见的问题我们也能解答：</p>
+<ul>
+<li><p>设置成员变量 _age，没有触发 setter 方法 ，也不会触发 KVO 相关的代码；</p>
+</li>
+<li><p>一个被声明为public的变量，而不是类的属性，只要其拥有对应的setter方法，也可以触发KVO；</p>
+</li>
+<li><p>当观察的键值比较复杂，比如Person的dog.name的时候，动态生成的类包含Person和Dog，即Person的dog属性和Dog的name属性变化时，都会触发KVO；</p>
+</li>
+<li><p>通过setValue:ForKey的方式也可以触发KVO，因为其逻辑就是找setXXX，_setXXX这些方法。</p>
+</li>
+</ul>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://mp.weixin.qq.com/s?__biz=MzUxODg0MzU2OQ==&mid=2247484301&idx=1&sn=14488ad70e79f5e9f91b026e47bbb13c&chksm=f983fe53cef47745ec9f768f4aff2e4e93d34083d4dd66da5fd18ce0ee44fc488df3a0ee12e5&token=1147085013&lang=zh_CN#rd">你的KVO用对了吗</a></p>
+<p><a href="https://github.com/facebookarchive/KVOController">KVOController源码</a></p>
+<p><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html">苹果官方KVO文档</a></p>
+<p><a href="https://draveness.me/kvocontroller/">如何优雅地使用KVO</a></p>
+<p><a href="https://blog.csdn.net/kyl282889543/article/details/93859511">KVO底层实现原理</a></p>
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+      <tags>
+        <tag>KVO</tag>
+      </tags>
   </entry>
   <entry>
     <title>IOS音频技术（一）Audio Session</title>
@@ -264,25 +415,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>IOS中的hitTest和pointInside</title>
-    <url>/article/b9c88020.html</url>
-    <content><![CDATA[<h4 id="事件处理流程"><a href="#事件处理流程" class="headerlink" title="事件处理流程"></a>事件处理流程</h4><p>1.当用户点击屏幕时，会产生一个触摸事件，系统会将该事件加入到一个由UIApplication管理的事件队列中</p>
-<p>2.UIApplication会从事件队列中取出最前面的事件进行分发以便处理，通常，先发送事件给应用程序的主窗口(UIWindow)</p>
-<p>3.主窗口会调用hitTest:withEvent:方法在视图(UIView)层次结构中找到一个最合适的UIView来处理触摸事件<br> (hitTest:withEvent:其实是UIView的一个方法，UIWindow继承自UIView，因此主窗口UIWindow也是属于视图的一种)</p>
-<p>这个过程可以用下面的代码描述</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSString</span> *viewID;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ([<span class="keyword">self</span> pointInside:point withEvent:event] == <span class="literal">NO</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSArray</span> *subviews = <span class="keyword">self</span>.subviews;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (<span class="keyword">int</span>)subviews.count - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="built_in">UIView</span> *view = subviews[i];</span><br><span class="line">        <span class="built_in">CGPoint</span> viewPoint = [view convertPoint:point fromView:<span class="keyword">self</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">UIView</span> *hitSubview = [view hitTest:viewPoint withEvent:event];</span><br><span class="line">        <span class="keyword">if</span> (hitSubview) &#123;</span><br><span class="line">            <span class="keyword">return</span> hitSubview;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@:%s&quot;</span>, <span class="keyword">self</span>.viewID, __func__);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(<span class="keyword">self</span>.bounds, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h4><p>通过合理的重载在两个方法，可以实现一些特殊的效果。</p>
-<h5 id="1-扩大点击区域"><a href="#1-扩大点击区域" class="headerlink" title="1. 扩大点击区域"></a>1. 扩大点击区域</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">JJView</span> : <span class="title">UIView</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UIEdgeInsets</span> touchInsets;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">JJView</span></span></span><br><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="built_in">CGRect</span> responsibleRect = <span class="built_in">CGRectMake</span>(-<span class="keyword">self</span>.touchInsets.left,</span><br><span class="line">                                        -<span class="keyword">self</span>.touchInsets.top,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.width + <span class="keyword">self</span>.touchInsets.left + <span class="keyword">self</span>.touchInsets.right,</span><br><span class="line">                                        <span class="keyword">self</span>.frame.size.height + <span class="keyword">self</span>.touchInsets.top + <span class="keyword">self</span>.touchInsets.bottom);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGRectContainsPoint</span>(responsibleRect, point);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h5 id="2-子View超出父View部分仍可响应"><a href="#2-子View超出父View部分仍可响应" class="headerlink" title="2. 子View超出父View部分仍可响应"></a>2. 子View超出父View部分仍可响应</h5><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">UIView</span> *view <span class="keyword">in</span> <span class="keyword">self</span>.subviews) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">CGRectContainsPoint</span>(view.frame, point))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>IOS</category>
-      </categories>
-  </entry>
-  <entry>
     <title>OC中的链式语法</title>
     <url>/article/d24c3138.html</url>
     <content><![CDATA[<h3 id="点语法"><a href="#点语法" class="headerlink" title="点语法"></a>点语法</h3><p>1.在OC中，访问对象的property时，可以使用点语法的方式访问</p>
@@ -324,155 +456,6 @@
       <categories>
         <category>IOS</category>
         <category>ObjC</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>KVO&amp;KVOController及其原理</title>
-    <url>/article/efb0498b.html</url>
-    <content><![CDATA[<h3 id="KVO介绍"><a href="#KVO介绍" class="headerlink" title="KVO介绍"></a>KVO介绍</h3><p>KVO全名Key Value Observing，是一种通知机制，使得当某个Object的Property发生变化时，能够得到通知，它基于KVC实现。</p>
-<p>KVO一般代码实现分为三个步骤：</p>
-<span id="more"></span>
-
-<ul>
-<li>添加观察</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@implementation Person</span><br><span class="line">- (void)observeNTESStock &#123;</span><br><span class="line">    [self.stock addObserver:self forKeyPath:@&quot;price&quot; options:NSKeyValueObservingOptionNew context:nil];</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>添加回调</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context &#123;</span><br><span class="line">    // To Do Something···</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>移除观察</li>
-</ul>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">[<span class="keyword">self</span>.stock removeObserver:<span class="keyword">self</span> forKeyPath:<span class="string">@&quot;price&quot;</span>];</span><br></pre></td></tr></table></figure>
-
-<p>但是KVO在使用中也有一些问题：</p>
-<ol>
-<li><p>由于观察者可以观察多个键值，当观察的键值比较多的时候，在回调的方法中会存在大量的if语句去判断被观察者以及KeyPath</p>
-</li>
-<li><p>需要手动移除观察，操作不当容易Crash</p>
-</li>
-<li><p>可重复添加观察（导致多次回调），当移除观察方法 &gt; 添加观察方法的次数时，会crash</p>
-</li>
-<li><p>在多线程并发下，可能存在这样的问题：</p>
-<p>线程一：观察者正在执行dealloc方法，并且还未执行<code>removeObserver</code></p>
-<p>线程二：被观察对象的键值发现改变，触发了KVO的<code>observeValueForKeyPath</code>回调，但此时观察者已经变成野指针了</p>
-</li>
-</ol>
-<h3 id="KVOController介绍"><a href="#KVOController介绍" class="headerlink" title="KVOController介绍"></a>KVOController介绍</h3><p>KVOController是FaceBook开源的基于KVO封装的框架，提高了代码的可读性和安全性。下图是其在Github上的介绍：</p>
-<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627190457920.png" alt="image-20210627190457920" style="zoom: 50%;" />
-
-<p>引入KVOController以后，键值观察的实现将变得非常简单。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@interface ViewController ()</span><br><span class="line">@property (nonatomic, strong) FBKVOController *KVOController;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation ViewController</span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    self.KVOController = [[FBKVOController alloc] initWithObserver:self];</span><br><span class="line">    Person *person = [[Person alloc] init];</span><br><span class="line">    [self.KVOController observe:person keyPath:@&quot;name&quot; options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary&lt;NSKeyValueChangeKey,id&gt; * _Nonnull change) &#123;</span><br><span class="line">        NSLog(@&quot;%@&quot;, change);</span><br><span class="line">    &#125;];</span><br><span class="line">    person.name = @&quot;Jane&quot;;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line">=====输出=====</span><br><span class="line">&#123;</span><br><span class="line">    FBKVONotificationKeyPathKey = name;</span><br><span class="line">    kind = 1;</span><br><span class="line">    new = Jane;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>KVOController提供了Block、Action、原生方法三种回调方法。</p>
-<p>KVOController也对NSObject做了category，动态绑定了KVOController属性，使用起来更方便。</p>
-<h3 id="KVOController源码分析"><a href="#KVOController源码分析" class="headerlink" title="KVOController源码分析"></a>KVOController源码分析</h3><p>KVOController的源码非常少，一共五个文件。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627192143311.png" alt="image-20210627192143311"></p>
-<p>NSObject+FBKVOController主要是动态增加了NSObject的两个属性，区别在于是否持有被观察对象的强引用，它们都采用了懒加载。</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">FBKVOController</span>)</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) FBKVOController *KVOController;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) FBKVOController *KVOControllerNonRetaining;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> *<span class="built_in">NSObjectKVOControllerKey</span> = &amp;<span class="built_in">NSObjectKVOControllerKey</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> *<span class="built_in">NSObjectKVOControllerNonRetainingKey</span> = &amp;<span class="built_in">NSObjectKVOControllerNonRetainingKey</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">NSObject</span> (<span class="title">FBKVOController</span>)</span></span><br><span class="line">- (FBKVOController *)KVOController</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">id</span> controller = objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerKey</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// lazily create the KVOController</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">nil</span> == controller) &#123;</span><br><span class="line">    controller = [FBKVOController controllerWithObserver:<span class="keyword">self</span>];</span><br><span class="line">    <span class="keyword">self</span>.KVOController = controller;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> controller;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setKVOController:(FBKVOController *)KVOController</span><br><span class="line">&#123;</span><br><span class="line">  objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerKey</span>, KVOController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (FBKVOController *)KVOControllerNonRetaining</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">id</span> controller = objc_getAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerNonRetainingKey</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span> (<span class="literal">nil</span> == controller) &#123;</span><br><span class="line">    controller = [[FBKVOController alloc] initWithObserver:<span class="keyword">self</span> retainObserved:<span class="literal">NO</span>];</span><br><span class="line">    <span class="keyword">self</span>.KVOControllerNonRetaining = controller;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> controller;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setKVOControllerNonRetaining:(FBKVOController *)KVOControllerNonRetaining</span><br><span class="line">&#123;</span><br><span class="line">  objc_setAssociatedObject(<span class="keyword">self</span>, <span class="built_in">NSObjectKVOControllerNonRetainingKey</span>, KVOControllerNonRetaining, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="初始化与销毁代码"><a href="#初始化与销毁代码" class="headerlink" title="初始化与销毁代码"></a>初始化与销毁代码</h4><p>FBKVOController内的属性<code>_objectInfosMap</code> 根据retainObserved是YES还是NO，在初始化时选择对Key值进行强引用还是弱引用。<code>_objectInfosMap</code>的Key记录了被观察者，Value记录了被观察者的所有FBKVOInfo集合。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627194253013.png" alt="image-20210627194253013"></p>
-<p>下图描述了KVOController和KVOInfo的关系：</p>
-<p>KVOController把观察的键值路径、回调block等信息封装到一个KVOInfo中，内部重写了hash和isEqual方法。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210819175158731.png" alt="image-20210819175158731"></p>
-<h4 id="添加观察者"><a href="#添加观察者" class="headerlink" title="添加观察者"></a>添加观察者</h4><p>这里以Block的为例。首先将参数封装到FBKVOInfo中，然后调用内部的_observe:info方法</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627210553489.png" alt="image-20210627210553489"></p>
-<p>内部的_observe:info方法，将FBKVOInfo加入到对应object的集合中。最后调用了_FBKVOSharedController的方法，这个FBKVOSharedController采用单例实现，所有的FBKVOController共享。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627210720980.png" alt="image-20210627210720980"></p>
-<p>在这里，可以看到调用了原生的addObserver方法了。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627211922146.png" alt="image-20210627211922146"></p>
-<p>Observer指定为self，所以当键值发生变化时，就会回调这个FBKVOSharedController里面的方法。这里会依次判断FBKVOInfo中是否有Block、Action、默认回调方法，选择一个执行。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627212422089-20210819235605531.png" alt="image-20210627212422089"></p>
-<p>使用了KVOController进行键值监听的，所有的回调都会回到KVOSharedController这个类中，然后在根据KVOInfo里面的信息进行转发。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/2017-03-06-KVOSharedController.png-1000width" alt="KVOSharedControlle"></p>
-<p>移除观察者的流程和上面类似，这里不再展开。</p>
-<h3 id="KVOController注意事项"><a href="#KVOController注意事项" class="headerlink" title="KVOController注意事项"></a>KVOController注意事项</h3><p>虽然KVOController已经修复了KVO的一些问题，但是如果用得不恰当，还是会有Crash发生。如果在dealloc中第一次调用了KVOController，就会导致Crash。</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">SecondViewController</span></span></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">  	<span class="comment">//模拟一种情况，满足某种条件时才使用KVOController</span></span><br><span class="line">    <span class="keyword">if</span>(arc4random_uniform(<span class="number">4</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;%@&quot;</span>, <span class="keyword">self</span>.KVOController);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dealloc &#123;</span><br><span class="line">    [<span class="keyword">self</span>.KVOController unobserveAll];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<p>原因也比较简单，KVOController采用了懒加载，在init方法中会把当前对象赋值给其内部属性observer，但是当前对象已经到了dealloc的处理流程，无法赋值。</p>
-<p>不过一般也不需要在当前对象的dealloc方法中移除监听，因为KVOController的dealloc方法已经做了这样的处理。</p>
-<p>又比如当观察的对象是本身时，需要注意避免出现循环引用。</p>
-<h3 id="KVO的基本原理"><a href="#KVO的基本原理" class="headerlink" title="KVO的基本原理"></a>KVO的基本原理</h3><p>KVOController本质是对原有KVO的封装，那么原有KVO又是如何实现的呢？</p>
-<blockquote>
-<p>苹果文档中对其进行了描述：</p>
-<p>Automatic key-value observing is implemented using a technique called <em>isa-swizzling</em>.</p>
-<p>The <code>isa</code> pointer, as the name suggests, points to the object’s class which maintains a dispatch table. This dispatch table essentially contains pointers to the methods the class implements, among other data.</p>
-<p>When an observer is registered for an attribute of an object the isa pointer of the observed object is modified, pointing to an intermediate class rather than at the true class. As a result the value of the isa pointer does not necessarily reflect the actual class of the instance.</p>
-<p>You should never rely on the <code>isa</code> pointer to determine class membership. Instead, you should use the <code>class</code> method to determine the class of an object instance.</p>
-</blockquote>
-<p>当对象添加了KVO监听之后，系统会修改对象的isa指针，这个过程称为isa-swizzling。新isa指针指向的类是原来的子类，通过运行时机制生成，其中重写了set方法。set方法调用了 Fundation框架中C语言函数 _NSsetIntValueAndNotifyset，这个方法的大致调用逻辑为：调用willChangeValueForKey方法，然后调用原来的set方法，最后调用didChangeValueForKey。其中didChangeValueForKey方法内部调用了observeValueForKeyPath:ofObject:change:context:监听方法。</p>
-<p><strong>未添加KVO时</strong></p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/926.png" alt="img"></p>
-<p><strong>添加KVO之后</strong></p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1024.png" alt="img"></p>
-<p>下面通过代码调试来验证上面这个结论。</p>
-<p>创建一个Person类，里面只有一个age属性</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">int</span> age;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<p>代码中创建两个Person对象p1和p2。首先打印出未添加KVO之前的IMP指针，然后给p1添加KVO，再打印IMP指针。我们会看到，在添加KVO监听之后，p1的setAge方法的IMP已经变了。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628003922406.png" alt="image-20210628003922406"></p>
-<p>把这两个IMP打印出来，发现p1的已经变成了NSSetIntValueAndNotify。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628004138336.png" alt="image-20210628004138336"></p>
-<p>下面我们看一下p1指向的类是否已经改变，并查看该类的内部结构。</p>
-<p>可以看到，p1指向的类已经变为NSKVONotifying_Person，里面有四个方法。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628005405029.png" alt="image-20210628005405029"></p>
-<p>为什么有class方法，主要是为了对外屏蔽这个子类的存在。要取得真实的class类型，需要通过object_getClass的方式</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628005924792.png" alt="image-20210628005924792"></p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628010126761.png" alt="image-20210628010126761"></p>
-<p>下面验证didChangeValueForKey:内部会调用observer的observeValueForKeyPath:ofObject:change:context:方法</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628011008650.png" alt="image-20210628011008650"></p>
-<p>知道这个特点后，我们甚至可以在不更新属性的情况下调用KVO回调方法。不过我们一般不会直接这么做，而是先通过+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey置为NO，表示手动触发KVO。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628011343881-20210819235657211.png" alt="image-20210628011343881"></p>
-<h3 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h3><p>KVO位于Foundation框架中，而这部分代码苹果没有开源。不过我们可以参考GNU Step中的相关实现逻辑。</p>
-<p>GNU Step的代码可以从这里获取：<a href="https://github.com/gnustep/libs-base">https://github.com/gnustep/libs-base</a></p>
-<p>这里简单介绍一下其中的逻辑。如下图所示，A观察B中price的变化，C观察B中price和name的变化。KVO会为每一个对象关联一份GSKVOInfo，里面Key为属性名，Value为GSKVOPathInfo，GSKVOPathInfo内部包含一个GSKVOObservation构成的数组，里面弱引用着A和C。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210819200302952.png" alt="image-20210819200302952"></p>
-<p>当然，除了参考GNU Step里面的写法，我们也可以自己仿造写一个KVO。</p>
-<p>这里我写了一个例子：<a href="https://github.com/jayying007/demo-KVO">https://github.com/jayying007/demo-KVO</a></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本篇介绍了KVO以及其实现原理，针对KVO在开发过程中的问题，介绍了更好的替代方式–采用KVOController。</p>
-<p>另外，对一些常见的问题我们也能解答：</p>
-<ul>
-<li><p>设置成员变量 _age，没有触发 setter 方法 ，也不会触发 KVO 相关的代码；</p>
-</li>
-<li><p>一个被声明为public的变量，而不是类的属性，只要其拥有对应的setter方法，也可以触发KVO；</p>
-</li>
-<li><p>当观察的键值比较复杂，比如Person的dog.name的时候，动态生成的类包含Person和Dog，即Person的dog属性和Dog的name属性变化时，都会触发KVO；</p>
-</li>
-<li><p>通过setValue:ForKey的方式也可以触发KVO，因为其逻辑就是找setXXX，_setXXX这些方法。</p>
-</li>
-</ul>
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://mp.weixin.qq.com/s?__biz=MzUxODg0MzU2OQ==&mid=2247484301&idx=1&sn=14488ad70e79f5e9f91b026e47bbb13c&chksm=f983fe53cef47745ec9f768f4aff2e4e93d34083d4dd66da5fd18ce0ee44fc488df3a0ee12e5&token=1147085013&lang=zh_CN#rd">你的KVO用对了吗</a></p>
-<p><a href="https://github.com/facebookarchive/KVOController">KVOController源码</a></p>
-<p><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html">苹果官方KVO文档</a></p>
-<p><a href="https://draveness.me/kvocontroller/">如何优雅地使用KVO</a></p>
-<p><a href="https://blog.csdn.net/kyl282889543/article/details/93859511">KVO底层实现原理</a></p>
-]]></content>
-      <categories>
-        <category>IOS</category>
-      </categories>
-      <tags>
-        <tag>KVO</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>UISwitch在IOS12下的Bug</title>
-    <url>/article/c78e4670.html</url>
-    <content><![CDATA[<h4 id="重现方式"><a href="#重现方式" class="headerlink" title="重现方式"></a>重现方式</h4><p>在UISwitch的ValueChange事件中，修改UISwitch的on属性。</p>
-<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UISwitch</span> *oSwitch;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    <span class="keyword">self</span>.view.backgroundColor = <span class="built_in">UIColor</span>.whiteColor;</span><br><span class="line">    </span><br><span class="line">    _oSwitch = [[<span class="built_in">UISwitch</span> alloc] initWithFrame:<span class="built_in">CGRectMake</span>(<span class="number">50</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">60</span>)];</span><br><span class="line">    [<span class="keyword">self</span>.view addSubview:_oSwitch];</span><br><span class="line">    [_oSwitch addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(valueChange:) forControlEvents:<span class="built_in">UIControlEventValueChanged</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    oSwitch.on = !oSwitch.on;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2021-12-01 20:21:31.674948+0800 demo-switch[56902:576481] change</span><br><span class="line">2021-12-01 20:21:31.675095+0800 demo-switch[56902:576481] change</span><br></pre></td></tr></table></figure>
-
-<p>点击开关切换，可以看到valueChange方法被调用了两次！！</p>
-<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>把UISwitch中on属性的修改放到下一个Runloop中</p>
-<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        oSwitch.on = !oSwitch.on;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>IOS</category>
       </categories>
   </entry>
   <entry>
@@ -641,6 +624,23 @@
       </categories>
   </entry>
   <entry>
+    <title>UISwitch在IOS12下的Bug</title>
+    <url>/article/c78e4670.html</url>
+    <content><![CDATA[<h4 id="重现方式"><a href="#重现方式" class="headerlink" title="重现方式"></a>重现方式</h4><p>在UISwitch的ValueChange事件中，修改UISwitch的on属性。</p>
+<h4 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h4><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UISwitch</span> *oSwitch;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    <span class="keyword">self</span>.view.backgroundColor = <span class="built_in">UIColor</span>.whiteColor;</span><br><span class="line">    </span><br><span class="line">    _oSwitch = [[<span class="built_in">UISwitch</span> alloc] initWithFrame:<span class="built_in">CGRectMake</span>(<span class="number">50</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="number">60</span>)];</span><br><span class="line">    [<span class="keyword">self</span>.view addSubview:_oSwitch];</span><br><span class="line">    [_oSwitch addTarget:<span class="keyword">self</span> action:<span class="keyword">@selector</span>(valueChange:) forControlEvents:<span class="built_in">UIControlEventValueChanged</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    oSwitch.on = !oSwitch.on;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">2021-12-01 20:21:31.674948+0800 demo-switch[56902:576481] change</span><br><span class="line">2021-12-01 20:21:31.675095+0800 demo-switch[56902:576481] change</span><br></pre></td></tr></table></figure>
+
+<p>点击开关切换，可以看到valueChange方法被调用了两次！！</p>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><p>把UISwitch中on属性的修改放到下一个Runloop中</p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)valueChange:(<span class="built_in">UISwitch</span> *)oSwitch &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;change&quot;</span>);</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        oSwitch.on = !oSwitch.on;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>IOS</category>
+      </categories>
+  </entry>
+  <entry>
     <title>ios自定义转场动画</title>
     <url>/article/906405e8.html</url>
     <content><![CDATA[<p>最近工作需要对转场时导航栏做样式变化，在网上找到一个对于转场来说不错的教程。</p>
@@ -744,30 +744,6 @@
       </tags>
   </entry>
   <entry>
-    <title>二分查找</title>
-    <url>/article/e8eb0481.html</url>
-    <content><![CDATA[<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>二分查找，又称折半查找。顾名思义，就是在一堆<strong>有序排列</strong>的元素中查找某一指定数值。返回数值对应的下标或-1（查不到）。</p>
-<h2 id="场景模拟"><a href="#场景模拟" class="headerlink" title="场景模拟"></a>场景模拟</h2><p>看其他文章都是千篇一律的猜数字，我们换一换风格，来猜一猜价格吧。这不是一样的吗？</p>
-<p>比如说现在让你猜一件商品的价格，已知商品的价格在1-1000元之间，且为整数，现在让你尽快猜中商品的价格，你要怎么做呢？（你每猜一个价格，都能得知这个价格与正确价格相比是相同的，还是小了或大了）</p>
-<p>鲁莽的方法：从1元开始猜到1000元，总会猜到的。运气好的话，价格刚好是1元，猜一次就中了。运气不好的话，价格是1000元，要猜1000次才能猜中。</p>
-<p><strong>这种方法其实没有充分利用猜价格得到的反馈信息，即从1元开始猜到1000元的过程中，你得到的反馈只有正确或者小了，绝对不会出现大了。</strong></p>
-<p>睿智的方法：既然价格在1元到1000元之间，那我就猜500元，即（1+1000）/2。这时可能的反馈信息分别有</p>
-<p>比正确价格小：这样我们就知道商品的价格不在1元到500元之间，而是在501元到1000元之间。</p>
-<p>与正确价格相同：即我们猜中了，所以就直接返回这个结果就可以了。</p>
-<p>比正确价格大：所以商品价格不在500元到1000元之间，而是在1元到499元之间。</p>
-<p><strong>不难看出，只经过一次猜测，可能猜中或者把猜测范围缩小一半。后面用同样的方式猜测，则又可以将猜测范围缩小一半。</strong>这个不就是递归吗？虽然用循环也可以做</p>
-<p><strong>用二分查找的时间复杂度为O（logN）</strong></p>
-<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="keyword">int</span>&gt; arr,<span class="keyword">int</span> aim)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 参数说明：arr即查找的容器序列，aim为需要查找的元素</span></span><br><span class="line"><span class="comment">     * 要求：arr容器需保证元素升序</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> left=<span class="number">0</span>,right=arr.<span class="built_in">size</span>()<span class="number">-1</span>,mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span>(left&lt;=right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid]&lt;aim)&#123;</span><br><span class="line">            left=mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]==aim)&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;找到了&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]&gt;aim)&#123;</span><br><span class="line">            right=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;找不到&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; arr;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">        arr.<span class="built_in">push_back</span>(i*<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">binarySearch</span>(arr,<span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>二分</tag>
-        <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>k-means算法</title>
     <url>/article/9984e5c8.html</url>
     <content><![CDATA[<h5 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h5><p>据说是机器学习中最简单的一种方法，属于<strong>非监督学习</strong>这一类。通俗一点讲，给机器一堆数据，告诉机器要分成多少种类别，然后机器就根据算法进行各种操作。</p>
@@ -789,6 +765,30 @@
       <tags>
         <tag>机器学习</tag>
         <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>二分查找</title>
+    <url>/article/e8eb0481.html</url>
+    <content><![CDATA[<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>二分查找，又称折半查找。顾名思义，就是在一堆<strong>有序排列</strong>的元素中查找某一指定数值。返回数值对应的下标或-1（查不到）。</p>
+<h2 id="场景模拟"><a href="#场景模拟" class="headerlink" title="场景模拟"></a>场景模拟</h2><p>看其他文章都是千篇一律的猜数字，我们换一换风格，来猜一猜价格吧。这不是一样的吗？</p>
+<p>比如说现在让你猜一件商品的价格，已知商品的价格在1-1000元之间，且为整数，现在让你尽快猜中商品的价格，你要怎么做呢？（你每猜一个价格，都能得知这个价格与正确价格相比是相同的，还是小了或大了）</p>
+<p>鲁莽的方法：从1元开始猜到1000元，总会猜到的。运气好的话，价格刚好是1元，猜一次就中了。运气不好的话，价格是1000元，要猜1000次才能猜中。</p>
+<p><strong>这种方法其实没有充分利用猜价格得到的反馈信息，即从1元开始猜到1000元的过程中，你得到的反馈只有正确或者小了，绝对不会出现大了。</strong></p>
+<p>睿智的方法：既然价格在1元到1000元之间，那我就猜500元，即（1+1000）/2。这时可能的反馈信息分别有</p>
+<p>比正确价格小：这样我们就知道商品的价格不在1元到500元之间，而是在501元到1000元之间。</p>
+<p>与正确价格相同：即我们猜中了，所以就直接返回这个结果就可以了。</p>
+<p>比正确价格大：所以商品价格不在500元到1000元之间，而是在1元到499元之间。</p>
+<p><strong>不难看出，只经过一次猜测，可能猜中或者把猜测范围缩小一半。后面用同样的方式猜测，则又可以将猜测范围缩小一半。</strong>这个不就是递归吗？虽然用循环也可以做</p>
+<p><strong>用二分查找的时间复杂度为O（logN）</strong></p>
+<h2 id="代码模板"><a href="#代码模板" class="headerlink" title="代码模板"></a>代码模板</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">binarySearch</span><span class="params">(vector&lt;<span class="keyword">int</span>&gt; arr,<span class="keyword">int</span> aim)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 参数说明：arr即查找的容器序列，aim为需要查找的元素</span></span><br><span class="line"><span class="comment">     * 要求：arr容器需保证元素升序</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">int</span> left=<span class="number">0</span>,right=arr.<span class="built_in">size</span>()<span class="number">-1</span>,mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">while</span>(left&lt;=right)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[mid]&lt;aim)&#123;</span><br><span class="line">            left=mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]==aim)&#123;</span><br><span class="line">            cout&lt;&lt;<span class="string">&quot;找到了&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(arr[mid]&gt;aim)&#123;</span><br><span class="line">            right=mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mid=(left+right)/<span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;找不到&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; arr;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">        arr.<span class="built_in">push_back</span>(i*<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">binarySearch</span>(arr,<span class="number">7</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>二分</tag>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -825,50 +825,6 @@
 ]]></content>
       <categories>
         <category>其他</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>分享一道算法设计题</title>
-    <url>/article/b7f4376e.html</url>
-    <content><![CDATA[<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>有一个函数rand()能生成1-65536之间的整数，利用这个函数，让30万人中有5万人中奖，要求保证公平（即每个人的中奖几率一样）。</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<p>|</p>
-<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="首先解决如何做到30万人抽出5万人，还保证公平。"><a href="#首先解决如何做到30万人抽出5万人，还保证公平。" class="headerlink" title="首先解决如何做到30万人抽出5万人，还保证公平。"></a>首先解决如何做到30万人抽出5万人，还保证公平。</h4><p>假设能实现一个函数randX()，他能返回1-30万之间的整数，那么我可以制定一个策略，从随机到的数向后取5万个。如下图所示</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472709130-4d0d4a54-46a1-45e5-8322-ba832fddb6de.png" alt="img"></p>
-<p>当后面不足5万个时，从头部补一些</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472845433-aba9cff7-fe04-49b4-90e2-cb071439853b.png" alt="img"></p>
-<p>这种方式真的能保证公平吗，让我们来验证一下</p>
-<p>每个人的中奖概率为 5万/30万 = 1/6</p>
-<p>上面的这种方法，红色部分共有30万种可能（初始位置从1-30万），而每一个位置，比如5万这个位置，红色部分共有5万种可能会覆盖到这个数，所以这个位置被选到的概率也是 5万/30万 = 1/6</p>
-<h4 id="现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平"><a href="#现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平" class="headerlink" title="现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平"></a>现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平</h4><p>一个错误方式是将rand() * (300000/65536)，这种方式虽然能得到1-300000之间的整数，但是有些数却永远取不到。</p>
-<p>rand()=1时，rand()*(300000/65536)=4.5776,那么无论如何你就取不到1，2，3了</p>
-<p>那么该如何解决呢？一种方法是分区间</p>
-<p>比如把30万划分为5个一样大的区别，每个区间只有6万</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615474782637-741cfe45-dcba-4c01-86b4-8ae1910a1c29.jpeg" alt="img"></p>
-<p>我们先随机取1-5之间的数，从而确定在那个区间取。</p>
-<p>一个区间只有6万，所以我们可以用rand()来取1-6万之间的整数了，最后加上区间起始位置的数就可以了。</p>
-<p>这样就没问题了吗？</p>
-<p>其实如果选择不慎，还是不公平的。</p>
-<p>比如一个能生成1-10随机数的函数rand，用它来生成1-4的随机数，如果写成rand%4+1，那结果就是错的。</p>
-<p>我们可以列出所有计算的可能情况</p>
-<p>生成1: 1 5 9</p>
-<p>生成2: 2 6 10</p>
-<p>生成3: 3 7</p>
-<p>生成4: 4 8</p>
-<p>可见生成不同随机数的概率其实是不一样的，生成1的概率是十分之三，生成4的概率是十分之二。</p>
-<p>要实现一个公平的随机数生成器，需要保证生成的最大数为原来随机器最大数的因数。比如1-10对应能制造生成1-2和1-5两种随机器，且保证公平。</p>
-<p>而针对上面这种情况，我们能做的是拒绝采样（reject sampling），当得到的数为9或10时，让它重新生成一个随机数直到满足条件。</p>
-<p>对于本文的题，65536的因数都是2的指数次幂，而30万不是，所以也只能采用拒绝采样的方法。</p>
-]]></content>
-      <categories>
-        <category>算法</category>
       </categories>
   </entry>
   <entry>
@@ -919,6 +875,50 @@
         <tag>分布式</tag>
         <tag>消息表</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>分享一道算法设计题</title>
+    <url>/article/b7f4376e.html</url>
+    <content><![CDATA[<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>有一个函数rand()能生成1-65536之间的整数，利用这个函数，让30万人中有5万人中奖，要求保证公平（即每个人的中奖几率一样）。</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<p>|</p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="首先解决如何做到30万人抽出5万人，还保证公平。"><a href="#首先解决如何做到30万人抽出5万人，还保证公平。" class="headerlink" title="首先解决如何做到30万人抽出5万人，还保证公平。"></a>首先解决如何做到30万人抽出5万人，还保证公平。</h4><p>假设能实现一个函数randX()，他能返回1-30万之间的整数，那么我可以制定一个策略，从随机到的数向后取5万个。如下图所示</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472709130-4d0d4a54-46a1-45e5-8322-ba832fddb6de.png" alt="img"></p>
+<p>当后面不足5万个时，从头部补一些</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615472845433-aba9cff7-fe04-49b4-90e2-cb071439853b.png" alt="img"></p>
+<p>这种方式真的能保证公平吗，让我们来验证一下</p>
+<p>每个人的中奖概率为 5万/30万 = 1/6</p>
+<p>上面的这种方法，红色部分共有30万种可能（初始位置从1-30万），而每一个位置，比如5万这个位置，红色部分共有5万种可能会覆盖到这个数，所以这个位置被选到的概率也是 5万/30万 = 1/6</p>
+<h4 id="现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平"><a href="#现在问题转为如何设计一个randX-，使其返回1-30万之间的整数，且公平" class="headerlink" title="现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平"></a>现在问题转为如何设计一个randX()，使其返回1-30万之间的整数，且公平</h4><p>一个错误方式是将rand() * (300000/65536)，这种方式虽然能得到1-300000之间的整数，但是有些数却永远取不到。</p>
+<p>rand()=1时，rand()*(300000/65536)=4.5776,那么无论如何你就取不到1，2，3了</p>
+<p>那么该如何解决呢？一种方法是分区间</p>
+<p>比如把30万划分为5个一样大的区别，每个区间只有6万</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1615474782637-741cfe45-dcba-4c01-86b4-8ae1910a1c29.jpeg" alt="img"></p>
+<p>我们先随机取1-5之间的数，从而确定在那个区间取。</p>
+<p>一个区间只有6万，所以我们可以用rand()来取1-6万之间的整数了，最后加上区间起始位置的数就可以了。</p>
+<p>这样就没问题了吗？</p>
+<p>其实如果选择不慎，还是不公平的。</p>
+<p>比如一个能生成1-10随机数的函数rand，用它来生成1-4的随机数，如果写成rand%4+1，那结果就是错的。</p>
+<p>我们可以列出所有计算的可能情况</p>
+<p>生成1: 1 5 9</p>
+<p>生成2: 2 6 10</p>
+<p>生成3: 3 7</p>
+<p>生成4: 4 8</p>
+<p>可见生成不同随机数的概率其实是不一样的，生成1的概率是十分之三，生成4的概率是十分之二。</p>
+<p>要实现一个公平的随机数生成器，需要保证生成的最大数为原来随机器最大数的因数。比如1-10对应能制造生成1-2和1-5两种随机器，且保证公平。</p>
+<p>而针对上面这种情况，我们能做的是拒绝采样（reject sampling），当得到的数为9或10时，让它重新生成一个随机数直到满足条件。</p>
+<p>对于本文的题，65536的因数都是2的指数次幂，而30万不是，所以也只能采用拒绝采样的方法。</p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
   </entry>
   <entry>
     <title>字典树</title>
@@ -999,67 +999,6 @@
         <tag>定时</tag>
         <tag>RunLoop</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>快速幂</title>
-    <url>/article/20c47d09.html</url>
-    <content><![CDATA[<p>​    今天介绍一个在中低难度算法竞赛中经常碰到的算法—快速幂，于此相匹配的还有一个叫矩阵快速幂的东西。不过这篇文章只介绍快速幂，矩阵快速幂只是把两个数的乘法换成两个矩阵的乘法而已。</p>
-<p>快速幂，顾名思义，就是快速求解某一个数的指数次方结果为多少。</p>
-<h2 id="普通求解"><a href="#普通求解" class="headerlink" title="普通求解"></a>普通求解</h2><p>如让你求2^5次方，你可以很快计算出结果为2*2*2*2*2=32。</p>
-<blockquote>
-<p>这种方式在计算机中可以使用pow函数解决，即pow（2,5）=32。引入头文件cmath就行了，当然你也可以手写。</p>
-</blockquote>
-<p>pow函数的实现方式大致如下</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="function">ll <span class="title">pow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b--)&#123;</span><br><span class="line">        d=d*a%c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>不难看出，这种计算方式的速度是由b决定的，即时间复杂度为O（b），而如果b很大的，那就超时了啊！</strong></p>
-<hr>
-<h2 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h2><p>下面就进入本节的主要内容，用快速幂求解，这其实是对二进制的巧妙使用。</p>
-<p>讲一个例子，现在要求3^11，按上述方法需要计算11次，但快速幂可以将求3^11简化为(3^8)<em>(3^2)</em>(3^1)，这样就只计算了3次，其实总共比较了4次，往下看就懂了。</p>
-<p>来一波分析：</p>
-<ol>
-<li>将指数11转化为二进制，即00…001011（32位，前面的0我就省略不写了，太多容易看乱）</li>
-<li>从右到左开始，32位的01串我们在下面给它们一个数值标识，从3^1开始，以平方的方式不断递增，如下面的表格所示（注意只给出最后边的6位，int类型总共应该有32位） </li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>0</th>
-<th>0</th>
-<th>1</th>
-<th>0</th>
-<th>1</th>
-<th>1</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>3^32</td>
-<td>3^16</td>
-<td>3^8</td>
-<td>3^4</td>
-<td>3^2</td>
-<td>3^1</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p> 其实下面的指数也可以有另外一种方式理解，即当前位置的1表示十进制的哪个数，指数就是哪个。</p>
-</blockquote>
-<p>所以下面的操作就很简单了，3^11=3^(8+2+1)，为什么要拆成这几个数呢，因为他们就是11转成二进制后，对应的1的位置数值的表示啊（上面的表格），而这些位置的1代表的数加起来就是11. </p>
-<p>那么计算的思路就是，读取11的二进制数，若该位置为1，就乘上该位置所代表的数，若为0则不作处理。</p>
-<p><strong>时间复杂度从O(N)降到了O(logN)</strong></p>
-<blockquote>
-<p>具体方法：将11与1做按位与位运算，若结果为1，说明11二进制最后的数为1，所以乘上。</p>
-<p>然后下一步我们让11做右移位运算，即将32个01集体往右移动1位，这时最左侧会补上0，而最右侧的1已经不见了。相当于继续比较下一位，若当前数值为0，即二进制32个都为0，说明已经没有1了，就可以结束循环。</p>
-</blockquote>
-<h2 id="具体的代码实现"><a href="#具体的代码实现" class="headerlink" title="具体的代码实现"></a>具体的代码实现</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">quickPow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)&#123;</span><br><span class="line">            d=d*a%c;</span><br><span class="line">        &#125;</span><br><span class="line">        a=a*a%c;<span class="comment">//更新当前位置代表的数</span></span><br><span class="line">        b=b&gt;&gt;<span class="number">1</span>;<span class="comment">//右移1位</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;10的1亿次方mod3的结果为: &quot;</span>&lt;&lt;<span class="built_in">quickPow</span>(<span class="number">10</span>,<span class="number">1e9</span>,<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="矩阵快速幂"><a href="#矩阵快速幂" class="headerlink" title="矩阵快速幂"></a>矩阵快速幂</h2><p>这里放一下矩阵快速幂的模板</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">typedef long long ll;</span><br><span class="line">const int mod=1e9+7;</span><br><span class="line">const int MaxN=105;//矩阵大小</span><br><span class="line">struct Mat&#123;</span><br><span class="line">    ll m[MaxN][MaxN];</span><br><span class="line">&#125;ans,a;//结果与输入矩阵</span><br><span class="line">Mat Mul(Mat a,Mat b,int n)&#123;</span><br><span class="line">    Mat c;</span><br><span class="line">    memset(c.m,0,sizeof(c.m));</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        <span class="keyword">for</span>(int j=1;j&lt;=n;j++)</span><br><span class="line">            <span class="keyword">for</span>(int k=1;k&lt;=n;k++)</span><br><span class="line">                c.m[i][j]=(c.m[i][j]+(a.m[i][k]*b.m[k][j])%mod)%mod;</span><br><span class="line">    <span class="built_in">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line">Mat _power(Mat a,ll b,int n)&#123;</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        ans.m[i][i]=1;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;1)</span><br><span class="line">            ans=Mul(ans,a,n);</span><br><span class="line">        a=Mul(a,a,n);</span><br><span class="line">        b&gt;&gt;=1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
   </entry>
   <entry>
     <title>数字音频技术介绍</title>
@@ -1217,29 +1156,6 @@
       </tags>
   </entry>
   <entry>
-    <title>神秘的RSS</title>
-    <url>/article/c4687954.html</url>
-    <content><![CDATA[<p>春节放假时偶然间搜到RSS这个玩意，闲来无事，就稍微研究了一下。</p>
-<p>我本人是不大喜欢手机上装一大堆App的，但我又想知道外界发生了什么事情。所以我一直用“今日热榜“这款App来跟踪一些热新闻。</p>
-<blockquote>
-<p>在iPhone上，需要用一个外国区的账号，才能在App Store上搜到这个App，国内由于一些不可抗拒的原因被下线了。</p>
-</blockquote>
-<h3 id="RSS简介"><a href="#RSS简介" class="headerlink" title="RSS简介"></a>RSS简介</h3><p>RSS其实跟我上面提到的那款App很类似，不过借助一些插件，可以抓取到更细节的一些信息。</p>
-<p>我不打算详细介绍，这里有篇<a href="https://zhuanlan.zhihu.com/p/349349861">不错的文章</a></p>
-<h3 id="RSS原理浅析"><a href="#RSS原理浅析" class="headerlink" title="RSS原理浅析"></a>RSS原理浅析</h3><p>看阮一峰的两个RSS源，其实就是一些Xml数据。</p>
-<p><a href="https://feeds.feedburner.com/ruanyifeng">https://feeds.feedburner.com/ruanyifeng</a></p>
-<p><a href="https://www.ruanyifeng.com/blog/atom.xml">https://www.ruanyifeng.com/blog/atom.xml</a></p>
-<p>只要知道这个Xml的结构，我们完全可以自己写一个RSS阅读器，甚至不需要自己做内容渲染，内嵌一个WebView即可。</p>
-<p>从这里也可以看出，我们不在乎RSS源是从哪里来的，只要它能返回Xml数据就行，于是就有了RSSHub这样的中间人。</p>
-<h3 id="RSSHub"><a href="#RSSHub" class="headerlink" title="RSSHub"></a>RSSHub</h3><p>RSSHub官网被墙了，我很诧异。不过自己搭建难度也不高，比如我这个博客就部署了RSSHub，<a href="http://www.zhuangjieying.com:1200/">http://www.zhuangjieying.com:1200</a></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">用docker真的很方便</span></span><br><span class="line">sudo docker run -d --name rsshub -p 1200:1200 -e CACHE_EXPIRE=3600 diygod/rsshub</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>一开始我以为RSSHub是爬取了对应网站的数据，然后请求时再拼接成Xml返回给我们。<br>但我试了订阅Bilibili的视频评论，发现它其实是调用了Bilibili的API。<br>例如这个：<a href="https://api.bilibili.com/x/v2/reply?type=1&amp;oid=BV1L24y1z7sw&amp;sort=0">https://api.bilibili.com/x/v2/reply?type=1&amp;oid=BV1L24y1z7sw&amp;sort=0</a></p>
-<p>当然，应该不一定有那么多网站有这种开放能力，所以RSSHub应该是用了各种不同的抓取策略。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>简述垃圾回收算法</title>
     <url>/article/5105b6f3.html</url>
     <content><![CDATA[<h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>垃圾回收(Garbage Collection),简称GC,主要是对那些已经分配的空间进行回收利用,实现再分配.</p>
@@ -1350,6 +1266,79 @@
       </tags>
   </entry>
   <entry>
+    <title>神秘的RSS</title>
+    <url>/article/c4687954.html</url>
+    <content><![CDATA[<p>春节放假时偶然间搜到RSS这个玩意，闲来无事，就稍微研究了一下。</p>
+<p>我本人是不大喜欢手机上装一大堆App的，但我又想知道外界发生了什么事情。所以我一直用“今日热榜“这款App来跟踪一些热新闻。</p>
+<blockquote>
+<p>在iPhone上，需要用一个外国区的账号，才能在App Store上搜到这个App，国内由于一些不可抗拒的原因被下线了。</p>
+</blockquote>
+<h3 id="RSS简介"><a href="#RSS简介" class="headerlink" title="RSS简介"></a>RSS简介</h3><p>RSS其实跟我上面提到的那款App很类似，不过借助一些插件，可以抓取到更细节的一些信息。</p>
+<p>我不打算详细介绍，这里有篇<a href="https://zhuanlan.zhihu.com/p/349349861">不错的文章</a></p>
+<h3 id="RSS原理浅析"><a href="#RSS原理浅析" class="headerlink" title="RSS原理浅析"></a>RSS原理浅析</h3><p>看阮一峰的两个RSS源，其实就是一些Xml数据。</p>
+<p><a href="https://feeds.feedburner.com/ruanyifeng">https://feeds.feedburner.com/ruanyifeng</a></p>
+<p><a href="https://www.ruanyifeng.com/blog/atom.xml">https://www.ruanyifeng.com/blog/atom.xml</a></p>
+<p>只要知道这个Xml的结构，我们完全可以自己写一个RSS阅读器，甚至不需要自己做内容渲染，内嵌一个WebView即可。</p>
+<p>从这里也可以看出，我们不在乎RSS源是从哪里来的，只要它能返回Xml数据就行，于是就有了RSSHub这样的中间人。</p>
+<h3 id="RSSHub"><a href="#RSSHub" class="headerlink" title="RSSHub"></a>RSSHub</h3><p>RSSHub官网被墙了，我很诧异。不过自己搭建难度也不高，比如我这个博客就部署了RSSHub，<a href="http://www.zhuangjieying.com:1200/">http://www.zhuangjieying.com:1200</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">用docker真的很方便</span></span><br><span class="line">sudo docker run -d --name rsshub -p 1200:1200 -e CACHE_EXPIRE=3600 diygod/rsshub</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>一开始我以为RSSHub是爬取了对应网站的数据，然后请求时再拼接成Xml返回给我们。<br>但我试了订阅Bilibili的视频评论，发现它其实是调用了Bilibili的API。<br>例如这个：<a href="https://api.bilibili.com/x/v2/reply?type=1&amp;oid=BV1L24y1z7sw&amp;sort=0">https://api.bilibili.com/x/v2/reply?type=1&amp;oid=BV1L24y1z7sw&amp;sort=0</a></p>
+<p>当然，应该不一定有那么多网站有这种开放能力，所以RSSHub应该是用了各种不同的抓取策略。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>计算机简史（一）</title>
+    <url>/article/88413ea1.html</url>
+    <content><![CDATA[<h2 id="这个系列什么？"><a href="#这个系列什么？" class="headerlink" title="这个系列什么？"></a>这个系列什么？</h2><p>我觉得，既然是学计算机的，那么应该对计算机体系有一些认识。当然，这跟你会不会修电脑无关。。。</p>
+<p>作为计算机专业的，计算机的一些核心课程想必都学过（虽然我们学院没开编译原理、数字电路这些课程。。），但是很少把它们串起来的。这里是我当时准备面试前，把自己对计算机的认知体系梳理了一遍，也是对我大学四年学的东西的总结，希望对你也有帮助。当然，由于个人能力有限，可能有些地方讲的不大对，所以也请你辩证地看。</p>
+<p>这里我不会特别深入讲某个东西，但是我会推荐一些不错的资源，那些要学习的话也是挺费时间的。</p>
+<p>另外，这个系列更多的是总结，而不是零基础入门。</p>
+<span id="more"></span>
+
+<h2 id="从逻辑门到一台计算机"><a href="#从逻辑门到一台计算机" class="headerlink" title="从逻辑门到一台计算机"></a>从逻辑门到一台计算机</h2><h3 id="电的产生及应用"><a href="#电的产生及应用" class="headerlink" title="电的产生及应用"></a>电的产生及应用</h3><blockquote>
+<p> 这部分推荐一个B站Up主：《Ele实验室》，他的视频都是计算机相关的，通过动画呈现，小白也听得懂。</p>
+<p><a href="https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0">https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0</a></p>
+</blockquote>
+<p>物质发生化学反应，产生的溶液中存在阴阳离子。不同金属吸引不同阴阳离子，形成电池的正负极，电池内部不知道有什么结构，使得正负离子能够位于电池两极，从而形成了电压。而当我们连接上导线的时候，电子就能顺着这条导线会到正极，电子的流动我们称为电流。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608167111154-0f2f41cb-42a8-4775-b73a-41d7564f406e.png" alt="image.png"></p>
+<p>当然，也可以利用切割磁感线的原理产生电流。说到磁，学了物理我们知道，有电流通过的线圈会产生磁场。那么基于这个原理我们可以设计这样一个电路。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608167333744-b1badb83-b325-4f6d-9288-e56e693c9518.png" alt="image.png"></p>
+<p>当红色电路接通时，线圈产生的磁场把黑色电路的开关吸下来，从而电路闭合，灯泡亮起。这种结构一般称为继电器，可以实现电路影响另一条电路。假设黑色电路是高电压，那我们通过红色电路的低电压（emm,一般不会是干电池）就能控制高电压的电路。</p>
+<h3 id="逻辑门"><a href="#逻辑门" class="headerlink" title="逻辑门"></a>逻辑门</h3><p>利用上面的这个磁原理，我们其他能实现很多事情了。比如构造出非门、与门、或门等。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168149593-2d1fdfc6-b233-4fdb-b688-f06686b1bef7.png" alt="image.png"></p>
+<p>有了这些基础门，其他更高级的元器件也能实现了。比如加法器、选择器、反向选择器、ALU，直到CPU。</p>
+<blockquote>
+<p>如果你想学习如何组装这些组件，可以看看这个网站</p>
+<p><a href="https://nandgame.com/">https://nandgame.com</a></p>
+<p> 这个网站像玩游戏一样，让你从逻辑门一步步组装到一台计算机。如果你更倾向于看书，这里推荐一本不错的书：《计算机系统要素》，里面的电路组件设计是通过HDL（硬件描述语言）来实现的，我之前也做过一些笔记，放到Github上了</p>
+<p><a href="https://github.com/jayying007/nand2tetris">https://github.com/jayying007/nand2tetris</a></p>
+</blockquote>
+<h3 id="组计算机"><a href="#组计算机" class="headerlink" title="组计算机"></a>组计算机</h3><p>接下来，你就要把这些元器件组装起来，构成一台计算机了，比如下面的图示：</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168660703-e43ec6d5-7565-4318-bf1e-61e6f71c0363.png" alt="image.png"></p>
+<p>更多的组装细节，还是看书《计算机系统要素》吧。基本上，计算机干的事就是</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">while(true) &#123;</span><br><span class="line">	取指令</span><br><span class="line">	译码（根据指令生成控制信号）</span><br><span class="line">	执行（运算、读写内存...）</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这里，你已经拥有了一台自动机。当你接通电源的时候，它会从内存的0地址处开始读指令，执行…</p>
+<p>这里还有一本不错的书推荐，也是从逻辑门讲到计算机的，读起来挺有趣的，上面的图也是从这里取的。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210815183553332.png" alt="image-20210815183553332"></p>
+<p>另外，如果有玩《我的世界》的小伙伴，也可以尝试用红石电路去构建。比如我之前就自己搭了一个二进制加法器</p>
+<iframe src="//player.bilibili.com/player.html?aid=419833419&bvid=BV1R3411z7ew&cid=389690536&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+<blockquote>
+<p>但是最后其实还有个问题，前面我们说接通电源后从内存开始读指令，但是内存一开始也没有数据呀，那这些指令怎么来的呢？这部分内容等下篇博客来解答。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>计算机简史</category>
+      </categories>
+      <tags>
+        <tag>逻辑门</tag>
+        <tag>计算机结构</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自己手动生成二维码</title>
     <url>/article/eaab1938.html</url>
     <content><![CDATA[<p>虽然生成二维码不是什么难事，毕竟有那么多轮子，工作中你就是调一下SDK，并不会去关心它具体怎么实现的（比如zxing算一个，不想麻烦的可以用这个）。但是两三行调用别人的代码就完事感觉没什么意思，<del>其实还是想折腾</del>。</p>
@@ -1432,54 +1421,65 @@
       </tags>
   </entry>
   <entry>
-    <title>计算机简史（一）</title>
-    <url>/article/88413ea1.html</url>
-    <content><![CDATA[<h2 id="这个系列什么？"><a href="#这个系列什么？" class="headerlink" title="这个系列什么？"></a>这个系列什么？</h2><p>我觉得，既然是学计算机的，那么应该对计算机体系有一些认识。当然，这跟你会不会修电脑无关。。。</p>
-<p>作为计算机专业的，计算机的一些核心课程想必都学过（虽然我们学院没开编译原理、数字电路这些课程。。），但是很少把它们串起来的。这里是我当时准备面试前，把自己对计算机的认知体系梳理了一遍，也是对我大学四年学的东西的总结，希望对你也有帮助。当然，由于个人能力有限，可能有些地方讲的不大对，所以也请你辩证地看。</p>
-<p>这里我不会特别深入讲某个东西，但是我会推荐一些不错的资源，那些要学习的话也是挺费时间的。</p>
-<p>另外，这个系列更多的是总结，而不是零基础入门。</p>
-<span id="more"></span>
-
-<h2 id="从逻辑门到一台计算机"><a href="#从逻辑门到一台计算机" class="headerlink" title="从逻辑门到一台计算机"></a>从逻辑门到一台计算机</h2><h3 id="电的产生及应用"><a href="#电的产生及应用" class="headerlink" title="电的产生及应用"></a>电的产生及应用</h3><blockquote>
-<p> 这部分推荐一个B站Up主：《Ele实验室》，他的视频都是计算机相关的，通过动画呈现，小白也听得懂。</p>
-<p><a href="https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0">https://www.bilibili.com/video/BV1774114798/?spm_id_from=333.788.recommend_more_video.0</a></p>
-</blockquote>
-<p>物质发生化学反应，产生的溶液中存在阴阳离子。不同金属吸引不同阴阳离子，形成电池的正负极，电池内部不知道有什么结构，使得正负离子能够位于电池两极，从而形成了电压。而当我们连接上导线的时候，电子就能顺着这条导线会到正极，电子的流动我们称为电流。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608167111154-0f2f41cb-42a8-4775-b73a-41d7564f406e.png" alt="image.png"></p>
-<p>当然，也可以利用切割磁感线的原理产生电流。说到磁，学了物理我们知道，有电流通过的线圈会产生磁场。那么基于这个原理我们可以设计这样一个电路。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608167333744-b1badb83-b325-4f6d-9288-e56e693c9518.png" alt="image.png"></p>
-<p>当红色电路接通时，线圈产生的磁场把黑色电路的开关吸下来，从而电路闭合，灯泡亮起。这种结构一般称为继电器，可以实现电路影响另一条电路。假设黑色电路是高电压，那我们通过红色电路的低电压（emm,一般不会是干电池）就能控制高电压的电路。</p>
-<h3 id="逻辑门"><a href="#逻辑门" class="headerlink" title="逻辑门"></a>逻辑门</h3><p>利用上面的这个磁原理，我们其他能实现很多事情了。比如构造出非门、与门、或门等。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168149593-2d1fdfc6-b233-4fdb-b688-f06686b1bef7.png" alt="image.png"></p>
-<p>有了这些基础门，其他更高级的元器件也能实现了。比如加法器、选择器、反向选择器、ALU，直到CPU。</p>
+    <title>快速幂</title>
+    <url>/article/20c47d09.html</url>
+    <content><![CDATA[<p>​    今天介绍一个在中低难度算法竞赛中经常碰到的算法—快速幂，于此相匹配的还有一个叫矩阵快速幂的东西。不过这篇文章只介绍快速幂，矩阵快速幂只是把两个数的乘法换成两个矩阵的乘法而已。</p>
+<p>快速幂，顾名思义，就是快速求解某一个数的指数次方结果为多少。</p>
+<h2 id="普通求解"><a href="#普通求解" class="headerlink" title="普通求解"></a>普通求解</h2><p>如让你求2^5次方，你可以很快计算出结果为2*2*2*2*2=32。</p>
 <blockquote>
-<p>如果你想学习如何组装这些组件，可以看看这个网站</p>
-<p><a href="https://nandgame.com/">https://nandgame.com</a></p>
-<p> 这个网站像玩游戏一样，让你从逻辑门一步步组装到一台计算机。如果你更倾向于看书，这里推荐一本不错的书：《计算机系统要素》，里面的电路组件设计是通过HDL（硬件描述语言）来实现的，我之前也做过一些笔记，放到Github上了</p>
-<p><a href="https://github.com/jayying007/nand2tetris">https://github.com/jayying007/nand2tetris</a></p>
+<p>这种方式在计算机中可以使用pow函数解决，即pow（2,5）=32。引入头文件cmath就行了，当然你也可以手写。</p>
 </blockquote>
-<h3 id="组计算机"><a href="#组计算机" class="headerlink" title="组计算机"></a>组计算机</h3><p>接下来，你就要把这些元器件组装起来，构成一台计算机了，比如下面的图示：</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1608168660703-e43ec6d5-7565-4318-bf1e-61e6f71c0363.png" alt="image.png"></p>
-<p>更多的组装细节，还是看书《计算机系统要素》吧。基本上，计算机干的事就是</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">while(true) &#123;</span><br><span class="line">	取指令</span><br><span class="line">	译码（根据指令生成控制信号）</span><br><span class="line">	执行（运算、读写内存...）</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>pow函数的实现方式大致如下</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="function">ll <span class="title">pow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b--)&#123;</span><br><span class="line">        d=d*a%c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这里，你已经拥有了一台自动机。当你接通电源的时候，它会从内存的0地址处开始读指令，执行…</p>
-<p>这里还有一本不错的书推荐，也是从逻辑门讲到计算机的，读起来挺有趣的，上面的图也是从这里取的。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210815183553332.png" alt="image-20210815183553332"></p>
-<p>另外，如果有玩《我的世界》的小伙伴，也可以尝试用红石电路去构建。比如我之前就自己搭了一个二进制加法器</p>
-<iframe src="//player.bilibili.com/player.html?aid=419833419&bvid=BV1R3411z7ew&cid=389690536&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-
+<p><strong>不难看出，这种计算方式的速度是由b决定的，即时间复杂度为O（b），而如果b很大的，那就超时了啊！</strong></p>
+<hr>
+<h2 id="快速幂"><a href="#快速幂" class="headerlink" title="快速幂"></a>快速幂</h2><p>下面就进入本节的主要内容，用快速幂求解，这其实是对二进制的巧妙使用。</p>
+<p>讲一个例子，现在要求3^11，按上述方法需要计算11次，但快速幂可以将求3^11简化为(3^8)<em>(3^2)</em>(3^1)，这样就只计算了3次，其实总共比较了4次，往下看就懂了。</p>
+<p>来一波分析：</p>
+<ol>
+<li>将指数11转化为二进制，即00…001011（32位，前面的0我就省略不写了，太多容易看乱）</li>
+<li>从右到左开始，32位的01串我们在下面给它们一个数值标识，从3^1开始，以平方的方式不断递增，如下面的表格所示（注意只给出最后边的6位，int类型总共应该有32位） </li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>0</th>
+<th>1</th>
+<th>0</th>
+<th>1</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3^32</td>
+<td>3^16</td>
+<td>3^8</td>
+<td>3^4</td>
+<td>3^2</td>
+<td>3^1</td>
+</tr>
+</tbody></table>
 <blockquote>
-<p>但是最后其实还有个问题，前面我们说接通电源后从内存开始读指令，但是内存一开始也没有数据呀，那这些指令怎么来的呢？这部分内容等下篇博客来解答。</p>
+<p> 其实下面的指数也可以有另外一种方式理解，即当前位置的1表示十进制的哪个数，指数就是哪个。</p>
 </blockquote>
+<p>所以下面的操作就很简单了，3^11=3^(8+2+1)，为什么要拆成这几个数呢，因为他们就是11转成二进制后，对应的1的位置数值的表示啊（上面的表格），而这些位置的1代表的数加起来就是11. </p>
+<p>那么计算的思路就是，读取11的二进制数，若该位置为1，就乘上该位置所代表的数，若为0则不作处理。</p>
+<p><strong>时间复杂度从O(N)降到了O(logN)</strong></p>
+<blockquote>
+<p>具体方法：将11与1做按位与位运算，若结果为1，说明11二进制最后的数为1，所以乘上。</p>
+<p>然后下一步我们让11做右移位运算，即将32个01集体往右移动1位，这时最左侧会补上0，而最右侧的1已经不见了。相当于继续比较下一位，若当前数值为0，即二进制32个都为0，说明已经没有1了，就可以结束循环。</p>
+</blockquote>
+<h2 id="具体的代码实现"><a href="#具体的代码实现" class="headerlink" title="具体的代码实现"></a>具体的代码实现</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"></span><br><span class="line"><span class="function">ll <span class="title">quickPow</span><span class="params">(ll a,ll b,ll c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ll d=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;<span class="number">1</span>)&#123;</span><br><span class="line">            d=d*a%c;</span><br><span class="line">        &#125;</span><br><span class="line">        a=a*a%c;<span class="comment">//更新当前位置代表的数</span></span><br><span class="line">        b=b&gt;&gt;<span class="number">1</span>;<span class="comment">//右移1位</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;10的1亿次方mod3的结果为: &quot;</span>&lt;&lt;<span class="built_in">quickPow</span>(<span class="number">10</span>,<span class="number">1e9</span>,<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="矩阵快速幂"><a href="#矩阵快速幂" class="headerlink" title="矩阵快速幂"></a>矩阵快速幂</h2><p>这里放一下矩阵快速幂的模板</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">typedef long long ll;</span><br><span class="line">const int mod=1e9+7;</span><br><span class="line">const int MaxN=105;//矩阵大小</span><br><span class="line">struct Mat&#123;</span><br><span class="line">    ll m[MaxN][MaxN];</span><br><span class="line">&#125;ans,a;//结果与输入矩阵</span><br><span class="line">Mat Mul(Mat a,Mat b,int n)&#123;</span><br><span class="line">    Mat c;</span><br><span class="line">    memset(c.m,0,sizeof(c.m));</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        <span class="keyword">for</span>(int j=1;j&lt;=n;j++)</span><br><span class="line">            <span class="keyword">for</span>(int k=1;k&lt;=n;k++)</span><br><span class="line">                c.m[i][j]=(c.m[i][j]+(a.m[i][k]*b.m[k][j])%mod)%mod;</span><br><span class="line">    <span class="built_in">return</span> c;</span><br><span class="line">&#125;</span><br><span class="line">Mat _power(Mat a,ll b,int n)&#123;</span><br><span class="line">    <span class="keyword">for</span>(int i=1;i&lt;=n;i++)</span><br><span class="line">        ans.m[i][i]=1;</span><br><span class="line">    <span class="keyword">while</span>(b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(b&amp;1)</span><br><span class="line">            ans=Mul(ans,a,n);</span><br><span class="line">        a=Mul(a,a,n);</span><br><span class="line">        b&gt;&gt;=1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
-        <category>计算机简史</category>
+        <category>算法</category>
       </categories>
-      <tags>
-        <tag>逻辑门</tag>
-        <tag>计算机结构</tag>
-      </tags>
   </entry>
   <entry>
     <title>计算机简史（三）</title>
@@ -1524,6 +1524,30 @@
         <tag>数据库</tag>
         <tag>分布式系统</tag>
         <tag>搜索引擎</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>部署Tensorflow模型到服务器-方法二</title>
+    <url>/article/eaf06a22.html</url>
+    <content><![CDATA[<h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>python 3.8.3</p>
+<p>tensorflow 2.4.0</p>
+<h3 id="制作测试模型"><a href="#制作测试模型" class="headerlink" title="制作测试模型"></a>制作测试模型</h3><p><strong>注意</strong>: tensorflow版本1和版本2的接口不同, 我这里套用原来的代码, 修改部分需要兼容的代码.比如 tf.placeholder()  –&gt;  tf.compat.v1.placeholder()。如果你用的是版本1则不用修改</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件夹不存在时,会报utf-8解析错误</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="string">&#x27;./model&#x27;</span>):</span><br><span class="line">    os.mkdir(<span class="string">&#x27;./model&#x27;</span>)</span><br><span class="line"></span><br><span class="line">tf.compat.v1.disable_eager_execution()</span><br><span class="line"></span><br><span class="line">x = tf.compat.v1.placeholder(tf.float32, name=<span class="string">&#x27;inputX&#x27;</span>)</span><br><span class="line">feed = np.random.rand(<span class="number">100</span>)</span><br><span class="line">y = <span class="number">2</span> * x + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">w = tf.Variable(<span class="number">0.</span>)</span><br><span class="line">b = tf.Variable(<span class="number">0.</span>)</span><br><span class="line"></span><br><span class="line">y_ = tf.add(tf.multiply(w, x), b, name=<span class="string">&#x27;outputY&#x27;</span>)</span><br><span class="line"></span><br><span class="line">loss = tf.reduce_mean(tf.square(y - y_))</span><br><span class="line"></span><br><span class="line">optimizer = tf.compat.v1.train.GradientDescentOptimizer(<span class="number">0.2</span>)</span><br><span class="line">train = optimizer.minimize(loss)</span><br><span class="line"></span><br><span class="line">init = tf.compat.v1.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(init)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">200</span>):</span><br><span class="line">        sess.run(train, feed_dict=&#123;x: feed&#125;)</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">5</span> == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(i, sess.run([w, b]))</span><br><span class="line"></span><br><span class="line">    constant_graph = tf.compat.v1.graph_util.convert_variables_to_constants(sess, sess.graph_def, [<span class="string">&#x27;outputY&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, mode=<span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(constant_graph.SerializeToString())</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署上线"><a href="#部署上线" class="headerlink" title="部署上线"></a>部署上线</h3><p>这里使用python的web服务器框架Flask，很容易上手的，而且Pycharm在创建项目时就能选择。<br><img src="https://img-blog.csdnimg.cn/20201217181847852.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>这里直接贴代码</p>
+<h5 id="app-py"><a href="#app-py" class="headerlink" title="app.py"></a>app.py</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    graph_def = tf.compat.v1.GraphDef()</span><br><span class="line">    graph_def.ParseFromString(f.read())</span><br><span class="line">    tf.import_graph_def(graph_def, name=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">sess = tf.compat.v1.Session()</span><br><span class="line">output = sess.graph.get_tensor_by_name(<span class="string">&#x27;outputY:0&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/predict&#x27;</span>, methods=[<span class="string">&quot;GET&quot;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testPredict</span>():</span></span><br><span class="line">    inputX = request.args.get(<span class="string">&quot;inputX&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">str</span>(sess.run(output, feed_dict=&#123;<span class="string">&#x27;inputX:0&#x27;</span>: inputX&#125;))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<h3 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果"></a>验证结果</h3><p>程序启动后，默认监听的是5000端口，我们用浏览器访问 <a href="http://localhost:5000/predict?inputX=2%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E7%BB%93%E6%9E%9C">http://localhost:5000/predict?inputX=2，可以看到结果</a></p>
+<p><img src="https://img-blog.csdnimg.cn/2020121718193840.png#pic_center" alt="在这里插入图片描述"></p>
+<p>完结撒花❀❀❀</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>模型部署</tag>
+        <tag>Tensorflow</tag>
       </tags>
   </entry>
   <entry>
@@ -1654,30 +1678,6 @@
         <tag>模型部署</tag>
         <tag>Tensorflow</tag>
         <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>部署Tensorflow模型到服务器-方法二</title>
-    <url>/article/eaf06a22.html</url>
-    <content><![CDATA[<h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>python 3.8.3</p>
-<p>tensorflow 2.4.0</p>
-<h3 id="制作测试模型"><a href="#制作测试模型" class="headerlink" title="制作测试模型"></a>制作测试模型</h3><p><strong>注意</strong>: tensorflow版本1和版本2的接口不同, 我这里套用原来的代码, 修改部分需要兼容的代码.比如 tf.placeholder()  –&gt;  tf.compat.v1.placeholder()。如果你用的是版本1则不用修改</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 文件夹不存在时,会报utf-8解析错误</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="string">&#x27;./model&#x27;</span>):</span><br><span class="line">    os.mkdir(<span class="string">&#x27;./model&#x27;</span>)</span><br><span class="line"></span><br><span class="line">tf.compat.v1.disable_eager_execution()</span><br><span class="line"></span><br><span class="line">x = tf.compat.v1.placeholder(tf.float32, name=<span class="string">&#x27;inputX&#x27;</span>)</span><br><span class="line">feed = np.random.rand(<span class="number">100</span>)</span><br><span class="line">y = <span class="number">2</span> * x + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">w = tf.Variable(<span class="number">0.</span>)</span><br><span class="line">b = tf.Variable(<span class="number">0.</span>)</span><br><span class="line"></span><br><span class="line">y_ = tf.add(tf.multiply(w, x), b, name=<span class="string">&#x27;outputY&#x27;</span>)</span><br><span class="line"></span><br><span class="line">loss = tf.reduce_mean(tf.square(y - y_))</span><br><span class="line"></span><br><span class="line">optimizer = tf.compat.v1.train.GradientDescentOptimizer(<span class="number">0.2</span>)</span><br><span class="line">train = optimizer.minimize(loss)</span><br><span class="line"></span><br><span class="line">init = tf.compat.v1.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(init)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">200</span>):</span><br><span class="line">        sess.run(train, feed_dict=&#123;x: feed&#125;)</span><br><span class="line">        <span class="keyword">if</span> i % <span class="number">5</span> == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(i, sess.run([w, b]))</span><br><span class="line"></span><br><span class="line">    constant_graph = tf.compat.v1.graph_util.convert_variables_to_constants(sess, sess.graph_def, [<span class="string">&#x27;outputY&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, mode=<span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(constant_graph.SerializeToString())</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署上线"><a href="#部署上线" class="headerlink" title="部署上线"></a>部署上线</h3><p>这里使用python的web服务器框架Flask，很容易上手的，而且Pycharm在创建项目时就能选择。<br><img src="https://img-blog.csdnimg.cn/20201217181847852.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>这里直接贴代码</p>
-<h5 id="app-py"><a href="#app-py" class="headerlink" title="app.py"></a>app.py</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> tf.compat.v1.gfile.FastGFile(<span class="string">&#x27;./model/linear.pb&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    graph_def = tf.compat.v1.GraphDef()</span><br><span class="line">    graph_def.ParseFromString(f.read())</span><br><span class="line">    tf.import_graph_def(graph_def, name=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">sess = tf.compat.v1.Session()</span><br><span class="line">output = sess.graph.get_tensor_by_name(<span class="string">&#x27;outputY:0&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/predict&#x27;</span>, methods=[<span class="string">&quot;GET&quot;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testPredict</span>():</span></span><br><span class="line">    inputX = request.args.get(<span class="string">&quot;inputX&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">str</span>(sess.run(output, feed_dict=&#123;<span class="string">&#x27;inputX:0&#x27;</span>: inputX&#125;))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
-
-<h3 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果"></a>验证结果</h3><p>程序启动后，默认监听的是5000端口，我们用浏览器访问 <a href="http://localhost:5000/predict?inputX=2%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0%E7%BB%93%E6%9E%9C">http://localhost:5000/predict?inputX=2，可以看到结果</a></p>
-<p><img src="https://img-blog.csdnimg.cn/2020121718193840.png#pic_center" alt="在这里插入图片描述"></p>
-<p>完结撒花❀❀❀</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>模型部署</tag>
-        <tag>Tensorflow</tag>
       </tags>
   </entry>
 </search>
