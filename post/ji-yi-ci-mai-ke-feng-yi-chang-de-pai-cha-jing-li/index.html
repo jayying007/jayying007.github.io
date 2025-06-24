@@ -1,0 +1,245 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>记一次麦克风异常的排查经历 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    记一次麦克风异常的排查经历
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2025-06-24 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/cg-GGtZWft/" class="post-tags">
+                            # debug
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/8tQaAKVbVX/" class="post-tags">
+                            # iOS
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/bazzqxoAVFy/" class="post-tags">
+                            # 音视频
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="复现方式">复现方式</h2>
+<p>进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。<br>
+然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。</p>
+<h2 id="排查过程">排查过程</h2>
+<p>通过AudioQueue实现的录音，启动都没有什么错误。<br>
+然后通过LevelMeter检查数据的音量，发现全是0。</p>
+<p>再看看AudioSession的各种接口，setActive、setCategory都是正常的。</p>
+<p>好奇怪🤔</p>
+<p>经过测试，这时使用微信的语音通话，是可以使用麦克风的。<br>
+此时回到腾讯会议，会出现中断的提示。</p>
+<p>也就是说，只有使用AudioUnit才能把音频权限抢回来，然后腾讯会议收到AudioSessionInterrupt的通知，出现提示。</p>
+<p>于是乎，我们可以自己写一个AudioUnit的录音demo，而这个之前早就写过了。<br>
+https://github.com/jayying007/iOSDemos</p>
+<p>测试时发现，即使是AudioUnit，选择RemoteIO也是不行的，需要选择VoiceProcessingIO。</p>
+<p>另外一个发现是，使用AudioQueue，只要把AudioSession setCategory的option AudioSessionModeVoiceChat加上，也是可以打断腾讯会议，把麦克风抢回来的。</p>
+<p>但是话说回来，AudioUnit本身是用于通话类场景的，这里录音使用真的好吗？</p>
+<h2 id="疑问">疑问</h2>
+<p>一个支线任务：如何实现关闭麦克风，右上角的小黄点消失？🤔</p>
+<p>试了下，AudioUnit通过EnableIO把输入通道给关闭了，依然不行。</p>
+<p>最后试了下setInputMuted这个接口，发现可行。也就是说，可以仿照腾讯会议的逻辑，屏蔽掉其他App的录音。</p>
+<h2 id="结论">结论</h2>
+<p>我觉得这是苹果🍎的bug，其他App把麦克风关闭的时候无法录音，把麦克风打开的时候又可以录音。<br>
+setInputMuted这个逻辑本来是每个App单独设置的，怎么这里会影响到全部app呢。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/ios-xian-shi-hdr-zu-jian/" class="post-title gt-a-link">
+                    iOS 显示HDR组件
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>字典树 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    字典树
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-08-01 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/BtKai_tdYmNu/" class="post-tags">
+                            # 字符串匹配
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/9wAgK94QIRgC/" class="post-tags">
+                            # 数据结构
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <blockquote>
+<p>字典树一般用于字符串的匹配，当数量多的时候效率还是挺明显的。</p>
+</blockquote>
+<p>这里以一道洛谷的题为例子，https://www.luogu.org/problem/P2580</p>
+<h3 id="题目的大致意思时先给你n个字符串然后再给你m个字符串求这m个字符串是否在n个字符串中出现过或是否重复出现了">题目的大致意思时，先给你n个字符串，然后再给你m个字符串，求这m个字符串是否在n个字符串中出现过或是否重复出现了。</h3>
+<hr>
+<p>若采用朴素一对一的比较方式，那时间复杂度就是O(n <strong>X</strong> m <strong>X</strong> ‘字符串长度’)，所以还是算了。</p>
+<p>解决的方法便是利用字典树，将n个字符串搭建成一个字典树。</p>
+<p><strong>什么是字典树？？？？比如字符串（ab,ac,b,bca,bcd）构成的字典树如下</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/20190825170358538.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="img" loading="lazy"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动" loading="lazy"></p>
+<p><strong>红色标记的结点即该结点为某一字符串的结束结点，注意字典树的根结点不存任何字符</strong></p>
+<blockquote>
+<p>构建完字典树后，后面的操作就简单了。待查询的m个字符串依次从根节点开始查询，<strong>当前结点存在该字符，则更新当前位置到该字符所在结点，否则就证明查询不到。到最后一个字符匹配且该结点是结束结点，说明查询成功。</strong></p>
+</blockquote>
+<p>下面是题目的代码</p>
+<pre><code class="language-cpp">#include&lt;iostream&gt;
+using namespace std;
+int n,m,cnt;
+string s;
+struct node
+{
+    int vis[26];
+    int state;//0 普通节点 1 结束节点 2 结束且已访问
+}tried[500010];
+void Build_tree(string s)
+{
+    int len=s.length();
+    int now=0;
+    for(int i=0;i&lt;len;i++){
+        if(tried[now].vis[s[i]-'a']==0){
+            tried[now].vis[s[i]-'a']=++cnt;
+        }
+        now=tried[now].vis[s[i]-'a'];
+    }
+    tried[now].state=1;
+}
+void Query_str(string s)
+{
+    int len=s.length();
+    int now=0;
+    for(int i=0;i&lt;len;i++){
+        if(tried[now].vis[s[i]-'a']){
+            now=tried[now].vis[s[i]-'a'];
+            if(i==len-1&amp;&amp;tried[now].state==1){
+                cout&lt;&lt;&quot;OK&quot;&lt;&lt;endl;
+                tried[now].state=2;
+            }
+            else if(i==len-1&amp;&amp;tried[now].state==2){
+                cout&lt;&lt;&quot;REPEAT&quot;&lt;&lt;endl;
+            }
+        }
+        else{
+            cout&lt;&lt;&quot;WRONG&quot;&lt;&lt;endl;
+            break;
+        }
+    }
+}
+int main()
+{
+    cin&gt;&gt;n;
+    for(int i=0;i&lt;n;i++){
+        cin&gt;&gt;s;
+        Build_tree(s);
+    }
+    cin&gt;&gt;m;
+    for(int i=0;i&lt;m;i++){
+        cin&gt;&gt;s;
+        Query_str(s);
+    }
+    return 0;
+}
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/部署Tensorflow模型到服务器-方法二/" class="post-title gt-a-link">
+                    部署Tensorflow模型到服务器-方法二
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

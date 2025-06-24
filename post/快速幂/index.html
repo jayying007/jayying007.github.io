@@ -1,0 +1,322 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>快速幂 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    快速幂
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-08-01 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <p>​	今天介绍一个在中低难度算法竞赛中经常碰到的算法---快速幂，于此相匹配的还有一个叫矩阵快速幂的东西。不过这篇文章只介绍快速幂，矩阵快速幂只是把两个数的乘法换成两个矩阵的乘法而已。</p>
+<p>快速幂，顾名思义，就是快速求解某一个数的指数次方结果为多少。</p>
+<h2 id="普通求解">普通求解</h2>
+<p>如让你求2^5次方，你可以很快计算出结果为2*2*2*2*2=32。</p>
+<blockquote>
+<p>这种方式在计算机中可以使用pow函数解决，即pow（2,5）=32。引入头文件cmath就行了，当然你也可以手写。</p>
+</blockquote>
+<p>pow函数的实现方式大致如下</p>
+<pre><code class="language-cpp">typedef long long ll;
+ll pow(ll a,ll b,ll c)
+{
+    ll d=1;
+    while(b--){
+        d=d*a%c;
+    }
+    return d;
+}
+</code></pre>
+<p><strong>不难看出，这种计算方式的速度是由b决定的，即时间复杂度为O（b），而如果b很大的，那就超时了啊！</strong></p>
+<hr>
+<h2 id="快速幂">快速幂</h2>
+<p>下面就进入本节的主要内容，用快速幂求解，这其实是对二进制的巧妙使用。</p>
+<p>讲一个例子，现在要求3<sup>11，按上述方法需要计算11次，但快速幂可以将求3</sup>11简化为(3<sup>8)*(3</sup>2)*(3^1)，这样就只计算了3次，其实总共比较了4次，往下看就懂了。</p>
+<p>来一波分析：</p>
+<ol>
+<li>将指数11转化为二进制，即00...001011（32位，前面的0我就省略不写了，太多容易看乱）</li>
+<li>从右到左开始，32位的01串我们在下面给它们一个数值标识，从3^1开始，以平方的方式不断递增，如下面的表格所示（注意只给出最后边的6位，int类型总共应该有32位）</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>0</th>
+<th>1</th>
+<th>0</th>
+<th>1</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3^32</td>
+<td>3^16</td>
+<td>3^8</td>
+<td>3^4</td>
+<td>3^2</td>
+<td>3^1</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>其实下面的指数也可以有另外一种方式理解，即当前位置的1表示十进制的哪个数，指数就是哪个。</p>
+</blockquote>
+<p>所以下面的操作就很简单了，3<sup>11=3</sup>(8+2+1)，为什么要拆成这几个数呢，因为他们就是11转成二进制后，对应的1的位置数值的表示啊（上面的表格），而这些位置的1代表的数加起来就是11.</p>
+<p>那么计算的思路就是，读取11的二进制数，若该位置为1，就乘上该位置所代表的数，若为0则不作处理。</p>
+<p><strong>时间复杂度从O(N)降到了O(logN)</strong></p>
+<blockquote>
+<p>具体方法：将11与1做按位与位运算，若结果为1，说明11二进制最后的数为1，所以乘上。</p>
+<p>然后下一步我们让11做右移位运算，即将32个01集体往右移动1位，这时最左侧会补上0，而最右侧的1已经不见了。相当于继续比较下一位，若当前数值为0，即二进制32个都为0，说明已经没有1了，就可以结束循环。</p>
+</blockquote>
+<h2 id="具体的代码实现">具体的代码实现</h2>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+typedef long long ll;
+
+ll quickPow(ll a,ll b,ll c)
+{
+    ll d=1;
+    while(b){
+        if(b&amp;1){
+            d=d*a%c;
+        }
+        a=a*a%c;//更新当前位置代表的数
+        b=b&gt;&gt;1;//右移1位
+    }
+    return d;
+}
+int main()
+{
+    cout&lt;&lt;&quot;10的1亿次方mod3的结果为: &quot;&lt;&lt;quickPow(10,1e9,3);
+    return 0;
+}
+</code></pre>
+<h2 id="矩阵快速幂">矩阵快速幂</h2>
+<p>这里放一下矩阵快速幂的模板</p>
+<pre><code class="language-bash">typedef long long ll;
+const int mod=1e9+7;
+const int MaxN=105;//矩阵大小
+struct Mat{
+    ll m[MaxN][MaxN];
+}ans,a;//结果与输入矩阵
+Mat Mul(Mat a,Mat b,int n){
+    Mat c;
+    memset(c.m,0,sizeof(c.m));
+    for(int i=1;i&lt;=n;i++)
+        for(int j=1;j&lt;=n;j++)
+            for(int k=1;k&lt;=n;k++)
+                c.m[i][j]=(c.m[i][j]+(a.m[i][k]*b.m[k][j])%mod)%mod;
+    return c;
+}
+Mat _power(Mat a,ll b,int n){
+    for(int i=1;i&lt;=n;i++)
+        ans.m[i][i]=1;
+    while(b){
+        if(b&amp;1)
+            ans=Mul(ans,a,n);
+        a=Mul(a,a,n);
+        b&gt;&gt;=1;
+    }
+    return ans;
+}
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/字典树/" class="post-title gt-a-link">
+                    字典树
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

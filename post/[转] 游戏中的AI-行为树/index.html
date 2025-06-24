@@ -1,0 +1,340 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>[转] 游戏中的AI-行为树 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    [转] 游戏中的AI-行为树
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-05-27 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/cpOkDceSAK/" class="post-tags">
+                            # 游戏
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/kNKAmrsP2ih/" class="post-tags">
+                            # 行为树
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/WIOs3OwJAqf/" class="post-tags">
+                            # 状态机
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a href="https://lifan.tech/2020/02/15/game/behavior-tree/">https://lifan.tech/2020/02/15/game/behavior-tree/</a></p>
+<blockquote>
+<p>游戏里有不少算法，如本文的行为树，以及还有排行榜的排序算法、寻路算法、物体碰撞，如果你是做 3D 引擎的，还得懂图形学、物理学、数学...<br>
+这里的行为树虽然在 iOS 中基本用不到，但跟它关联的状态机还是有可能的。</p>
+</blockquote>
+<p>游戏中，常见用 AI 实现方式有 2 种，状态机和行为树。下面主要简介绍行为树，行为树是用一棵多叉树来表示 AI，树的中间节点为控制节点控制着 AI 的执行流程，叶子节点为行为节点，描述了 AI 的具体行为。</p>
+<h4 id="一-案例描述">一、案例描述</h4>
+<p>山贼的 AI 需求描述如下：</p>
+<ul>
+<li>视野内没有敌人则在一定范围内巡逻</li>
+<li>视野出现敌人则走过去攻击敌人</li>
+<li>当自己血量 &lt; 20% 则逃跑</li>
+</ul>
+<p>下面将分别用状态机和行为树来描述山贼的 AI</p>
+<h4 id="二-状态机">二、状态机</h4>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiihbE-NXdmVllv3lPin1dZ2iSlf.png" alt="" loading="lazy"><br>
+上图是用状态机来描述山贼的 AI, 目前来看状态机的逻辑还是非常清晰，代码实现也比较简单。但随着项目的推进，策划随时可能增加需求。假如现在需要加一个 “石化”状态，描述如下：<br>
+在逃跑的过程中，如果追击者数量&gt;2，则立即把自己石化，持续 5s，此时自己不能被攻击也不能攻击目标<br>
+在状态机中加入“石化”状态时，我们需要考虑它跟现有每个状态之间是否有联系，输入输出状态分别有哪些。</p>
+<h5 id="11-状态机存在的不足">1.1 状态机存在的不足</h5>
+<p>在项目中随时可能增加新状态、减少状态或者改变状态之间的迁移关系，如果状态越来越多，任何一点小修改都会产生很大的工作量，代码中会出现大量的判断跳转，代码的逻辑会变得越来越混乱，如果负责状态机的同事离职了，这会带来很大的问题。<br>
+行为树的出现从根本上解决了这些问题，它把每个行为作为一个原子项，提供给策划编辑，让策划来决定 AI 的执行流程，程序只需要集中精力根据需求增加新的行为，不用关心具体流程。用种方式，程序的工作会得到很大程度的解放，即使有一天交给其他同事维护也比较容易。</p>
+<h4 id="三-行为树">三、行为树</h4>
+<p>行为树是由控制节点、装饰节点、行为节点组成的一棵 n 叉树，中间节点一般为控制节点和装饰节，用于控制行为树的执行流程，它们相对固定，一旦确定几乎不会变化；叶子节点由行为节点或条件节点组成，它实现了 AI 中的各种行为，程序的大部分工作都是丰富行为节点。需要注意的是，行为树的每个节点都有一个返回值，它们分别是：</p>
+<ul>
+<li>成功（Success）</li>
+<li>失败（failed）</li>
+<li>运行中（running）：表示当前帧没有执行完成、下帧继续执行。</li>
+</ul>
+<p>下面列出了行为树常用的节点类型，主要用于说明行为树的原理，类型可能不全面；但只要明白了原理，根据项目需求增加类型即可。</p>
+<h5 id="11-控制类节点">1.1 控制类节点</h5>
+<p>控制节点一般为中间节点，用于控制行为树的执行流程，决定了其子节点是以顺序、并行、随机或其它方式执行。</p>
+<ul>
+<li>顺序节点（Sequences）<br>
+依次执行所有子节点，若当前子节点返回成功，则继续执行下一个子节点；若子当前节点返回失败，则中断后续子节点的执行，并把结果返回给父节点。<br>
+如下图所求：节点 1 返回成功，继续执行节点 2；节点 2 返回失败，则把结果返回给 Sequences 的父节点，节点 3 并不会执行。顺序节点相当于 and 语义。<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fs91eZc77NI6Z8Kgzs7Z6hpyC7cC.png" alt="" loading="lazy"></li>
+<li>选择节点（Selector）<br>
+依次执行所有子节点，若当前子节点返回成功，则中断后续节点运行，并把结果返回给父节点。如下图所示：<br>
+相当于 or 语义<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FhJfP1dHbJzbgQkLfSEjgB28lkBQ.png" alt="" loading="lazy"></li>
+<li>并行节点（Parallel）<br>
+依次执行所有子节点，无论失败与否，都会把所有子节点执行一遍。至于 Parallel 节点该返回什么值给父节点，这要看需求。比如：成功数 &gt; 失败数返回成功，否则返回失败。<br>
+如下图所示：<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Ftt3kut4XmIKOthbgNuffm_LXo81.png" alt="" loading="lazy"></li>
+<li>随机节点（Random）<br>
+随机选择一个子节点来运行。</li>
+<li>记忆节点（MemSequences、MemSelector）<br>
+功能和顺序节点、选择节点类似，唯一不同是会保存当前执行进度（比如：保存当前子节点索引），下一帧继续执行当前节点，如果当前节点是中间节点，则会跳过前面的节点。</li>
+</ul>
+<h5 id="12-装饰节点decorator">1.2 装饰节点（Decorator）</h5>
+<ul>
+<li>逆变节点（Inverter）：对子节点的返回值取反，相当于 not 语义，它只会有一个子节点。</li>
+<li>成功节点（Succeeder）：不管其子节点返回何值，都会返回 Success 给父节点</li>
+<li>重复节点（Repeater）：重复执行 n 次子节点。</li>
+<li>重复直至失败节点（Repeat Until Fail）：重复执行子节点，直到失败为上；同样也有类似的重复直至成功节点这里就不列出了。</li>
+<li>执行一段时间（MaxTime）：重复执行子节点一段时间</li>
+</ul>
+<p>节点的类型是灵活多变的，不同的项目有不同的需求，上面只列出了常用的。</p>
+<h5 id="13-行为节点action">1.3 行为节点（Action）</h5>
+<p>行为节点都是叶节点，控制节点用于控制行为执行的流程，行为节点则表示具体功能，比如：战斗，逃跑，巡逻等。它至少包含两个函数：</p>
+<ul>
+<li>Init:用于初始化节点，比如读取配置数据初始化当前节点，只会执行一次。</li>
+<li>OnTick:每一帧都会执行，节点的主要逻辑都在此函数中实现或调用。</li>
+</ul>
+<h6 id="131-行为节点代码实现">1.3.1 行为节点代码实现</h6>
+<p>这是一个在指定范围内查找道具的行为节点<a href="https://github.com/magicsea/h5game/blob/master/server/src/Server/battle/bevAction.go">例子</a>（Ation）:</p>
+<pre><code class="language-go">//节点结构
+type FindItem struct {
+    b3core.Action
+    index string
+    etype EntityType
+    dis   float32
+}
+
+//初始化函数，参数setting为节点的配置数据
+//此函数在加载节点时调用
+func (this *FindItem) Initialize(setting *b3config.BTNodeCfg) {
+    this.Action.Initialize(setting)
+    this.index = setting.GetPropertyAsString(&quot;index&quot;) //道具枚举用于缓存道具的key
+    this.etype = EntityType(setting.GetPropertyAsInt(&quot;etype&quot;))//道具类型
+    this.dis = float32(setting.GetProperty(&quot;range&quot;))//查找范围
+}
+
+//遍历节点时，此函数会被调用，每个节点都有OnTick函数
+func (this *FindItem) OnTick(tick *b3core.Tick) b3.Status {
+    f := tick.GetTarget().(*Fighter) //玩家对象
+    tick.Blackboard.Set(this.index, int32(0), &quot;&quot;, &quot;&quot;) //清空老数据
+    ball := f.FindNearItem(this.dis, this.etype) //在附近搜索道具
+    if nil == ball {//如果没找到，向父节点返回FAILURE
+        return b3.FAILURE
+    }
+
+    id := ball.GetID() //获取道具id
+    tick.Blackboard.Set(this.index, id, &quot;&quot;, &quot;&quot;) //缓存道具id
+    return b3.SUCCESS//向父节点返回SUCCESS
+
+    //因为行为树的节点返回值必须是FAILURE、SUCCESS、RUNNING, 所以Tick中产生的结果只能通过其它方式传回去，比如例子中的Blackboard
+}
+</code></pre>
+<h6 id="132-用行为树表示山贼-ai">1.3.2 用行为树表示山贼 AI</h6>
+<p>用行为树来表示的山贼 AI，并加上了“石化”需求，下图黄色部分：<br>
+需求描述：在逃跑的过程中，如果追击者数量&gt;2，则立即把自己石化，持续 5s，此时自己不能被攻击也不能攻击目标。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fkec8UI8CjD1y2Bvb6dH0HRl6L7J.png" alt="" loading="lazy"><br>
+对于程序来说，只需要写”石化”的逻辑即可，至于这个行为用在哪里，执行顺序以及和其它行为的关系，则由策划来决定。在本例中，条件判断其实可以放在行为节里，这里把它独立出来主要是为了方便表达。</p>
+<h4 id="四-状态机与行为树比较">四、状态机与行为树比较</h4>
+<h5 id="11-状态机">1.1 状态机</h5>
+<ul>
+<li>优点：实现简单、执行效率高。</li>
+<li>缺点：随着状态数量的增多，状态之间的关系会越来越复杂，代码变得难以维护。</li>
+</ul>
+<h5 id="12-行为树">1.2 行为树</h5>
+<ul>
+<li>优点：结构清晰、节点间关系弱，程序大部分工作是丰富行为节点，AI 流程交由策划完成。</li>
+<li>缺点：每次 tick 都会遍历整棵行为树(Mem 子节点除外)，若树的深度很深，效率将变得低下。</li>
+</ul>
+<h4 id="五-关于状态机行为树的思考">五、关于状态机行为树的思考</h4>
+<p>从状态机和行为树的特征可以看出，状态机和行为树都存在明显的优缺点。我们可不可以只取它们的优点呢？<br>
+在游戏中，若主动怪的视野范围内没有目标它的行为是很简单的，一般会在一定范围内巡逻。如果用行为树，不管视野内有没有人，每帧都会遍历所有非行为节点，这造成了很大的资源浪费。<br>
+如果用状态机实现巡逻、死亡、逃跑，进入战斗后的行为用行为树，这会是一个有效的优化。尤其是怪物很多时，大部分时间段，大部分怪都处于巡逻或 idle 状态，完全没有必要遍历行为树。<br>
+如果项目的 AI 比较简单，比如小游戏之类的。用状态机是个不错的选择。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/FastImageCache框架分析/" class="post-title gt-a-link">
+                    FastImageCache框架分析
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

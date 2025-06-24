@@ -1,0 +1,463 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Objective-C中的block语法 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Objective-C中的block语法
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-09-21 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/2yd3XVCm-Ic/" class="post-tags">
+                            # IOS
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/HTgmVKsURQ_/" class="post-tags">
+                            # Objective-C
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="objective-c中的block语法">Objective-C中的block语法</h1>
+<h2 id="前言">前言</h2>
+<p>之前学习Obj-C的时候，看过《Objective-C高级编程》，是中文翻译版的，读起来总感觉少了些味道。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921191536098.png" alt="image-20210921191536098" style="zoom:67%;" />
+<p>不过作者是日本的，原版日文我更看不懂，幸好英文版的翻译好了很多，而且英语六级也过了🐶，这次看得下去。Block的知识在第四章和第五章。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921193334781.png" alt="image-20210921193334781" style="zoom:67%;" />
+<p>本篇文章大部分图片也是从里面摘过来的。</p>
+<!-- more -->
+<h2 id="block简介">Block简介</h2>
+<h3 id="简单回顾一下block的用法">简单回顾一下Block的用法</h3>
+<p><code>Block</code>可以算是对C语言语法的一种扩展，借助结构体和函数指针的技术即可实现。如果你对函数指针比较熟悉，那你很容易理解<code>Block</code>。不过跟函数指针稍微有些区别，函数指针需要对应函数的函数名，但是Block不需要，它只要一个匿名函数即可。</p>
+<p>废话不多说，直接看代码：</p>
+<pre><code class="language-objc">int main() {
+	(void)(^blk_t)(void) = ^void (void) {
+		printf(&quot;Hello world.&quot;);
+	};
+}
+</code></pre>
+<p>这里的<code>blk_t</code>就是存放Block的变量，通过<code>blk_t()</code>就可以执行这个Block，输出Hello world。声明Block变量的方式跟声明函数指针有点像，看起来就是把*换成了^。Block的基本格式如下：</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921194833343.png" alt="image-20210921194833343" style="zoom: 50%;" />
+<p>如果没有返回值，没有参数列表，则可以进一步省略。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921195017730.png" alt="image-20210921195017730" style="zoom:50%;" />
+<p>Block内部可以使用外面的局部变量，当然也包括静态变量、全局变量等。但是这个使用的变量的值只是在Block创建那一刻复制的，后面修改是不会改变的，而且你也不能在Block内部对这个变量进行修改。</p>
+<pre><code class="language-objc">int main() {
+	int val = 10;
+	(void)(^blk_t)(void) = ^void (void) {
+		printf(&quot;value is :%d&quot;, val);
+	};
+	val = 2222;
+	blk_t();
+}
+</code></pre>
+<p>此时输出为<code>value is 10</code></p>
+<p>要想在Block内部修改这个变量，只需要在变量前加上<code>__block</code>即可，变成<code>__block int val = 10;</code>。或者还有一种方式是通过指针，就好比调用函数时的实参和形参，传的参数是指针就可修改到对应的数值。</p>
+<pre><code class="language-objc">int main() {
+	int val = 10;
+	int *p = &amp;val;
+	(void)(^blk_t)(void) = ^void (void) {
+	  *p = 2222;
+	};
+	printf(&quot;value is :%d&quot;, val);
+	blk_t();
+  printf(&quot;value is :%d&quot;, val);
+}
+</code></pre>
+<p>指针的这种方式，只要你不在Block内部修改变量p的值就不会报错，至于修改变量p指向的内存，则无所谓。同理可得下面这种也是正确的：</p>
+<pre><code class="language-objc">int main() {
+	id array = [[NSMutableArray alloc] init];
+	(void)(^blk_t)(void) = ^void (void) {
+	  id obj = [[NSObject alloc] init];
+    [array addObject:obj];
+	};
+	blk_t();
+}
+</code></pre>
+<h3 id="block的实现原理">Block的实现原理</h3>
+<p>借助Clang，我们可以将OC的代码转换为C++代码，从而看到Block在C层面上是如何实现的。</p>
+<p><code>clang -rewrite-objc filename.m</code></p>
+<blockquote>
+<p>后面如果代码含有<code>__weak</code>，则需要补充多几个参数</p>
+<p><code>clang -rewrite-objc -fobjc-arc -fobjc-runtime=ios-14.0.0 filename.m</code></p>
+</blockquote>
+<h4 id="第一组使用局部变量但是不使用__block">第一组（使用局部变量，但是不使用<code>__block</code>）</h4>
+<p>源代码</p>
+<pre><code class="language-objc">#import &lt;Foundation/Foundation.h&gt;
+int main() {
+    int val = 10;
+    void (^blk)(void) = ^ {
+        printf(&quot;val:%d&quot;, val);
+    };
+    blk();
+    return 0;
+}
+</code></pre>
+<p>clang转换后的代码（省略一些无关的，都是import带来的东西...）</p>
+<pre><code class="language-c++">struct __block_impl {
+  void *isa;
+  int Flags;
+  int Reserved;
+  void *FuncPtr;
+};
+
+struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  int val;
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int _val, int flags=0) : val(_val) {
+    impl.isa = &amp;_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+
+static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+  int val = __cself-&gt;val; // bound by copy
+  printf(&quot;val:%d&quot;, val);
+}
+
+static struct __main_block_desc_0 {
+  size_t reserved;
+  size_t Block_size;
+} __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0)};
+
+int main() {
+    int val = 10;
+    void (*blk)(void) = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, val));
+    ((void (*)(__block_impl *))((__block_impl *)blk)-&gt;FuncPtr)((__block_impl *)blk);
+    return 0;
+}
+</code></pre>
+<p>第一次看起来确实有点头疼，不过书中讲的也比较详细，多看几遍就好了。</p>
+<p>看到结构体<code>__main_block_impl_0</code>，这就是Block在C层面下的面目了。里面有个字段<code>val</code>，通过构造函数传递过来的<code>_val</code>进行赋值。</p>
+<p>而原本block的代码，可以看到被放到函数<code>__main_block_func_0</code>里面去了，而且里面的<code>val</code>也不是原先的局部变量的，就是结构体自己的变量而已。这也就解释了为什么局部变量的值改了，Block执行的输出确还是之前的，因为这已经是两个不同的变量了。</p>
+<h4 id="第二组使用__block">第二组（使用<code>__block</code>）</h4>
+<p>源代码</p>
+<pre><code class="language-objc">#import &lt;Foundation/Foundation.h&gt;
+int main() {
+    __block int val = 10;
+    void (^blk)(void) = ^ {
+        val = 222;
+    };
+    printf(&quot;val:%d&quot;, val);
+    blk();
+    printf(&quot;val:%d&quot;, val);
+    return 0;
+}
+</code></pre>
+<p>clang转换后的代码</p>
+<pre><code class="language-c++">struct __block_impl {
+  void *isa;
+  int Flags;
+  int Reserved;
+  void *FuncPtr;
+};
+
+struct __Block_byref_val_0 {
+  void *__isa;
+	__Block_byref_val_0 *__forwarding;
+ 	int __flags;
+ 	int __size;
+ 	int val;
+};
+
+struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  __Block_byref_val_0 *val; // by ref
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, __Block_byref_val_0 *_val, int flags=0) : val(_val-&gt;__forwarding) {
+    impl.isa = &amp;_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+
+static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+  __Block_byref_val_0 *val = __cself-&gt;val; // bound by ref
+	(val-&gt;__forwarding-&gt;val) = 222;
+}
+
+static void __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) {
+  _Block_object_assign((void*)&amp;dst-&gt;val, (void*)src-&gt;val, 8/*BLOCK_FIELD_IS_BYREF*/);
+}
+
+static void __main_block_dispose_0(struct __main_block_impl_0*src) {
+  _Block_object_dispose((void*)src-&gt;val, 8/*BLOCK_FIELD_IS_BYREF*/);
+}
+
+static struct __main_block_desc_0 {
+  size_t reserved;
+  size_t Block_size;
+  void (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*);
+  void (*dispose)(struct __main_block_impl_0*);
+} __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0), __main_block_copy_0, __main_block_dispose_0};
+
+int main() {
+    __attribute__((__blocks__(byref))) __Block_byref_val_0 val = {(void*)0,(__Block_byref_val_0 *)&amp;val, 0, sizeof(__Block_byref_val_0), 10};
+    void (*blk)(void) = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, (__Block_byref_val_0 *)&amp;val, 570425344));
+    printf(&quot;val:%d&quot;, (val.__forwarding-&gt;val));
+    ((void (*)(__block_impl *))((__block_impl *)blk)-&gt;FuncPtr)((__block_impl *)blk);
+    printf(&quot;val:%d&quot;, (val.__forwarding-&gt;val));
+    return 0;
+}
+</code></pre>
+<p>代码又复杂了一些，其实主要是多了一个结构体<code>__Block_byref_val_0</code>，细看这个结构体，你会发现它记录了之前局部变量的值。所以<code>__block</code>基本上就把变量包装成一个结构体了。</p>
+<p>对<code>val</code>的访问就变成了<code>val.__forwarding-&gt;val</code>，为什么有这个<code>__forwarding</code>,这主要因为Block可以在栈、堆、全局上，具体细节看书。</p>
+<h3 id="关于block内部对变量的读写">关于Block内部对变量的读写</h3>
+<p>前面我们知道可通过添加<code>__block</code>实现，但也有一些情况是不需要的。</p>
+<p>比如当你这个变量是全局变量、静态全局变量、静态局部变量，不需要在变量名前增加修饰符也可以读写。</p>
+<p>前两个容易理解，因为Block最终还是转换成函数，在函数内部访问全局变量是OK的，Block结构体不用新增什么字段；</p>
+<p>静态局部变量则多了些工作量，通过clang转换代码后，发现Block的结构体内部会有一个指针变量指向这个静态局部变量。</p>
+<h3 id="循环引用">循环引用</h3>
+<p>前面我们在Block中用的都是一些基础数据类型，如果我们使用object的会怎样呢？</p>
+<p>答案是会造成循环引用。比如下面这种写法</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210540085.png" alt="image-20210921210540085" style="zoom: 67%;" />
+<p>我们看看Clang转换后的代码，其中带上了<code>__strong</code>标记，引用计数+1</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210517036.png" alt="image-20210921210517036" style="zoom: 50%;" />
+<p>在前面加上<code>__block</code>也是一样的，都是强引用</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921210917823.png" alt="image-20210921210917823" style="zoom: 50%;" />
+<p>解决方法也比较简单，改为弱引用即可</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921211111472.png" alt="image-20210921211111472" style="zoom: 67%;" />
+<hr>
+<h4 id="补充一">补充一</h4>
+<p>实际开发中一般遇到的是下面这种情况，一个Object对象有一个属性Block，相互持有。</p>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921211551509.png" alt="image-20210921211551509" loading="lazy"></figure>
+<p>或者把self用<code>__block</code>修饰，形成下面这种循环引用。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921212056815.png" alt="image-20210921212056815" style="zoom: 50%;" />
+<p>这种比较有意思，你可以在Block内部特定时机将<code>__block variable</code>释放，从而解除循环引用，这种用法比较高级。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210921212317578.png" alt="image-20210921212317578" style="zoom:50%;" />
+<h4 id="补充二">补充二</h4>
+<p>一般在Block前使用__weak就可以了，但是对于访问成员变量却行不通，而修改成员变量一般都是通过指针操作。</p>
+<pre><code class="language-objc">__weak typeof(self) weakSelf = self;
+blk = ^(id obj) {
+	weakSelf.money = 100000;
+	weakSelf-&gt;height = 222;
+};
+</code></pre>
+<p>这里第二句<code>weakSelf-&gt;height = 222;</code>编译器会提示错误，因为weakSelf有可能变成nil，会导致非法的内存访问。</p>
+<blockquote>
+<p>另一种修改成员变量的方法是通过<code>__block</code>的方式</p>
+</blockquote>
+<p>也为了防止Block执行过程中self突然释放了，在Block中一般会先强引用一下self，而离开了Block作用域，强引用自然消失了；</p>
+<pre><code class="language-objc">__weak typeof(self) weakSelf = self;
+blk = ^(id obj) {
+  __strong typeof(self) strongSelf = weakSelf;
+	strongSelf.money = 100000;
+	strongSelf-&gt;height = 222;
+};
+</code></pre>
+<p>不过上面这种也有一定概率crash，即有可能strongSelf是nil；</p>
+<p>比如当Block是一个全局变量的时候，而Object生命周期先结束变成nil，此时再执行Block就会crash。如果Block是Object的一个属性或成员变量，也不会有这个问题。</p>
+<p>另外，在开发中一般也不会去写这么长的weakSelf和strongSelf，我们是希望直接用self。(比如你灵机一动，想从其他地方copy一份代码直接放到Block，结果发现得一步步把self替换成strongSelf，过程相当痛苦😖)</p>
+<p>这部分内容RAC有相关的实现，通过@weakify(self)和@strongify(self)。这里我简化了一下实现，代码如下：</p>
+<pre><code class="language-objc">#define weakify(VAR) __weak typeof(VAR) _weak_ = VAR;
+#define strongify(VAR) __strong typeof(VAR) VAR = _weak_;
+
+//使用宏定义后的效果
+weakify(self);
+blk = ^(id obj) {
+  strongify(self);
+	self.money = 100000;
+	self-&gt;height = 222;
+};
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/ios播放动态图/" class="post-title gt-a-link">
+                    ios播放动态图
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

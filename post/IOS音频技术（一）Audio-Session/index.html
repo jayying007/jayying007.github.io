@@ -1,0 +1,405 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>IOS音频技术（一）Audio Session | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    IOS音频技术（一）Audio Session
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-12-13 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="简介">简介</h2>
+<p>Audio Session是IOS提供的一个用来管理音频的类。通过Audio Session，你可以描述如何处理你的App的音频跟其他App的音频的关系。同时也可以告诉操作系统你将如何使用硬件设备，比如麦克风、扬声器。Audio Session是我们跟音频硬件打交道的中介。</p>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/ASPG_intro_2x.png" alt="ASPG_intro_2x.png" loading="lazy"></figure>
+<p>系统提供了<code>AVAudioSession</code>这个类来代表Audio Session，它是一个单例，在App启动之后系统会自动初始化。主要提供的功能有以下：</p>
+<ul>
+<li>
+<p>设置App的音频表现形式</p>
+</li>
+<li>
+<p>接受Audio Session相关通知，比如AudioInterrupt、RouteChange</p>
+</li>
+<li>
+<p>配置音频设备的一些播放参数，如采样率、通道数</p>
+</li>
+</ul>
+<h2 id="设置app的音频表现形式">设置App的音频表现形式</h2>
+<p>比如当你想播放音频时，其他App也在播放音频。这时候你有几种选择：</p>
+<ol>
+<li>暂停其他App的音频（需要其他App是non-mixable）</li>
+<li>一起播放（自己或其他App是mixable）</li>
+<li>一起播放但是减少其他App的音量。</li>
+</ol>
+<p>系统提供了很多种Category，通过设置不同的Category，可以表明你的App的音频表现，具体看下面这张表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Category</th>
+<th style="text-align:left">按下静音键or锁屏时静音</th>
+<th style="text-align:left">中断其他无法混合播放的App</th>
+<th style="text-align:left">允许输入（录音）和输出（播放）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionCategoryAmbient</code></td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">只有输出</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionCategorySoloAmbient</code> (Default)</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">只有输出</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayback</code></td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">只有输出</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionCategoryRecord</code></td>
+<td style="text-align:left">No (锁屏时继续录音)</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">只有输入</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayAndRecord</code></td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">输入和输出</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionCategoryMultiRoute</code></td>
+<td style="text-align:left">No</td>
+<td style="text-align:left">Yes</td>
+<td style="text-align:left">输入和输出</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意最后一个Category，苹果的定义是：</p>
+<p>The category for routing distinct streams of audio data to different output devices at the same time.</p>
+<p>就是虽然可以扬声器和耳机同时播放，但需要是不同的音频流</p>
+</blockquote>
+<p>上述一些打断其他App播放的Category，如果你想实现混合播放，则可通过增加Option：<code>AVAudioSessionCategoryOptionMixWithOthers</code>来实现。</p>
+<p>完整的API是这个：<code>setCategory:mode:options:error:</code>,这里还有一个Mode参数，它的主要作用是在不同音频场景下，让系统做相关的信号处理优化，见下表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Mode identifiers</th>
+<th style="text-align:left">Compatible categories</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeDefault</code></td>
+<td style="text-align:left">All</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeMoviePlayback</code></td>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayback</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeVideoRecording</code></td>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayAndRecord``AVAudioSessionCategoryRecord</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeVoiceChat</code></td>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayAndRecord</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeGameChat</code></td>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayAndRecord</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeVideoChat</code></td>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayAndRecord</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeSpokenAudio</code></td>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayback</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AVAudioSessionModeMeasurement</code></td>
+<td style="text-align:left"><code>AVAudioSessionCategoryPlayAndRecord``AVAudioSessionCategoryRecord``AVAudioSessionCategoryPlayback</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="一个例子">一个例子</h3>
+<p>比如你要实现音频可以在后台播放，如果有其他App的音频则降低其音量，代码如下：</p>
+<pre><code class="language-objc">[[AVAudioSession sharedInstance] setActive:NO error:nil];
+[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionDuckOthers error:nil];
+[[AVAudioSession sharedInstance] setActive:YES error:nil];
+</code></pre>
+<p>注意需要在Xcode的Capabilities中开启Background Mode</p>
+<figure data-type="image" tabindex="2"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/background_modes_2x.png" alt="../Art/background_modes.shot/Resources/shot_2x.png" loading="lazy"></figure>
+<blockquote>
+<p>有时我们要播放App时，需要判断其他App是否在使用Audio，这时可通过secondaryAudioShouldBeSilencedHint这个属性来获取，为true时说明在playing。据此配置AudioSession和UI层的表现</p>
+</blockquote>
+<p>有个比较蛋疼的设定是：你无法中断其他Mixable的音频。也就是说如果其他App配置了Mixable，那你的App播放的音频一定会跟它混播，而不能单独播放。</p>
+<h2 id="audiosession的通知">AudioSession的通知</h2>
+<p>常用的通知有以下几个：</p>
+<h3 id="audiointerrupt">AudioInterrupt</h3>
+<p>指正在播放的音频被中断了，比如系统来电、闹钟、其他不允许一起播放的App启动了音频播放。这个时候你App的AudioSession会被系统Deactive掉，也就静音了。</p>
+<figure data-type="image" tabindex="3"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/audio_session_interrupted_2x.png" alt="A timeline representation of an application's audio session getting interrupted by a phone call." loading="lazy"></figure>
+<p>代码模板如下：</p>
+<pre><code class="language-objc">- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAudioInterrupt:) name:AVAudioSessionInterruptionNotification object:nil];
+}
+
+- (void)onAudioInterrupt:(NSNotification *)notification {
+    NSDictionary *userInfo = [notification userInfo];
+    NSNumber *value = (NSNumber *)userInfo[AVAudioSessionInterruptionTypeKey];
+    if ([value intValue] == AVAudioSessionInterruptionTypeBegan) {
+        NSLog(@&quot;interrupt begin&quot;);
+        //保存播放上下文
+    } else if ([value intValue] == AVAudioSessionInterruptionTypeEnded) {
+        NSLog(@&quot;interrupt end&quot;);
+        //根据情况看看是否恢复播放
+    }   
+}
+</code></pre>
+<p>当然，你可以在中断开始的时候又恢复播放，有机会把其他App暂停掉😜，使得有你App在其他App就不能播放，不过相信你会被用户投诉的。</p>
+<h3 id="routechange">RouteChange</h3>
+<p>用户插拔耳机，使得输入输出音频设备有变化时触发该通知。系统遵循Last in wins原则，output的设备是最后插入的，且有以下表现：（有时拿下耳机声音还在，诡异。。）</p>
+<figure data-type="image" tabindex="4"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/audio_route_change_2x.png" alt="A flowchart representation of how Core Audio, and your property listener callback function, interact to provide good user experience upon an audio hardware route change." loading="lazy"></figure>
+<p>代码模板：</p>
+<pre><code class="language-objc">- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
+}
+
+- (void)onRouteChange:(NSNotification *)notification {
+    NSLog(@&quot;routeChange&quot;);
+    NSDictionary *userInfo = notification.userInfo;
+    NSNumber *value = userInfo[AVAudioSessionRouteChangeReasonKey];
+    if ([value intValue] == AVAudioSessionRouteChangeReasonNewDeviceAvailable) {
+        NSLog(@&quot;new device in&quot;);
+        //遍历[AVAudioSession sharedInstance].currentRoute.outputs，看看是什么接入
+    } else if ([value intValue] == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+        NSLog(@&quot;old device remove&quot;);
+        AVAudioSessionRouteDescription *previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey];
+        NSLog(@&quot;previous: %@&quot;, previousRoute);
+        NSLog(@&quot;current: %@&quot;, [AVAudioSession sharedInstance].currentRoute);
+    }
+}
+</code></pre>
+<h2 id="配置音频设备参数">配置音频设备参数</h2>
+<p>主要有几个</p>
+<ul>
+<li><code>setPreferredSampleRate</code>：设置采样率（但最终系统采用的不一定是这个）</li>
+<li><code>setPreferredIOBufferDuration</code>：时间越小延迟越低，但是I/O会更频繁</li>
+<li><code>setPreferredInput</code>：设置输入</li>
+<li>...</li>
+</ul>
+<h2 id="代办">代办</h2>
+<p>取下一只耳机，音乐暂停</p>
+<h2 id="参考资料">参考资料</h2>
+<p>https://developer.apple.com/library/archive/documentation/Audio/Conceptual/AudioSessionProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007875-CH1-SW1</p>
+<p>https://mikemikezhu.github.io/dev/2019/02/19/audio-session.html</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/数字音频技术介绍/" class="post-title gt-a-link">
+                    数字音频技术介绍
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

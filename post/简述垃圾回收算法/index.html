@@ -1,0 +1,367 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>简述垃圾回收算法 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    简述垃圾回收算法
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-08-02 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/AaNeWu8MQKPx/" class="post-tags">
+                            # 垃圾回收
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="概念">概念</h3>
+<p>垃圾回收(Garbage Collection),简称GC,主要是对那些已经分配的空间进行回收利用,实现再分配.</p>
+<p>比如下面的Java代码</p>
+<pre><code class="language-java">public void test() {
+	List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+	list.add(1);
+	System.out.println(list);
+}
+</code></pre>
+<p>在这个函数中,我创建了一个ArrayList对象,Java则在内存堆上为其分配空间.但是一旦出了这个函数,我们就再也访问不到这块空间了,如果不进行回收,那么内存堆的这个位置就浪费了.</p>
+<p><strong>所以GC要完成的主要有两件事:</strong></p>
+<ul>
+<li>找到内存中的垃圾</li>
+<li>回收这部分垃圾,以便之后可以再分配</li>
+</ul>
+<h3 id="关于对象在堆上的布局">关于对象在堆上的布局</h3>
+<p>一般一个对象在堆中存储两部分信息,一部分是对象的元数据,比如对象的大小,hashcode的值以及用来标识垃圾回收的信息等.另一部分就是对象的具体数据.这部分主要分两种,如果是基本数据类型,那么这个位置存的就是它的值.如果不是,那么这个位置存放的是指向具体内存地址的指针.</p>
+<figure data-type="image" tabindex="1"><img src="https://img-blog.csdnimg.cn/img_convert/a5aec2575de6280d7fb745cde167c8dc.png" alt="image-20210322220230929" loading="lazy"></figure>
+<h3 id="如何找到内存中的垃圾">如何找到内存中的垃圾</h3>
+<p>这里采用<mark>可达性分析</mark>,首先我们会将一些对象作为根,这些对象我们把它标记为可达的,然后由这些根所能指向的其他对象,我们也标记为可达...这样一直传递下去,到最后,我们可以遍历整个堆,然后把那些不可达的对象给回收掉.</p>
+<figure data-type="image" tabindex="2"><img src="https://img-blog.csdnimg.cn/img_convert/baf321c73a321a69339a6223a35858d8.png" alt="image-20210322222228195" loading="lazy"></figure>
+<p>哪些对象可以作为根呢 ---&gt; 调用栈、寄存器以及全局变量</p>
+<p>不过,这些根可能还有潜在的问题. <strong>怎么判断这个值是指针的地址还是一个基本数据类型呢</strong>?</p>
+<figure data-type="image" tabindex="3"><img src="https://img-blog.csdnimg.cn/img_convert/904c4bbb0ff02745c26d5e8cabccbb42.png" alt="image-20210322232620392" loading="lazy"></figure>
+<p>就概率上讲,数值刚好位于堆地址范围内,且刚好是对象头的地址,情况还是比较少的. 我们可以将错就错,不过在这种情况下,可能一个本该回收的对象就被我们列为根了.</p>
+<blockquote>
+<p>当存在貌似指针的非指针时，保守式GC会把被引用的对象错误识别为活动对象。如果这个对象存在大量的子对象，那么它们一律都会被看成活动对象</p>
+</blockquote>
+<p>要严格区别指针与非指针,需要语言处理程序的一些支持.这一块不作展开.</p>
+<h3 id="gc算法评价指标">GC算法评价指标</h3>
+<ul>
+<li>吞吐量</li>
+</ul>
+<p>如堆的大小为HEAP_SIZE,GC总共花费的时间为（A+B+C),则吞吐量为HEAP_SIZE/（A+B+C）。</p>
+<ul>
+<li>最大暂停时间</li>
+</ul>
+<p>最大暂停时间指的是“因执行GC而暂停执行mutator的最长时间”,比如下图指的就是B. 如果暂停时间太长,就会出现Stop-The-World</p>
+<figure data-type="image" tabindex="4"><img src="https://img-blog.csdnimg.cn/img_convert/a6884a135cffa7f0a5dfbd38e63963a0.png" alt="image-20210322223611521" loading="lazy"></figure>
+<ul>
+<li>堆使用效率</li>
+</ul>
+<p>不同的GC算法,会在堆中对象的对象头存放一些信息,大小不一,或者会将堆做划分.</p>
+<ul>
+<li>访问的局部性</li>
+</ul>
+<p>我们知道计算机是有高速缓存这么个东西.一般而言,具有引用关系的对象之间通常很可能存在连续访问的情况。所以如果在堆中这两个对象存放位置连续,那当读取第一个对象时,后面的对象也跟着被读进了缓存,后续访问的速度就加快了.</p>
+<h3 id="gc算法介绍">GC算法介绍</h3>
+<h4 id="标记清除算法">标记清除算法</h4>
+<p>这个其实在前面也有提到,从根集合出发,将能访问到的对象打上标记,然后遍历堆,将没有标记的对象清除.伪代码描述如下:</p>
+<pre><code class="language-go">mark_sweep() {
+	//标记阶段
+	for(r : $roots) {
+		mark(*r)
+	}
+	//清除阶段
+	sweeping = $heap_start
+	while(sweeping &lt; $heap_end)
+		if(sweeping.mark == TRUE)
+			sweeping.mark = FALSE
+		else
+			sweeping.next = $free_list
+			$free_list = sweeping
+		sweeping += sweeping.size
+}
+//标记函数
+mark(obj) {
+	if(obj.mark == FALSE) {
+		obj.mark = TRUE
+		for(child : children(obj))
+			mark(*child)
+	}
+}
+</code></pre>
+<p>这种方式不会挪动对象在堆中的位置,但是容易产生内存碎片.关于回收后的内存如何分配使用,可以找更相关的资料.比如参考malloc库的实现,在&lt;&lt;深入理解计算机系统&gt;&gt;一书中也有所涉及.</p>
+<h4 id="引用计数法">引用计数法</h4>
+<p>顾名思义,在对象头记录有多少个引用了这个对象.当计数变为0的时候,我们就可以立即对这部分内存进行回收.</p>
+<p>它的最大暂停时间短,但是存在多个无用对象循环引用无法释放内存的问题. Python的GC采用了引用计数法,可以去了解它如何解决循环引用的</p>
+<h4 id="标记复制算法">标记复制算法</h4>
+<p>这种算法把堆划分为两部分,每次分配对象的时候只使用其中一半.当标记过程结束后,把存活的对象全都挪到堆的另一半中.</p>
+<p>这种的好处是避免了内存碎片,因为每次都有一整块的空闲空间用于分配对象.但显然堆的使用效率降低了</p>
+<p><mark>注意</mark></p>
+<p>在这种算法中,由于挪动了对象,所以原先指向这些对象的指针,要做一个映射,使其访问到新的内存位置. 解决方法可以采用句柄的方式间接处理对象. (采用指向指针的指针也可以)</p>
+<figure data-type="image" tabindex="5"><img src="https://img-blog.csdnimg.cn/img_convert/f6a9508f151e2be0cf45d51b3cdd0b4c.png" alt="image-20210322232131923" loading="lazy"></figure>
+<p>通过引入句柄,当我们移动对象的时候,只需要修改句柄里的指针,而不用更新根的值.</p>
+<h4 id="标记整理算法">标记整理算法</h4>
+<p>这种算法可以理解为先执行了标记清除算法,然后把存活的对象都挪到一起,这样空闲的空间就是连续的了.</p>
+<figure data-type="image" tabindex="6"><img src="https://img-blog.csdnimg.cn/img_convert/ebb84a415b9493c50988bfca116e4258.png" alt="image-20210322231857408" loading="lazy"></figure>
+<figure data-type="image" tabindex="7"><img src="https://img-blog.csdnimg.cn/img_convert/a07183d5a37a41a81b0cd6873c5caf68.png" alt="image-20210322231906519" loading="lazy"></figure>
+<p>同样的,由于移动了对象,所以指针的访问也要做些修改.</p>
+<h4 id="分代回收">分代回收</h4>
+<p>在对象头部分多了对象的存活年龄,据此划分了新生代,老年代对象.在堆中也是划分存储.</p>
+<p>根据经验显示,新生代的对象存活率较低,所以这部分会有大量对象回收.对这部分采取标记复制算法收益比较好;</p>
+<p>而针对老年代对象,则采用标记清除算法. 当需要GC时,优先从新生代入手.</p>
+<p><strong>当我们对新生代进行GC时,如果有老年代的指向新生代的引用,怎么办?</strong></p>
+<p>如果遍历老年代去标记,那其实又跟遍历整个堆没区别了.</p>
+<p>所以这里引入了<mark>记录集</mark>和<mark>写入屏障</mark></p>
+<p>记录集上面保存了老年代对象的指针. 它是在我们更新对象指针的时候,通过写入屏障的方式加入的.</p>
+<pre><code class="language-go">write_barrier(obj, field, new_obj) {
+	if(obj &gt;= $old_start &amp;&amp; new_obj &lt; $old_start &amp;&amp; obj.remembered == FALSE)
+		$rs[$rs_index] = obj
+		$rs_index++
+		obj.remembered = TRUE
+	*field = new_obj
+}
+</code></pre>
+<p>如上述伪代码那样,当老年代对象有某个属性指向新生代对象时,将其加入记录集中.</p>
+<p>这样的好处是当新生代对象的内存位置移动时,能够知道要更新哪个老年代对象的指针</p>
+<figure data-type="image" tabindex="8"><img src="https://img-blog.csdnimg.cn/img_convert/be48105e64cec299cb2218e1592616f6.png" alt="image-20210323203741382" loading="lazy"></figure>
+<h4 id="增量式垃圾回收">增量式垃圾回收</h4>
+<p>上面提到的GC都有一个问题,它们在进行垃圾回收时会阻塞主线程,直到垃圾回收结束.</p>
+<figure data-type="image" tabindex="9"><img src="https://img-blog.csdnimg.cn/img_convert/54b247151e6342e6b1b3bc7a6f96d94b.png" alt="image-20210323204218375" loading="lazy"></figure>
+<p>这里主要讲一种增量GC的算法,它的GC要分好几个阶段完成,这样保证最大暂停时间变小.</p>
+<figure data-type="image" tabindex="10"><img src="https://img-blog.csdnimg.cn/img_convert/2f9fcb7ce4054df5db6c79d0207e56e1.png" alt="image-20210323204322491" loading="lazy"></figure>
+<h5 id="三色标记算法">三色标记算法</h5>
+<p>这是Edsger W. Dijkstra等人提出的三色标记算法（Tri-color marking）,它将每个对象都标记了一个颜色:</p>
+<ul>
+<li>
+<p>白色：还未搜索过的对象</p>
+</li>
+<li>
+<p>灰色：正在搜索的对象</p>
+</li>
+<li>
+<p>黑色：搜索完成的对象</p>
+</li>
+</ul>
+<p>GC开始运行前所有的对象都是白色。GC一开始运行，所有从根能到达的对象都会被标记，然后被堆到栈里。GC只是发现了这样的对象，但还没有搜索完它们，所以这些对象就成了灰色对象。灰色对象会被依次从栈中取出，其子对象也会被涂成灰色。当其所有的子对象都被涂成灰色时，对象就会被涂成黑色。当GC结束时已经不存在灰色对象了，活动对象全部为黑色，垃圾则为白色。</p>
+<hr>
+<p>它可以分为三个阶段: 根查找阶段,标记阶段,清除阶段</p>
+<p>根查找阶段把能直接从根引用的对象涂成灰色。</p>
+<p>标记阶段查找灰色对象，将其子对象也涂成灰色，查找结束后将灰色对象涂成黑色。</p>
+<p>清除阶段则查找堆，将白色对象连接到空闲链表，将黑色对象变回白色.</p>
+<p>// 在标记,清除阶段中,其都是增量式的,即每次只标记或清除一定数量的对象后切回主线程.</p>
+<hr>
+<p>这里还有几个需要注意的地方.</p>
+<p>问题1</p>
+<figure data-type="image" tabindex="11"><img src="https://img-blog.csdnimg.cn/img_convert/416d59030abc0f8a58e550c3c9afe392.png" alt="image-20210323210817028" loading="lazy"></figure>
+<p>如图,当A标记完所有子对象后,自己变黑. 此时切换回主线程,然后主线程的代码做了个操作,将B--C之间的引用删掉,然后加了A--C的引用.  这时再回来GC的时候,由于A已经黑了,所以不会再对其子对象做标记, 这样就会错过对象C, 这样会误回收对象!!</p>
+<p>解决这个问题的办法同样使用写入屏障, 在添加A指向C的引用时, 如果C是白色的,就将其标黑.</p>
+<pre><code class="language-go">write_barrier(obj, field, newobj) {
+	if(newobj.mark == FALSE) {
+		newobj.mark = TRUE
+		push(newobj, $mark_stack)
+	}
+	*field = newobj
+}
+</code></pre>
+<p>问题2</p>
+<figure data-type="image" tabindex="12"><img src="https://img-blog.csdnimg.cn/img_convert/471c98e4b5c097c01c1480de549093f1.png" alt="image-20210323211416289" loading="lazy"></figure>
+<p>如图,当GC开始清除阶段时,它会把没有标黑的对象给清除掉. 如果这时切换回主线程,而我们又要分配新的对象时就要注意了, 如果分配的新对象位置在$sweeping的右边, 那我们要把新分配的对象给标成黑色的,以防被误清除.</p>
+<h3 id="参考资料">参考资料</h3>
+<p>&lt;&lt;垃圾回收的算法与实现&gt;&gt;  ----- [日]中村成洋，[日]相川光</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/自己手动生成二维码/" class="post-title gt-a-link">
+                    自己手动生成二维码
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

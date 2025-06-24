@@ -1,0 +1,548 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>跨平台网络框架mars浅析 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    跨平台网络框架mars浅析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-06-26 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/WMOdcFhyli/" class="post-tags">
+                            # Mars
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/ptmLnGCxnGr/" class="post-tags">
+                            # 网络编程
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a href="https://github.com/Tencent/mars">https://github.com/Tencent/mars</a></p>
+<h2 id="mars-是什么">Mars 是什么</h2>
+<p>Mars 是微信官方的终端基础组件, 是一个业务性无关,平台性无关 使用 C++ 编写的基础组件。<br>
+它主要包括以下几个部分：</p>
+<ol>
+<li>Comm：基础库，包括 socket、线程、消息队列、协程等基础工具；</li>
+<li>Xlog：通用日志模块，充分考虑移动终端的特点，提供高性能、高可用、安全性、容错性的日志功能</li>
+<li>SDT：网络诊断模块；</li>
+<li>STN：信令传输网络模块，负责终端与服务器的小数据信令通道。包含了微信终端在移动网络上的大量优化经验与成果，经历了微信海量用户的考验。</li>
+</ol>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fhyysx-FjhKxqdzCMEJFhUJkBI8B.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>这些介绍 Github 上都有，我就不重复了。</p>
+</blockquote>
+<h3 id="给纯小白的说明">给纯小白的说明</h3>
+<p>说真的，如果对网络编程不了解，上面那段话估计是看不明白的，这里再简单说明一下。<br>
+一般来说，客户端和后台通过 TCP 三次握手建立连接<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiDGKMV1hcl3Xzb0vgYyiaufhoff.png" alt="" loading="lazy"><br>
+这组连接通过（IP1,Socket1,IP2,Socket2）唯一标识，<br>
+你想给后台发消息，就往这个 Socket 写数据。你想从后台收消息，就从这个 Socket 读数据。</p>
+<p>常见的通信方式有两种：</p>
+<ul>
+<li>客户端请求数据，后台返回；</li>
+<li>后台主动推数据；</li>
+</ul>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FhhYotVyo-F3BIJ5hjpeQHrFBPTg.png" alt="" loading="lazy"><br>
+其中，想要让后台在需要的时候发消息给你，就得保持 Socket 一直连接着，即所谓的长连接。而前面那种一来一回的，就无所谓短连接还是长连接了。</p>
+<blockquote>
+<p>其实还有客户端给后台发通知的场景，只不过这种比较少见。<br>
+例如微信里面的「对方正在输入」，就是用这种能力实现的。</p>
+</blockquote>
+<p>网络上传输的只是单纯的二进制数据，具体代表什么含义就看客户端跟后台协商的结果了。就像 TCP 协议建立在 IP 协议的基础之上，客户端和后台间的协议建立在 TCP 协议之上，这个学过计算机网络的都懂。</p>
+<p>socket 编程对应的系统调用接口如下<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FqjBttbkDx0-tt7TbICebMVCywHq.png" alt="" loading="lazy"></p>
+<p>到这里，总算可以知道 Mars 是什么了。简单说，Mars 就是对上面 Socket 建立的封装，由它负责建立跟后台的连接以及数据读写。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fl927kybOs6pEyV318Rp0G8h8WMU.png" alt="" loading="lazy"></p>
+<h2 id="关于官方-demo">关于官方 Demo</h2>
+<p>毕竟是微信推出的，提供的 demo 是基于聊天场景设计的。<br>
+关于 IM 系统，相信大部分人在上大学时都做过玩具项目了。<br>
+比如我的：<a href="https://github.com/jayying007/chatting-room">https://github.com/jayying007/chatting-room</a></p>
+<p>这里要吐槽一点是，Github 上的 demo 基本是运行不起来的，我经历了九九八十一难才搞定。<br>
+Server 端和 iOS 端都有问题：<br>
+Server 端的主要问题是 Gradle 版本比较老，我本地的 JDK 版本比较新，这里通过降低到 JDK8 解决；<br>
+iOS 端主要问题是新旧版本符号有所变更，这个根据报错信息逐步修改解决。<br>
+解决的过程因机器而异，所以我也不打算说明，应该没有人不会 Google 吧？</p>
+<h2 id="ios-demo-分析">iOS Demo 分析</h2>
+<p>核心结构如下：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FktXpXlVXPYxrm7LZrVLNJyhJcHQ.png" alt="" loading="lazy"></p>
+<p>其中，NetworkService 负责设置启动 mars，并接受 mars 回调的数据，传递给上层 NetworkEvent。</p>
+<pre><code class="language-objectivec">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    [NetworkService sharedInstance].delegate = [[NetworkEvent alloc] init];
+    [[NetworkService sharedInstance] setCallBack];
+    [[NetworkService sharedInstance] createMars];
+    [[NetworkService sharedInstance] setClientVersion:200];
+    [[NetworkService sharedInstance] setLongLinkAddress:@&quot;192.168.1.101&quot; port:8081];
+    [[NetworkService sharedInstance] setShortLinkPort:8080];
+    [[NetworkService sharedInstance] reportEvent_OnForeground:YES];
+    [[NetworkService sharedInstance] makesureLongLinkConnect];
+
+    [[NetworkStatus sharedInstance] Start:[NetworkService sharedInstance]];
+
+    return YES;
+}
+</code></pre>
+<h3 id="一次请求的过程">一次请求的过程</h3>
+<p>以 PingServerController 中的代码为例。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiMp7oM8ynpTtNNeQNRvsNCboyqS.png" alt="" loading="lazy"></p>
+<p>点击 Click 时，客户端创建了一个 CGITask，传递给 NetworkService，并把自己作为监听者。</p>
+<pre><code class="language-objectivec">- (IBAction)onButtonClick:(id)sender forEvent:(UIEvent *)event {
+    CGITask *helloCGI = [[CGITask alloc] initAll:ChannelType_All AndCmdId:kSayHello AndCGIUri:@&quot;/mars/hello&quot; AndHost:@&quot;192.168.1.101&quot;];
+    [[NetworkService sharedInstance] startTask:helloCGI ForUI:self];
+}
+</code></pre>
+<p>这个 CGITask 只是客户端对数据的封装，在 NetworkService 层会解析为 mars 的一个 Task，然后启动这个 Task。<br>
+每次创建 Task 都会生成一个唯一的 taskid，之后将这些上下文信息注册到 NetworkEvent 中。</p>
+<pre><code class="language-objectivec">- (int)startTask:(CGITask *)task ForUI:(id&lt;UINotifyDelegate&gt;)delegateUI {
+    Task ctask;
+    ctask.cmdid = task.cmdid;
+    ctask.channel_select = task.channel_select;
+    ctask.cgi = std::string(task.cgi.UTF8String);
+    ctask.shortlink_host_list.push_back(std::string(task.host.UTF8String));
+    ctask.user_context = (__bridge void*)task;
+
+    NSString *taskIdKey = [NSString stringWithFormat:@&quot;%d&quot;, ctask.taskid];
+    [_delegate addObserver:delegateUI forKey:taskIdKey];
+    [_delegate addCGITasks:task forKey:taskIdKey];
+
+    mars::stn::StartTask(ctask);
+
+    return ctask.taskid;
+}
+</code></pre>
+<p>接下来 Task 启动，要真正发送数据了，mars 通过 callback 来索取数据</p>
+<pre><code class="language-objectivec">// StnCallBack
+bool StnCallBack::Req2Buf(uint32_t _taskid, void* const _user_context, const std::string&amp; _user_id, AutoBuffer&amp; _outbuffer, AutoBuffer&amp; _extend, int&amp; _error_code, const int _channel_select, const std::string&amp; host) {
+    NSData* requestData =  [[NetworkService sharedInstance] Request2BufferWithTaskID:_taskid userContext:_user_context];
+    if (requestData == nil) {
+        requestData = [[NSData alloc] init];
+    }
+    _outbuffer.AllocWrite(requestData.length);
+    _outbuffer.Write(requestData.bytes,requestData.length);
+    return requestData.length &gt; 0;
+}
+// NetworkService
+- (NSData*)Request2BufferWithTaskID:(uint32_t)tid userContext:(const void *)context {
+    CGITask *task = (__bridge CGITask *)context;
+    return [_delegate Request2BufferWithTaskID:tid task:task];
+}
+// NetworkEvent
+- (NSData*)Request2BufferWithTaskID:(uint32_t)tid task:(CGITask *)task {
+    NSData* data = NULL;
+
+    NSString *taskIdKey = [NSString stringWithFormat:@&quot;%d&quot;, tid];
+
+    id&lt;UINotifyDelegate&gt; uiObserver = [controllers objectForKey:taskIdKey];
+    if (uiObserver != nil) {
+        data = [uiObserver requestSendData];
+    }
+
+    return data;
+}
+// PingServerController
+- (NSData*)requestSendData {
+    HelloRequest *helloRequest = [HelloRequest new];
+    helloRequest.user = [self username];
+    helloRequest.text = @&quot;Hello world&quot;;
+    NSData *data = [helloRequest data];
+    return data;
+}
+</code></pre>
+<p>经过层层传递，最后来到了 PingServerController，得到一个 HelloRequest 的序列化数据。这里的业务层数据是一个 protobuf 对象，也是网络编程常用的序列化方式，关于 protobuf 的介绍可以看以前写的博客。</p>
+<p>因为这是个有来有回的请求，所以后台还会回数据给客户端，也是 mars 通过 callback 来返回数据。</p>
+<pre><code class="language-objectivec">// StnCallBack
+int StnCallBack::Buf2Resp(uint32_t _taskid, void* const _user_context, const std::string&amp; _user_id, const AutoBuffer&amp; _inbuffer, const AutoBuffer&amp; _extend, int&amp; _error_code, const int _channel_select) {
+    int handle_type = mars::stn::kTaskFailHandleNormal;
+    NSData* responseData = [NSData dataWithBytes:(const void *) _inbuffer.Ptr() length:_inbuffer.Length()];
+    NSInteger errorCode = [[NetworkService sharedInstance] Buffer2ResponseWithTaskID:_taskid ResponseData:responseData userContext:_user_context];
+
+    if (errorCode != 0) {
+        handle_type = mars::stn::kTaskFailHandleDefault;
+    }
+    return handle_type;
+}
+// NetworkService
+- (NSInteger)Buffer2ResponseWithTaskID:(uint32_t)tid ResponseData:(NSData *)data userContext:(const void *)context {
+    CGITask *task = (__bridge CGITask *)context;
+    return [_delegate Buffer2ResponseWithTaskID:tid responseData:data task:task];
+}
+// NetworkEvent
+- (NSInteger)Buffer2ResponseWithTaskID:(uint32_t)tid responseData:(NSData *)data task:(CGITask *)task {
+    int returnType = 0;
+
+    NSString *taskIdKey = [NSString stringWithFormat:@&quot;%d&quot;, tid];
+
+    id&lt;UINotifyDelegate&gt; uiObserver = [controllers objectForKey:taskIdKey];
+    if (uiObserver != nil) {
+        returnType = [uiObserver onPostDecode:data];
+    } else {
+        returnType = -1;
+    }
+
+    return returnType;
+}
+// PingServerController
+- (int)onPostDecode:(NSData*)responseData {
+    helloResponse = [HelloResponse parseFromData:responseData error:nil];
+    if ([helloResponse hasErrmsg]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:helloResponse.errmsg preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@&quot;OK&quot; style:UIAlertActionStyleDefault handler:nil]];
+            [self presentViewController:alert animated:YES completion:nil];
+        });
+        LOG_INFO(kModuleViewController, @&quot;recv hello response: %@&quot;, helloResponse.errmsg);
+    }
+
+    return helloResponse.retcode == 0 ? 0 : -1;
+}
+</code></pre>
+<h3 id="一次-push-的过程">一次 Push 的过程</h3>
+<p>为了测试这个过程，需要准备两台手机。这里以 TopicViewController 中的代码为例。<br>
+首先一台手机发送消息，过程和上面的类似，会有 request 和 response。</p>
+<pre><code class="language-objectivec">// request时调用
+- (NSData*)requestSendData {
+    SendMessageRequest *sendMsgRequest = [SendMessageRequest new];
+    sendMsgRequest.from = [self username];
+    sendMsgRequest.to = @&quot;all&quot;;
+    sendMsgRequest.text = _textField.text;
+    sendMsgRequest.accessToken = @&quot;123456&quot;;
+    sendMsgRequest.topic = _conversation.topic;
+    LOG_INFO(kModuleViewController, @&quot;send msg to topic:%@&quot;, _conversation.notice);
+    NSData* data = [sendMsgRequest data];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _textField.text = @&quot;&quot;;
+    });
+    return data;
+}
+// response时调用
+- (int)onPostDecode:(NSData*)responseData {
+    SendMessageResponse *sendMsgResponse = [SendMessageResponse parseFromData:responseData error:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *recvtext = [NSString stringWithFormat:@&quot;%@ : %@&quot;, sendMsgResponse.from, sendMsgResponse.text];
+        [self.messages addObject:recvtext];
+        [self.tableView reloadData];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.messages.count-1 inSection:0];
+        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    });
+    return sendMsgResponse.errCode == 0 ? 0 : -1;
+}
+</code></pre>
+<p>在进入 TopicViewController 时，注册了 PushObserver</p>
+<pre><code class="language-objectivec">- (void)viewDidLoad {
+    [super viewDidLoad];
+	// 略...
+    [[NetworkService sharedInstance] addPushObserver:self withCmdId:kPushMessageCmdId];
+}
+</code></pre>
+<p>这样当后台 Push 数据时，就能找到对应的处理者。这样另一台手机就能收到消息了。</p>
+<pre><code class="language-objectivec">// StnCallBack
+void StnCallBack::OnPush(const std::string&amp; _channel_id, uint32_t _cmdid, uint32_t _taskid, const AutoBuffer&amp; _body, const AutoBuffer&amp; _extend) {
+    if (_body.Length() &gt; 0) {
+        NSData* recvData = [NSData dataWithBytes:(const void *) _body.Ptr() length:_body.Length()];
+        [[NetworkService sharedInstance] OnPushWithCmd:_cmdid data:recvData];
+    }
+}
+// NetworkService
+- (void)OnPushWithCmd:(NSInteger)cid data:(NSData *)data {
+    return [_delegate OnPushWithCmd:cid data:data];
+}
+// NetworkEvent
+- (void)OnPushWithCmd:(NSInteger)cid data:(NSData *)data {
+    id&lt;PushNotifyDelegate&gt; pushObserver = [pushrecvers objectForKey:[NSString stringWithFormat:@&quot;%d&quot;, cid]];
+    if (pushObserver != nil) {
+        [pushObserver notifyPushMessage:data withCmdId:cid];
+    }
+}
+// TopicViewController
+- (void)notifyPushMessage:(NSData*)pushData withCmdId:(int)cmdId {
+    MessagePush* messagePush = [MessagePush parseFromData:pushData error:nil];
+    if (messagePush != nil) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *recvtext = [NSString stringWithFormat:@&quot;%@ : %@&quot;, messagePush.from, messagePush.content];
+            [self.messages addObject:recvtext];
+            [self.tableView reloadData];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.messages.count-1 inSection:0];
+            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+        });
+    }
+}
+</code></pre>
+<p>画成图大概长这样：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FtRSj6-8QkS9QFzBs7CYSRH9l5YO.png" alt="" loading="lazy"></p>
+<h2 id="写到最后">写到最后</h2>
+<p>这里要提个醒，如果你以为网络上传输的就是纯 HelloRequest、HelloResponse、MessagePush 这样的数据，那说明你还没完全理解。<br>
+毕竟这里还有个疑问，怎么区分后台返回的数据是 HelloResponse 还是 MessagePush🤔。</p>
+<p>回想前面创建 CGITask 的过程，其实还有 cmdid 这个东西。</p>
+<pre><code class="language-objectivec">- (IBAction)onButtonClick:(id)sender forEvent:(UIEvent *)event {
+    CGITask *helloCGI = [[CGITask alloc] initAll:ChannelType_All AndCmdId:kSayHello AndCGIUri:@&quot;/mars/hello&quot; AndHost:@&quot;192.168.1.101&quot;];
+    [[NetworkService sharedInstance] startTask:helloCGI ForUI:self];
+}
+</code></pre>
+<p>这样，客户端在请求时把这个 cmdid 也带上，后台就知道客户端请求的是什么内容。<br>
+后台返回时把 cmdid 带上，客户端就知道后台返回的是什么内容。<br>
+在 Demo 中，客户端和后台之间的传输协议如下：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fjf92KFNF4RKejLQe3RcksxEdxSr.png" alt="" loading="lazy"></p>
+<p>客户端这部分代码在 longlink_packer.cc 中</p>
+<pre><code class="language-objectivec">void (*longlink_pack)(uint32_t _cmdid, uint32_t _seq, const AutoBuffer&amp; _body, const AutoBuffer&amp; _extension, AutoBuffer&amp; _packed, longlink_tracker* _tracker)
+    = [](uint32_t _cmdid, uint32_t _seq, const AutoBuffer&amp; _body, const AutoBuffer&amp; _extension, AutoBuffer&amp; _packed, longlink_tracker* _tracker) {
+    __STNetMsgXpHeader st = {0};
+    st.head_length = htonl(sizeof(__STNetMsgXpHeader));
+    st.client_version = htonl(sg_client_version);
+    st.cmdid = htonl(_cmdid);
+    st.seq = htonl(_seq);
+    st.body_length = htonl(_body.Length());
+
+    _packed.AllocWrite(sizeof(__STNetMsgXpHeader) + _body.Length());
+    _packed.Write(&amp;st, sizeof(st));
+
+    if (NULL != _body.Ptr()) _packed.Write(_body.Ptr(), _body.Length());
+
+    _packed.Seek(0, AutoBuffer::ESeekStart);
+};
+</code></pre>
+<p>服务器这部分代码在 NetMsgHeader.java 中</p>
+<pre><code class="language-java">public byte[] encode() throws InvalidHeaderException {
+    if (body == null &amp;&amp; cmdId != CMDID_NOOPING &amp;&amp; cmdId != CMDID_NOOPING_RESP) {
+        throw new InvalidHeaderException(&quot;invalid header body&quot;);
+    }
+
+    final int headerLength = FIXED_HEADER_SKIP + (options == null ? 0 : options.length);
+    final int bodyLength = (body == null ? 0 : body.length);
+    final int packLength = headerLength + bodyLength;
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream(packLength);
+
+    try {
+        final DataOutputStream dos = new DataOutputStream(baos);
+
+        dos.writeInt(headerLength);
+        dos.writeInt(CLIENTVERSION);
+        dos.writeInt(cmdId);
+        dos.writeInt(seq);
+        dos.writeInt(bodyLength);
+
+        if (options != null) {
+            dos.write(options);
+        }
+
+        if (body != null) {
+            dos.write(body);
+        }
+
+    } catch (IOException e) {
+        e.printStackTrace();
+
+    } finally {
+        try {
+            baos.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    return baos.toByteArray();
+}
+</code></pre>
+<p>最后的最后，我还要插一句。这个协议是客户端跟后台协商的，每个业务定的都不一样，微信也不是这样搞的。具体怎么定义取决于自身业务，更好的设计是减少传输数据大小，又能有扩展性，更安全。</p>
+<h2 id="其他">其他</h2>
+<p>如果你对 mars 的源码有兴趣，可以参考下面的博客<br>
+<a href="https://tbfungeek.github.io/2019/12/05/Tencent-Mars-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">Tencent Mars 源码解析</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/[转] 游戏中的AI-行为树/" class="post-title gt-a-link">
+                    [转] 游戏中的AI-行为树
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

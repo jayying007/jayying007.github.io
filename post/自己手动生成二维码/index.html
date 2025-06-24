@@ -1,0 +1,730 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>自己手动生成二维码 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    自己手动生成二维码
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-08-02 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/_fsezK5tGgA_/" class="post-tags">
+                            # 二维码
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>虽然生成二维码不是什么难事，毕竟有那么多轮子，工作中你就是调一下SDK，并不会去关心它具体怎么实现的（比如zxing算一个，不想麻烦的可以用这个）。但是两三行调用别人的代码就完事感觉没什么意思，<s>其实还是想折腾</s>。</p>
+<ul>
+<li>如果对二维码的原理不熟悉，可以参考我转载的这篇博客<a href="https://blog.csdn.net/qq_17190121/article/details/104715136">https://blog.csdn.net/qq_17190121/article/details/104715136</a><br>
+博主写得很清楚了，看一两遍然后就懂了</li>
+<li>找不到官方文档，貌似ISO要收费。。然后就在百度文库中找了中文版的<a href="https://wenku.baidu.com/view/ef77275f312b3169a451a4a4.html?pn=50">https://wenku.baidu.com/view/ef77275f312b3169a451a4a4.html?pn=50</a></li>
+</ul>
+<h5 id="自我感觉代码写得一般但逻辑很清晰基本步骤如图">自我感觉代码写得一般，但逻辑很清晰，基本步骤如图<img src="https://img-blog.csdnimg.cn/20200307162618411.gif" alt="在这里插入图片描述" loading="lazy"></h5>
+<blockquote>
+<p>其实上面这个图是在写代码出现bug时想到的一个办法，嗯...，还挺好看的</p>
+</blockquote>
+<h5 id="因为目的是用手机扫码所以二维码的规格不用特别大一般只需要存一个网站的地址即可微信支付宝扫到二维码时会自动跳转到这个网址">因为目的是用手机扫码，所以二维码的规格不用特别大，一般只需要存一个网站的地址即可，微信/支付宝扫到二维码时会自动跳转到这个网址。</h5>
+<h6 id="我这里用的规格">我这里用的规格</h6>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>纠错等级</th>
+<th>编码方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td>H</td>
+<td>Byte Mode</td>
+</tr>
+</tbody>
+</table>
+<h4 id="参考文档位置">参考文档位置</h4>
+<p><img src="https://img-blog.csdnimg.cn/20200307162827574.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" loading="lazy"><br>
+<img src="https://img-blog.csdnimg.cn/2020030716283698.png" alt="在这里插入图片描述" loading="lazy"><br>
+<img src="https://img-blog.csdnimg.cn/20200307162840189.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" loading="lazy"><br>
+<img src="https://img-blog.csdnimg.cn/20200307162844555.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" loading="lazy"></p>
+<h3 id="初始化数据">初始化数据</h3>
+<pre><code class="language-python"># 相关信息
+self.version = 6
+# H纠错等级的指示码，版本6的字节数，划分数据块数，每块数据数，每块纠错数
+self.relate_info = {'err_code': '10', 'total_bytes': 172, 'number_of_block': 4,
+                    'per_block_data': 15, 'per_block_err': 28}
+# 对齐图案中心点位置
+self.align_pos = 34
+self.size = 21 + (self.version - 1) * 4
+# 0表示白，1表示黑，2表示未使用
+self.pattern = np.ones([self.size, self.size], dtype=int) * 2
+self.data = data
+# 格式：{'000':[[1,0,0,1]...[0,1,1,0],'001':...}
+self.masking_pattern = None
+self.masking_coding = None
+self.draw = True
+</code></pre>
+<h3 id="绘制定位图案">绘制定位图案</h3>
+<p>版本确定了，位置也就确定了</p>
+<pre><code class="language-python">def get_position_pattern(self):
+    # 画好一个定位图案
+    position_pattern = np.ones([7, 7], dtype=int)
+    for i in range(1, 6):
+        for j in range(1, 6):
+            if i == 1 or i == 5:
+                position_pattern[i][j] = 0
+                continue
+            if j == 1 or j == 5:
+                position_pattern[i][j] = 0
+                continue
+    # 放在三个位置
+    for i in range(0, 7):
+        for j in range(0, 7):
+            self.pattern[i][j] = position_pattern[i][j]
+            self.pattern[i][j + self.size - 7] = position_pattern[i][j]
+            self.pattern[i + self.size - 7][j] = position_pattern[i][j]
+            if self.draw:
+                self.dynamic_draw()
+</code></pre>
+<h3 id="绘制定位图案白边">绘制定位图案白边</h3>
+<pre><code class="language-python">def get_position_round_pattern(self):
+    for i in range(0, 8):
+        self.pattern[i][7] = 0
+        self.pattern[7][i] = 0
+        self.pattern[i][self.size - 8] = 0
+        self.pattern[self.size - 8][i] = 0
+        self.pattern[i + self.size - 8][7] = 0
+        self.pattern[7][i + self.size - 8] = 0
+        if self.draw:
+            self.dynamic_draw()
+</code></pre>
+<h3 id="绘制对齐图案">绘制对齐图案</h3>
+<pre><code class="language-python">def get_alignment_pattern(self):
+    # 画好一个对齐图案
+    alignment_pattern = np.ones([5, 5], dtype=int)
+    for i in range(1, 4):
+        for j in range(1, 4):
+            if i == 1 or i == 3:
+                alignment_pattern[i][j] = 0
+                continue
+            if j == 1 or j == 3:
+                alignment_pattern[i][j] = 0
+                continue
+    # 只放置在一个位置
+    for i in range(0, 5):
+        for j in range(0, 5):
+            self.pattern[i + self.align_pos - 2][j + self.align_pos - 2] = alignment_pattern[i][j]
+            if self.draw:
+                self.dynamic_draw()
+</code></pre>
+<h3 id="绘制时序图案">绘制时序图案</h3>
+<pre><code class="language-python">def get_timing_pattern(self):
+    fill_black = True
+    for i in range(8, self.size - 7):
+        if fill_black:
+            self.pattern[6][i] = 1
+            self.pattern[i][6] = 1
+        else:
+            self.pattern[6][i] = 0
+            self.pattern[i][6] = 0
+        fill_black = not fill_black
+        if self.draw:
+            self.dynamic_draw()
+</code></pre>
+<h3 id="绘制临时的格式图案">绘制临时的格式图案</h3>
+<p>主要是为了占坑，让后面填充数据的操作更简单</p>
+<pre><code class="language-python">def get_tmp_format_pattern(self):
+    # 右上角0-7
+    for i in range(0, 8):
+    	self.pattern[8][self.size - 1 - i] = 0
+    # 左下角8-14
+    for i in range(0, 7):
+        self.pattern[self.size - 7 + i][8] = 0
+    # 固定黑点
+        self.pattern[self.size - 8][8] = 0
+    # 左上角部分
+    for i in range(0, 6):
+        self.pattern[i][8] = 0
+    for i in range(0, 6):
+        self.pattern[8][5 - i] = 0
+        # 位置是固定的
+        self.pattern[7][8] = 0
+        self.pattern[8][8] = 0
+        self.pattern[8][7] = 0
+</code></pre>
+<h3 id="绘制版本图案">绘制版本图案</h3>
+<p>这个版本刚好不用，版本7以上才需要</p>
+<pre><code class="language-python">def get_version_pattern(self):
+    # version7及以上才有
+    pass
+</code></pre>
+<h3 id="获取掩膜图案">获取掩膜图案</h3>
+<p>这个版本是长这样的</p>
+<figure data-type="image" tabindex="1"><img src="https://img-blog.csdnimg.cn/20200307162944343.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" loading="lazy"></figure>
+<p>看看如何生成这么奇怪的形状</p>
+<figure data-type="image" tabindex="2"><img src="https://img-blog.csdnimg.cn/20200307162951328.png" alt="在这里插入图片描述" loading="lazy"></figure>
+<pre><code class="language-python">def get_masking_area(self):
+    masking_area = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if self.pattern[i][j] == 2:
+                masking_area[i][j] = 1
+    return masking_area
+
+def get_masking_pattern(self):
+    # 八个模板
+    masking_array = {}
+    masking_area = self.get_masking_area()
+    ##########
+    code = &quot;000&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if (i + j) % 2 == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+    ##########
+    code = &quot;001&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if i % 2 == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+    ##########
+    code = &quot;010&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if j % 3 == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+    ##########
+    code = &quot;011&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if (i + j) % 3 == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+    ##########
+    code = &quot;100&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            # 这里有一点坑,不转为int会变成float+float
+            if (int(i / 2) + int(j / 3)) % 2 == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+    ##########
+    code = &quot;101&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if ((i * j) % 2 + (i * j) % 3) == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+    ##########
+    code = &quot;110&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if ((i * j) % 2 + (i * j) % 3) % 2 == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+    ##########
+    code = &quot;111&quot;
+    masking = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if ((i * j) % 3 + (i + j) % 2) % 2 == 0:
+                masking[i][j] = masking_area[i][j]
+    masking_array[code] = masking
+
+    self.masking_pattern = masking_array
+</code></pre>
+<h3 id="填充最初的数据">填充最初的数据</h3>
+<pre><code class="language-python">def fill_data(self):
+    # 右下角开始填充，先右后左，蛇形走位
+    x = self.size - 1
+    y = self.size - 1
+    pos_right = True
+    direct = 1  # 0向下  1向上
+    index = 0
+    data = _rsEncode(self.data, self.relate_info['per_block_data'],
+                     self.relate_info['number_of_block'], self.relate_info['per_block_err'])
+    remainder = 7
+    while index &lt; len(data) + remainder:
+        if self.pattern[x][y] == 2:
+            if index &lt; len(data):
+                self.pattern[x][y] = int(data[index])
+            # 把剩下7个空白补上--版本6剩下7个空白位置
+            else:
+                self.pattern[x][y] = 0
+            index = index + 1
+        if pos_right:
+            y = y - 1
+        else:
+            x = x + (-1) ** direct
+            y = y + 1
+        pos_right = not pos_right
+        # 向上飞出天了
+        if x &lt; 0:
+            direct = 0
+            x = 0
+            y = y - 2
+            # 刚好碰到时序线,这个的位置固定y为6，要左移一格
+            if y == 6:
+                y = y - 1
+        # 向下钻出地了
+        if x &gt; 40:
+            direct = 1
+            x = 40
+            y = y - 2
+        if self.draw:
+            self.dynamic_draw()
+</code></pre>
+<h3 id="与所有掩膜做异或选择处罚最低的">与所有掩膜做异或，选择处罚最低的</h3>
+<p>这里的评价一开始代码写的很晕，因为中文文档的表述不是很清楚。所以我找了英文的来看，它下面有详细的解释，理解起来容易很多</p>
+<figure data-type="image" tabindex="3"><img src="https://img-blog.csdnimg.cn/20200307163013534.png" alt="在这里插入图片描述" loading="lazy"></figure>
+<pre><code class="language-python">def find_best_masking_and_set(self):
+    coding = ''
+    score = 0
+    for key in self.masking_pattern.keys():
+        mask_score = self.get_mask_score(self.masking_pattern[key], key)
+        print(key, mask_score)
+        if coding == '':
+            coding = key
+            score = mask_score
+        else:
+            if score &gt; mask_score:
+                score = mask_score
+                coding = key
+    self.masking_coding = coding
+    # set
+    # 可以针对去调整评价算法
+    masking_pattern = self.masking_pattern[coding]
+    # 执行异或操作
+    for i in range(self.size):
+        for j in range(self.size):
+            self.pattern[i][j] = masking_pattern[i][j] ^ self.pattern[i][j]
+            if self.draw:
+                self.dynamic_draw()
+    self.get_format_pattern()
+
+def get_mask_score(self, masking_pattern, key):
+    array = np.zeros([self.size, self.size], dtype=int)
+    self.masking_coding = key
+    self.get_format_pattern()
+    # 执行异或操作
+    for i in range(self.size):
+        for j in range(self.size):
+            array[i][j] = masking_pattern[i][j] ^ self.pattern[i][j]
+
+    n1 = 0
+    n2 = 0
+    n3 = 0
+    n4 = 0
+    # 横竖存黑白相间次数的数组
+    row_interval = []
+    col_interval = []
+    # 横竖连续5个以上颜色相同，分数：个数-2
+    i = 0
+    while i &lt; self.size:
+        j = 0
+        interval = []
+        while j &lt; self.size:
+            times = 0
+            k = j
+            while k &lt; self.size and array[i][k] == array[i][j]:
+                k = k + 1
+                times = times + 1
+            interval.append(times)
+            if times &gt;= 5:
+                n1 = n1 + times - 2
+            j = k
+        i = i + 1
+        row_interval.append(interval)
+    i = 0
+    while i &lt; self.size:
+        j = 0
+        interval = []
+        while j &lt; self.size:
+            times = 0
+            k = j
+            while k &lt; self.size and array[k][i] == array[j][i]:
+                k = k + 1
+                times = times + 1
+            interval.append(times)
+            if times &gt;= 5:
+                n1 = n1 + times - 2
+            j = k
+        i = i + 1
+        col_interval.append(interval)
+    # 存在2X2颜色相同的块
+    for i in range(self.size - 1):
+        for j in range(self.size - 1):
+            if array[i][j] == array[i + 1][j] and array[i][j] == array[i][j + 1]:
+                if array[i][j] == array[i + 1][j + 1]:
+                    n2 = n2 + 3
+    # 横竖出现1:1:3:1:1 的黑白黑白黑，且前面或后面有4个以上白
+    for i in range(self.size):
+        if array[i][0] == 1:
+            first_dark = True
+        else:
+            first_dark = False
+        # bug warning
+        for j in range(1, len(row_interval[i])-5):
+            if row_interval[i][j] == row_interval[i][j+1] and row_interval[i][j]*3 == row_interval[i][j+2]:
+                if row_interval[i][j] == row_interval[i][j+3] and row_interval[i][j] == row_interval[i][j+4]:
+                    if row_interval[i][j-1] &gt;= 4 and not first_dark:
+                        n3 = n3 + 40
+                        first_dark = not first_dark
+                        continue
+                    if row_interval[i][j+5] &gt;= 4 and not first_dark:
+                        n3 = n3 + 40
+                        first_dark = not first_dark
+                        continue
+    for i in range(self.size):
+        if array[0][i] == 1:
+            first_dark = True
+        else:
+            first_dark = False
+        # bug warning
+        for j in range(1, len(col_interval[i])-5):
+            if col_interval[i][j] == col_interval[i][j+1] and col_interval[i][j]*3 == col_interval[i][j+2]:
+                if col_interval[i][j] == col_interval[i][j+3] and col_interval[i][j] == col_interval[i][j+4]:
+                    if col_interval[i][j-1] &gt;= 4 and not first_dark:
+                        n3 = n3 + 40
+                        first_dark = not first_dark
+                        continue
+                    if col_interval[i][j+5] &gt;= 4 and not first_dark:
+                        n3 = n3 + 40
+                        first_dark = not first_dark
+                        continue
+    # 黑色块的数量
+    dark_num = array.sum()
+    dark_rate = dark_num * 100 / (self.size * self.size)
+    n4 = n4 + int(math.fabs(dark_rate - 50) / 5) * 10
+    return n1 + n2 + n3 + n4
+
+def get_format_pattern(self):
+    code = int(self.relate_info['err_code'] + self.masking_coding, 2)
+    format_code = '{:015b}'.format(_fmtEncode(code))
+    # 默认高位在前，反转一下
+    format_code = format_code[::-1]
+    # 右上角0-7
+    for i in range(0, 8):
+        self.pattern[8][self.size - 1 - i] = int(format_code[i])
+    # 左下角8-14
+    for i in range(0, 7):
+        self.pattern[self.size - 7 + i][8] = int(format_code[i + 8])
+    # 固定黑点
+    self.pattern[self.size - 8][8] = 1
+    # 左上角部分
+    for i in range(0, 6):
+        self.pattern[i][8] = int(format_code[i])
+        self.pattern[8][5 - i] = int(format_code[9 + i])
+    # 位置是固定的
+    self.pattern[7][8] = int(format_code[6])
+    self.pattern[8][8] = int(format_code[7])
+    self.pattern[8][7] = int(format_code[8])
+</code></pre>
+<h3 id="最后调用画图看看自己做的二维码">最后调用画图，看看自己做的二维码</h3>
+<pre><code class="language-python">def dynamic_draw(self):
+    self.show()
+    plt.pause(0.001)
+    plt.clf()
+
+def show(self):
+    pic = np.zeros([self.size, self.size], dtype=int)
+    for i in range(self.size):
+        for j in range(self.size):
+            if self.pattern[i][j] == 1:
+                pic[i][j] = 0
+            elif self.pattern[i][j] == 0:
+                pic[i][j] = 255
+            else:
+                pic[i][j] = 200
+    plt.imshow(pic, cmap=&quot;gray&quot;)
+    plt.axis('off')
+    plt.show()
+</code></pre>
+<figure data-type="image" tabindex="4"><img src="https://img-blog.csdnimg.cn/20200307163205516.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" loading="lazy"></figure>
+<blockquote>
+<p>logo是我后期加上去的。。。</p>
+</blockquote>
+<h3 id="关于其中涉及到的两种编码">关于其中涉及到的两种编码</h3>
+<ul>
+<li>
+<h5 id="编数据的用到的里德-所罗门码这里用了第三方库虽然网上也能找到源代码但有几十行我就不添加了直接第三方工具一两行代码搞定">编数据的用到的里德-所罗门码：这里用了第三方库，虽然网上也能找到源代码，但有几十行，我就不添加了，直接第三方工具，一两行代码搞定</h5>
+</li>
+<li>
+<h5 id="编格式用到的bch码代码有点少所以用了源码">编格式用到的BCH码：代码有点少，所以用了源码</h5>
+<pre><code class="language-python">from reedsolo import RSCodec
+
+
+def _fmtEncode(fmt):
+    &quot;&quot;&quot;Encode the 15-bit format code using BCH code.&quot;&quot;&quot;
+    g = 0x537
+    code = fmt &lt;&lt; 10
+    for i in range(4, -1, -1):
+        if code &amp; (1 &lt;&lt; (i + 10)):
+            code ^= g &lt;&lt; i
+    return ((fmt &lt;&lt; 10) ^ code) ^ 0b101010000010010
+
+
+def _rsEncode(data, per_block_data, number_of_block, per_block_err):
+    # Byte mode prefix 0100.
+    bitstring = '0100'
+    # Character count in 8 binary bits.
+    bitstring += '{:08b}'.format(len(data))
+    # Encode every character in ISO-8859-1 in 8 binary bits.
+    for c in data:
+        bitstring += '{:08b}'.format(ord(c.encode('iso-8859-1')))
+    # Terminator 0000.
+    bitstring += '0000'
+    res = list()
+    # Convert string to byte numbers.
+    while bitstring:
+        res.append(int(bitstring[:8], 2))
+        bitstring = bitstring[8:]
+    total_data_length = per_block_data * number_of_block
+    # Add padding pattern.
+    while len(res) &lt; total_data_length:
+        res.append(int('11101100', 2))
+        res.append(int('00010001', 2))
+    # Slice to 60 bytes for V6-H.
+    res = res[:total_data_length]
+
+    ecc = RSCodec(per_block_err)
+    blocks = []
+    for i in range(number_of_block):
+        block = ecc.encode(res[:per_block_data])
+        blocks.append(block)
+        res = res[per_block_data:]
+    # 先拼接数据，再拼接纠错编码
+    final_res = ''
+    # 如果使用其他版本，可能不同数据块长度不同，请注意，这里四个数据块长度都是43
+    for i in range(per_block_data):
+        for j in range(4):
+            final_res = final_res + '{:08b}'.format(blocks[j][i])
+    for i in range(per_block_data, per_block_data+per_block_err):
+        for j in range(4):
+            final_res = final_res + '{:08b}'.format(blocks[j][i])
+    return final_res
+</code></pre>
+</li>
+</ul>
+<h5 id="注意bch码最后写回字符串时的第一个字符是二进制的高位所以要反转一下">注意：BCH码最后写回字符串时的第一个字符是二进制的高位，所以要反转一下</h5>
+<p><img src="https://img-blog.csdnimg.cn/20200307163303558.png" alt="在这里插入图片描述" loading="lazy"><br>
+<img src="https://img-blog.csdnimg.cn/20200307163308805.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzE3MTkwMTIx,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" loading="lazy"><br>
+数据进行编码时，最终数据 = 4位编码格式 + 字符长度(这里刚好是8位) + 原数据的二进制 + 4位结束符</p>
+<p>分块时，将最终数据分成若干份，再各自进行里德-所罗门码的编码，然后再按规定顺序重新组合排列</p>
+<h3 id="总结">总结</h3>
+<ul>
+<li>代码：https://github.com/jayying007/QR_Code</li>
+<li>前两天一窍不通，只觉得二维码挺有趣的，有点像密码学，到今天才大致理解其原理</li>
+<li>后期两种纠错编码可以去了解一下</li>
+<li>后期可以进一步优化，如添加logo，更改形状和颜色等，只要能识别就可以</li>
+<li>其实这只是第一步，后面还有两步：拍照时定位到二维码并做预处理，将二维码还原为原始信息</li>
+</ul>
+<p>中间有遇到很难理解的部分，也想过放弃（那会要准备实习，得疯狂补知识），但好在坚持了下来，花费了两天多时间我觉得值。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/快速幂/" class="post-title gt-a-link">
+                    快速幂
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

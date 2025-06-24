@@ -1,0 +1,2342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://jayying007.github.io</id>
+    <title>影帝的网络日志</title>
+    <updated>2025-06-24T15:02:58.019Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://jayying007.github.io"/>
+    <link rel="self" href="https://jayying007.github.io/atom.xml"/>
+    <logo>https://jayying007.github.io/images/avatar.png</logo>
+    <icon>https://jayying007.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2025, 影帝的网络日志</rights>
+    <entry>
+        <title type="html"><![CDATA[记一次麦克风异常的排查经历]]></title>
+        <id>https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/</id>
+        <link href="https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/">
+        </link>
+        <updated>2025-06-24T00:40:40.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="复现方式">复现方式</h2>
+<p>进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。<br>
+然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。</p>
+<h2 id="排查过程">排查过程</h2>
+<p>通过AudioQueue实现的录音，启动都没有什么错误。<br>
+然后通过LevelMeter检查数据的音量，发现全是0。</p>
+<p>再看看AudioSession的各种接口，setActive、setCategory都是正常的。</p>
+<p>好奇怪🤔</p>
+<p>经过测试，这时使用微信的语音通话，是可以使用麦克风的。<br>
+此时回到腾讯会议，会出现中断的提示。</p>
+<p>也就是说，只有使用AudioUnit才能把音频权限抢回来，然后腾讯会议收到AudioSessionInterrupt的通知，出现提示。</p>
+<p>于是乎，我们可以自己写一个AudioUnit的录音demo，而这个之前早就写过了。<br>
+https://github.com/jayying007/iOSDemos</p>
+<p>测试时发现，即使是AudioUnit，选择RemoteIO也是不行的，需要选择VoiceProcessingIO。</p>
+<p>另外一个发现是，使用AudioQueue，只要把AudioSession setCategory的option AudioSessionModeVoiceChat加上，也是可以打断腾讯会议，把麦克风抢回来的。</p>
+<p>但是话说回来，AudioUnit本身是用于通话类场景的，这里录音使用真的好吗？</p>
+<h2 id="疑问">疑问</h2>
+<p>一个支线任务：如何实现关闭麦克风，右上角的小黄点消失？🤔</p>
+<p>试了下，AudioUnit通过EnableIO把输入通道给关闭了，依然不行。</p>
+<p>最后试了下setInputMuted这个接口，发现可行。也就是说，可以仿照腾讯会议的逻辑，屏蔽掉其他App的录音。</p>
+<h2 id="结论">结论</h2>
+<p>我觉得这是苹果🍎的bug，其他App把麦克风关闭的时候无法录音，把麦克风打开的时候又可以录音。<br>
+setInputMuted这个逻辑本来是每个App单独设置的，怎么这里会影响到全部app呢。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[iOS 显示HDR组件]]></title>
+        <id>https://jayying007.github.io/post/ios-xian-shi-hdr-zu-jian/</id>
+        <link href="https://jayying007.github.io/post/ios-xian-shi-hdr-zu-jian/">
+        </link>
+        <updated>2025-06-24T00:36:06.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="概述">概述</h2>
+<p>在iOS中，我们可以显示HDR图片，播放HDR视频，但能不能显示HDR控件呢？</p>
+<p>比如文字、按钮、进度条这些。在系统相册中，播放HDR视频时，你会发现进度条也有HDR效果。</p>
+<h2 id="hdr图片">HDR图片</h2>
+<p>在此之前，我们先回顾一下显示HDR图片的方法。</p>
+<pre><code class="language-objective-c">NSString *imagePath = [[NSBundle mainBundle] pathForResource:@&quot;IMG_4167.HEIC&quot; ofType:nil];
+
+UIImage *image = [UIImageReader.defaultReader imageWithContentsOfFileURL:[NSURL fileURLWithPath:imagePath]];
+
+UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(60, 120, 120, 120)];
+imageView.image = image;
+imageView.preferredImageDynamicRange = UIImageDynamicRangeHigh;
+</code></pre>
+<p>那么，是不是用HDR图片生成UI控件就好了？</p>
+<p>理论上看起来是可行的，不过实际上文本要怎么处理？</p>
+<h2 id="hdr-控件">HDR 控件</h2>
+<p>经过一番搜查，在Github上发现了这个项目：<br>
+<a href="https://github.com/tsuzukihashi/EDR_Swift">GitHub - tsuzukihashi/EDR_Swift: I want to use EDR features easily.</a></p>
+<p>作者是用CoreImage的方式，生成了HDR的二维码和条形码，然后用MetalKit将其渲染到屏幕上。</p>
+<p>这种方法在一次WWDC的分享中有提及过：<br>
+<a href="https://developer.apple.com/videos/play/wwdc2022/10114/">Display EDR content with Core Image, Metal, and SwiftUI - WWDC22 - Videos - Apple Developer</a></p>
+<p>查看CoreImage的相关接口，发现了生成文本图片的方式。</p>
+<pre><code class="language-objective-c">@interface CIFilter (Builtins)
++ (CIFilter&lt;CITextImageGenerator&gt;*) textImageGeneratorFilter;
++ (CIFilter&lt;CIAttributedTextImageGenerator&gt;*) attributedTextImageGeneratorFilter;
+@end
+</code></pre>
+<p>但是这两个接口无法处理文本截断的场景，CoreImage没有宽度这些信息。<br>
+实际上，我们要的是CIImage，所以可以通过Core Graphics绘制文本为CGImage，再转换成CIImage就可以了。</p>
+<hr>
+<p>于是乎，渲染HDR Label便成为了可能。<br>
+可以仿照上面的项目实现，具体逻辑如下：</p>
+<pre><code class="language-objective-c">#import &lt;Foundation/Foundation.h&gt;
+#import &lt;MetalKit/MetalKit.h&gt;
+
+@interface MetalRender : NSObject &lt;MTKViewDelegate&gt;
+
+- (instancetype)initWithImageProvider:(CIImage * (^)(CGFloat contentScaleFactor, CGFloat headroom))imageProvider;
+
+@property (nonatomic) id&lt;MTLDevice&gt; device;
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &quot;MetalRender.h&quot;
+
+@interface MetalRender ()
+
+@property (nonatomic) id&lt;MTLCommandQueue&gt; commandQueue;
+@property (nonatomic) CIContext *renderContext;
+
+@property (nonatomic) CIImage * (^imageProvider)(CGFloat contentScaleFactor, CGFloat headroom);
+
+@end
+
+@implementation MetalRender
+
+- (instancetype)initWithImageProvider:(CIImage * (^)(CGFloat, CGFloat))imageProvider {
+	self = [super init];
+	if (self) {
+		self.imageProvider = imageProvider;
+		self.device = MTLCreateSystemDefaultDevice();
+		self.commandQueue = [self.device newCommandQueue];
+		self.renderContext = [CIContext
+		contextWithMTLCommandQueue:self.commandQueue
+		options:@{ kCIContextName : @&quot;MetalRender&quot;, kCIContextCacheIntermediates : @(YES), kCIContextAllowLowPower : @(YES) }];
+	}
+	return self;
+}
+
+- (void)drawInMTKView:(MTKView *)view {
+	// Create a new command buffer for each render pass to the current drawable.
+	id&lt;MTLCommandBuffer&gt; commandBuffer = [_commandQueue commandBuffer];
+	
+	id&lt;CAMetalDrawable&gt; drawable = view.currentDrawable;
+	if (drawable == nil) {
+		return;
+	}
+	CGSize drawSize = view.drawableSize;
+	CGFloat contentScaleFactor = view.contentScaleFactor;
+	
+	CIRenderDestination *destination = [[CIRenderDestination alloc] initWithWidth:drawSize.width
+																		   height:drawSize.height
+																	  pixelFormat:view.colorPixelFormat
+																	commandBuffer:commandBuffer
+															   mtlTextureProvider:^id&lt;MTLTexture&gt; {
+																   return drawable.texture;
+															   }];
+																	
+	if (@available(iOS 16.0, *)) {
+		CGFloat headroom = view.window.screen.currentEDRHeadroom;
+		CIImage *image = self.imageProvider(contentScaleFactor, headroom);
+		
+		CGRect iRect = [image extent];
+		CGRect backBounds = CGRectMake(0, 0, drawSize.width, drawSize.height);
+		CGFloat shiftX = round((backBounds.size.width + iRect.origin.x - iRect.size.width) * 0.5);
+		CGFloat shiftY = round((backBounds.size.height + iRect.origin.y - iRect.size.height) * 0.5);
+		image = [image imageByApplyingTransform:CGAffineTransformMakeTranslation(shiftX, shiftY)];
+		
+		[_renderContext startTaskToRender:image fromRect:backBounds toDestination:destination atPoint:CGPointZero error:nil];
+	}
+	
+	[commandBuffer presentDrawable:drawable];
+	[commandBuffer commit];
+}
+
+- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
+
+}
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &lt;MetalKit/MetalKit.h&gt;
+#import &quot;MetalRender.h&quot;
+
+@interface MetalView : MTKView
+
+- (instancetype)initWithFrame:(CGRect)frame render:(MetalRender *)render;
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &quot;MetalView.h&quot;
+
+@interface MetalView ()
+
+@property (nonatomic) MetalRender *render;
+
+@end
+
+@implementation MetalView
+
+- (instancetype)initWithFrame:(CGRect)frame render:(MetalRender *)render {
+	self = [super initWithFrame:frame device:render.device];
+	if (self) {
+		self.render = render;
+		
+		self.preferredFramesPerSecond = 10;
+		self.framebufferOnly = NO;
+		self.delegate = self.render;
+		self.backgroundColor = UIColor.clearColor;
+		
+		CAMetalLayer *layer = (CAMetalLayer *)self.layer;
+		if (@available(iOS 16.0, *)) {
+			layer.wantsExtendedDynamicRangeContent = YES;
+		}
+		layer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearSRGB);
+		self.colorPixelFormat = MTLPixelFormatRGBA16Float;
+	}
+	return self;
+}
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &lt;UIKit/UIKit.h&gt;
+
+@interface EDRLabel : UIView
+
+@property (nonatomic) NSString *text;
+
+- (void)applyStyleWithLabel:(UILabel *)label;
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &quot;EDRLabel.h&quot;
+#import &quot;MetalView.h&quot;
+#import &lt;CoreImage/CIFilterBuiltins.h&gt;
+
+@interface EDRLabel ()
+
+@property (nonatomic) MetalView *metalView;
+@property (nonatomic) CIImage *ciImage;
+
+@property (nonatomic) UIFont *font;
+@property (nonatomic) UIColor *textColor;
+@property (nonatomic) NSLineBreakMode lineBreakMode;
+@property (nonatomic) NSInteger numberOfLines;
+
+@end
+
+@implementation EDRLabel
+
+- (instancetype)initWithFrame:(CGRect)frame {
+	self = [super initWithFrame:frame];
+	if (self) {
+		__weak typeof(self) weakSelf = self;
+		MetalRender *render = [[MetalRender alloc] initWithImageProvider:^CIImage *(CGFloat contentScaleFactor, CGFloat headroom) {
+			__strong typeof(self) strongSelf = weakSelf;
+			CIImage *image = strongSelf.ciImage;
+			CGFloat red, green, blue, alpha;
+			[strongSelf.textColor getRed:&amp;red green:&amp;green blue:&amp;blue alpha:&amp;alpha];
+			
+			CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearSRGB);
+			CIColor *maxFillColor = [CIColor colorWithRed:headroom * red
+													green:headroom * green
+													 blue:headroom * blue
+													alpha:alpha
+											   colorSpace:colorSpace];
+			
+			CIImage *fillImage = [CIImage imageWithColor:maxFillColor];
+			CIFilter&lt;CIBlendWithMask&gt; *maskFilter = [CIFilter blendWithAlphaMaskFilter];
+			maskFilter.maskImage = image;
+			maskFilter.inputImage = fillImage;
+			
+			return [maskFilter.outputImage
+			imageByCroppingToRect:CGRectMake(0, 0, strongSelf.width * contentScaleFactor, strongSelf.height * contentScaleFactor)];
+		}];
+		
+		self.metalView = [[MetalView alloc] initWithFrame:frame render:render];
+		[self addSubview:self.metalView];
+		self.userInteractionEnabled = NO;
+	}
+	return self;
+}
+
+- (void)applyStyleWithLabel:(UILabel *)label {
+	self.text = label.text;
+	self.font = label.font;
+	self.textColor = label.textColor;
+	self.lineBreakMode = label.lineBreakMode;
+	self.numberOfLines = label.numberOfLines;
+}
+
+- (void)layoutSubviews {
+	[super layoutSubviews];
+
+	self.metalView.frame = self.bounds;
+}
+
+- (void)setFrame:(CGRect)frame {
+	BOOL sizeChange = self.bounds.size.width != frame.size.width || self.bounds.size.height != frame.size.height;
+	if (sizeChange) {
+		_ciImage = nil;
+	}
+	
+	[super setFrame:frame];
+}
+
+- (void)setText:(NSString *)text {
+	_text = text;
+	_ciImage = nil;
+}
+
+- (CIImage *)ciImage {
+	if (_ciImage == nil) {
+		UILabel *label = [[UILabel alloc] initWithFrame:self.bounds];
+		label.text = self.text;
+		label.font = self.font;
+		label.lineBreakMode = self.lineBreakMode;
+		label.numberOfLines = self.numberOfLines;
+		
+		UIGraphicsImageRenderer *render = [[UIGraphicsImageRenderer alloc] initWithBounds:label.bounds];
+		UIImage *image = [render imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
+			[label.layer renderInContext:rendererContext.CGContext];
+		}];
+		
+		_ciImage = [[CIImage alloc] initWithImage:image];
+	}
+	return _ciImage;
+}
+
+@end
+</code></pre>
+<p>最难的文本解决了，那实现HDR的UILabel、UIButton、UISlider就不是太复杂的事情了。这里不再赘述。</p>
+<h2 id="hdr-color">HDR Color</h2>
+<p>上面这种方式还是挺曲折的，而iOS 26迎来了新接口，可以直接把UIColor设置为HDR模式，这样对于UILabel、UIButton的接入就更简单了。</p>
+<p><a href="https://developer.apple.com/videos/play/wwdc2025/243/">What’s new in UIKit - WWDC25 - Videos - Apple Developer</a></p>
+<p>现阶段Xcode还没有iOS 26的SDK，想要尝鲜的可以通过runtime的形式调用到。</p>
+<pre><code class="language-objective-c">- (UIColor *)hdrColorWithHeadroom:(CGFloat)headroom {
+	SEL sel = NSSelectorFromString(@&quot;colorWithRed:green:blue:alpha:linearExposure:&quot;);
+	if ([UIColor.class respondsToSelector:sel] == NO) {
+		return self;
+	}
+	
+	CGFloat red = 1;
+	CGFloat green = 1;
+	CGFloat blue = 1;
+	CGFloat alpha = 1;
+	CGFloat linearExposure = headroom;
+	[self getRed:&amp;red green:&amp;green blue:&amp;blue alpha:&amp;alpha];
+	
+	NSMethodSignature *signature = [UIColor methodSignatureForSelector:sel];
+	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+	[invocation setTarget:UIColor.class];
+	[invocation setSelector:sel];
+	[invocation setArgument:&amp;red atIndex:2];
+	[invocation setArgument:&amp;green atIndex:3];
+	[invocation setArgument:&amp;blue atIndex:4];
+	[invocation setArgument:&amp;alpha atIndex:5];
+	[invocation setArgument:&amp;linearExposure atIndex:6];
+	[invocation invoke];
+	
+	UIColor *__unsafe_unretained color = nil;
+	[invocation getReturnValue:&amp;color];
+	
+	return color;
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[跨平台网络框架mars浅析]]></title>
+        <id>https://jayying007.github.io/post/跨平台网络框架mars浅析/</id>
+        <link href="https://jayying007.github.io/post/跨平台网络框架mars浅析/">
+        </link>
+        <updated>2023-06-26T13:37:41.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://github.com/Tencent/mars">https://github.com/Tencent/mars</a></p>
+<h2 id="mars-是什么">Mars 是什么</h2>
+<p>Mars 是微信官方的终端基础组件, 是一个业务性无关,平台性无关 使用 C++ 编写的基础组件。<br>
+它主要包括以下几个部分：</p>
+<ol>
+<li>Comm：基础库，包括 socket、线程、消息队列、协程等基础工具；</li>
+<li>Xlog：通用日志模块，充分考虑移动终端的特点，提供高性能、高可用、安全性、容错性的日志功能</li>
+<li>SDT：网络诊断模块；</li>
+<li>STN：信令传输网络模块，负责终端与服务器的小数据信令通道。包含了微信终端在移动网络上的大量优化经验与成果，经历了微信海量用户的考验。</li>
+</ol>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fhyysx-FjhKxqdzCMEJFhUJkBI8B.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>这些介绍 Github 上都有，我就不重复了。</p>
+</blockquote>
+<h3 id="给纯小白的说明">给纯小白的说明</h3>
+<p>说真的，如果对网络编程不了解，上面那段话估计是看不明白的，这里再简单说明一下。<br>
+一般来说，客户端和后台通过 TCP 三次握手建立连接<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiDGKMV1hcl3Xzb0vgYyiaufhoff.png" alt="" loading="lazy"><br>
+这组连接通过（IP1,Socket1,IP2,Socket2）唯一标识，<br>
+你想给后台发消息，就往这个 Socket 写数据。你想从后台收消息，就从这个 Socket 读数据。</p>
+<p>常见的通信方式有两种：</p>
+<ul>
+<li>客户端请求数据，后台返回；</li>
+<li>后台主动推数据；</li>
+</ul>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FhhYotVyo-F3BIJ5hjpeQHrFBPTg.png" alt="" loading="lazy"><br>
+其中，想要让后台在需要的时候发消息给你，就得保持 Socket 一直连接着，即所谓的长连接。而前面那种一来一回的，就无所谓短连接还是长连接了。</p>
+<blockquote>
+<p>其实还有客户端给后台发通知的场景，只不过这种比较少见。<br>
+例如微信里面的「对方正在输入」，就是用这种能力实现的。</p>
+</blockquote>
+<p>网络上传输的只是单纯的二进制数据，具体代表什么含义就看客户端跟后台协商的结果了。就像 TCP 协议建立在 IP 协议的基础之上，客户端和后台间的协议建立在 TCP 协议之上，这个学过计算机网络的都懂。</p>
+<p>socket 编程对应的系统调用接口如下<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FqjBttbkDx0-tt7TbICebMVCywHq.png" alt="" loading="lazy"></p>
+<p>到这里，总算可以知道 Mars 是什么了。简单说，Mars 就是对上面 Socket 建立的封装，由它负责建立跟后台的连接以及数据读写。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fl927kybOs6pEyV318Rp0G8h8WMU.png" alt="" loading="lazy"></p>
+<h2 id="关于官方-demo">关于官方 Demo</h2>
+<p>毕竟是微信推出的，提供的 demo 是基于聊天场景设计的。<br>
+关于 IM 系统，相信大部分人在上大学时都做过玩具项目了。<br>
+比如我的：<a href="https://github.com/jayying007/chatting-room">https://github.com/jayying007/chatting-room</a></p>
+<p>这里要吐槽一点是，Github 上的 demo 基本是运行不起来的，我经历了九九八十一难才搞定。<br>
+Server 端和 iOS 端都有问题：<br>
+Server 端的主要问题是 Gradle 版本比较老，我本地的 JDK 版本比较新，这里通过降低到 JDK8 解决；<br>
+iOS 端主要问题是新旧版本符号有所变更，这个根据报错信息逐步修改解决。<br>
+解决的过程因机器而异，所以我也不打算说明，应该没有人不会 Google 吧？</p>
+<h2 id="ios-demo-分析">iOS Demo 分析</h2>
+<p>核心结构如下：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FktXpXlVXPYxrm7LZrVLNJyhJcHQ.png" alt="" loading="lazy"></p>
+<p>其中，NetworkService 负责设置启动 mars，并接受 mars 回调的数据，传递给上层 NetworkEvent。</p>
+<pre><code class="language-objectivec">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    [NetworkService sharedInstance].delegate = [[NetworkEvent alloc] init];
+    [[NetworkService sharedInstance] setCallBack];
+    [[NetworkService sharedInstance] createMars];
+    [[NetworkService sharedInstance] setClientVersion:200];
+    [[NetworkService sharedInstance] setLongLinkAddress:@&quot;192.168.1.101&quot; port:8081];
+    [[NetworkService sharedInstance] setShortLinkPort:8080];
+    [[NetworkService sharedInstance] reportEvent_OnForeground:YES];
+    [[NetworkService sharedInstance] makesureLongLinkConnect];
+
+    [[NetworkStatus sharedInstance] Start:[NetworkService sharedInstance]];
+
+    return YES;
+}
+</code></pre>
+<h3 id="一次请求的过程">一次请求的过程</h3>
+<p>以 PingServerController 中的代码为例。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiMp7oM8ynpTtNNeQNRvsNCboyqS.png" alt="" loading="lazy"></p>
+<p>点击 Click 时，客户端创建了一个 CGITask，传递给 NetworkService，并把自己作为监听者。</p>
+<pre><code class="language-objectivec">- (IBAction)onButtonClick:(id)sender forEvent:(UIEvent *)event {
+    CGITask *helloCGI = [[CGITask alloc] initAll:ChannelType_All AndCmdId:kSayHello AndCGIUri:@&quot;/mars/hello&quot; AndHost:@&quot;192.168.1.101&quot;];
+    [[NetworkService sharedInstance] startTask:helloCGI ForUI:self];
+}
+</code></pre>
+<p>这个 CGITask 只是客户端对数据的封装，在 NetworkService 层会解析为 mars 的一个 Task，然后启动这个 Task。<br>
+每次创建 Task 都会生成一个唯一的 taskid，之后将这些上下文信息注册到 NetworkEvent 中。</p>
+<pre><code class="language-objectivec">- (int)startTask:(CGITask *)task ForUI:(id&lt;UINotifyDelegate&gt;)delegateUI {
+    Task ctask;
+    ctask.cmdid = task.cmdid;
+    ctask.channel_select = task.channel_select;
+    ctask.cgi = std::string(task.cgi.UTF8String);
+    ctask.shortlink_host_list.push_back(std::string(task.host.UTF8String));
+    ctask.user_context = (__bridge void*)task;
+
+    NSString *taskIdKey = [NSString stringWithFormat:@&quot;%d&quot;, ctask.taskid];
+    [_delegate addObserver:delegateUI forKey:taskIdKey];
+    [_delegate addCGITasks:task forKey:taskIdKey];
+
+    mars::stn::StartTask(ctask);
+
+    return ctask.taskid;
+}
+</code></pre>
+<p>接下来 Task 启动，要真正发送数据了，mars 通过 callback 来索取数据</p>
+<pre><code class="language-objectivec">// StnCallBack
+bool StnCallBack::Req2Buf(uint32_t _taskid, void* const _user_context, const std::string&amp; _user_id, AutoBuffer&amp; _outbuffer, AutoBuffer&amp; _extend, int&amp; _error_code, const int _channel_select, const std::string&amp; host) {
+    NSData* requestData =  [[NetworkService sharedInstance] Request2BufferWithTaskID:_taskid userContext:_user_context];
+    if (requestData == nil) {
+        requestData = [[NSData alloc] init];
+    }
+    _outbuffer.AllocWrite(requestData.length);
+    _outbuffer.Write(requestData.bytes,requestData.length);
+    return requestData.length &gt; 0;
+}
+// NetworkService
+- (NSData*)Request2BufferWithTaskID:(uint32_t)tid userContext:(const void *)context {
+    CGITask *task = (__bridge CGITask *)context;
+    return [_delegate Request2BufferWithTaskID:tid task:task];
+}
+// NetworkEvent
+- (NSData*)Request2BufferWithTaskID:(uint32_t)tid task:(CGITask *)task {
+    NSData* data = NULL;
+
+    NSString *taskIdKey = [NSString stringWithFormat:@&quot;%d&quot;, tid];
+
+    id&lt;UINotifyDelegate&gt; uiObserver = [controllers objectForKey:taskIdKey];
+    if (uiObserver != nil) {
+        data = [uiObserver requestSendData];
+    }
+
+    return data;
+}
+// PingServerController
+- (NSData*)requestSendData {
+    HelloRequest *helloRequest = [HelloRequest new];
+    helloRequest.user = [self username];
+    helloRequest.text = @&quot;Hello world&quot;;
+    NSData *data = [helloRequest data];
+    return data;
+}
+</code></pre>
+<p>经过层层传递，最后来到了 PingServerController，得到一个 HelloRequest 的序列化数据。这里的业务层数据是一个 protobuf 对象，也是网络编程常用的序列化方式，关于 protobuf 的介绍可以看以前写的博客。</p>
+<p>因为这是个有来有回的请求，所以后台还会回数据给客户端，也是 mars 通过 callback 来返回数据。</p>
+<pre><code class="language-objectivec">// StnCallBack
+int StnCallBack::Buf2Resp(uint32_t _taskid, void* const _user_context, const std::string&amp; _user_id, const AutoBuffer&amp; _inbuffer, const AutoBuffer&amp; _extend, int&amp; _error_code, const int _channel_select) {
+    int handle_type = mars::stn::kTaskFailHandleNormal;
+    NSData* responseData = [NSData dataWithBytes:(const void *) _inbuffer.Ptr() length:_inbuffer.Length()];
+    NSInteger errorCode = [[NetworkService sharedInstance] Buffer2ResponseWithTaskID:_taskid ResponseData:responseData userContext:_user_context];
+
+    if (errorCode != 0) {
+        handle_type = mars::stn::kTaskFailHandleDefault;
+    }
+    return handle_type;
+}
+// NetworkService
+- (NSInteger)Buffer2ResponseWithTaskID:(uint32_t)tid ResponseData:(NSData *)data userContext:(const void *)context {
+    CGITask *task = (__bridge CGITask *)context;
+    return [_delegate Buffer2ResponseWithTaskID:tid responseData:data task:task];
+}
+// NetworkEvent
+- (NSInteger)Buffer2ResponseWithTaskID:(uint32_t)tid responseData:(NSData *)data task:(CGITask *)task {
+    int returnType = 0;
+
+    NSString *taskIdKey = [NSString stringWithFormat:@&quot;%d&quot;, tid];
+
+    id&lt;UINotifyDelegate&gt; uiObserver = [controllers objectForKey:taskIdKey];
+    if (uiObserver != nil) {
+        returnType = [uiObserver onPostDecode:data];
+    } else {
+        returnType = -1;
+    }
+
+    return returnType;
+}
+// PingServerController
+- (int)onPostDecode:(NSData*)responseData {
+    helloResponse = [HelloResponse parseFromData:responseData error:nil];
+    if ([helloResponse hasErrmsg]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:helloResponse.errmsg preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@&quot;OK&quot; style:UIAlertActionStyleDefault handler:nil]];
+            [self presentViewController:alert animated:YES completion:nil];
+        });
+        LOG_INFO(kModuleViewController, @&quot;recv hello response: %@&quot;, helloResponse.errmsg);
+    }
+
+    return helloResponse.retcode == 0 ? 0 : -1;
+}
+</code></pre>
+<h3 id="一次-push-的过程">一次 Push 的过程</h3>
+<p>为了测试这个过程，需要准备两台手机。这里以 TopicViewController 中的代码为例。<br>
+首先一台手机发送消息，过程和上面的类似，会有 request 和 response。</p>
+<pre><code class="language-objectivec">// request时调用
+- (NSData*)requestSendData {
+    SendMessageRequest *sendMsgRequest = [SendMessageRequest new];
+    sendMsgRequest.from = [self username];
+    sendMsgRequest.to = @&quot;all&quot;;
+    sendMsgRequest.text = _textField.text;
+    sendMsgRequest.accessToken = @&quot;123456&quot;;
+    sendMsgRequest.topic = _conversation.topic;
+    LOG_INFO(kModuleViewController, @&quot;send msg to topic:%@&quot;, _conversation.notice);
+    NSData* data = [sendMsgRequest data];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _textField.text = @&quot;&quot;;
+    });
+    return data;
+}
+// response时调用
+- (int)onPostDecode:(NSData*)responseData {
+    SendMessageResponse *sendMsgResponse = [SendMessageResponse parseFromData:responseData error:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *recvtext = [NSString stringWithFormat:@&quot;%@ : %@&quot;, sendMsgResponse.from, sendMsgResponse.text];
+        [self.messages addObject:recvtext];
+        [self.tableView reloadData];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.messages.count-1 inSection:0];
+        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    });
+    return sendMsgResponse.errCode == 0 ? 0 : -1;
+}
+</code></pre>
+<p>在进入 TopicViewController 时，注册了 PushObserver</p>
+<pre><code class="language-objectivec">- (void)viewDidLoad {
+    [super viewDidLoad];
+	// 略...
+    [[NetworkService sharedInstance] addPushObserver:self withCmdId:kPushMessageCmdId];
+}
+</code></pre>
+<p>这样当后台 Push 数据时，就能找到对应的处理者。这样另一台手机就能收到消息了。</p>
+<pre><code class="language-objectivec">// StnCallBack
+void StnCallBack::OnPush(const std::string&amp; _channel_id, uint32_t _cmdid, uint32_t _taskid, const AutoBuffer&amp; _body, const AutoBuffer&amp; _extend) {
+    if (_body.Length() &gt; 0) {
+        NSData* recvData = [NSData dataWithBytes:(const void *) _body.Ptr() length:_body.Length()];
+        [[NetworkService sharedInstance] OnPushWithCmd:_cmdid data:recvData];
+    }
+}
+// NetworkService
+- (void)OnPushWithCmd:(NSInteger)cid data:(NSData *)data {
+    return [_delegate OnPushWithCmd:cid data:data];
+}
+// NetworkEvent
+- (void)OnPushWithCmd:(NSInteger)cid data:(NSData *)data {
+    id&lt;PushNotifyDelegate&gt; pushObserver = [pushrecvers objectForKey:[NSString stringWithFormat:@&quot;%d&quot;, cid]];
+    if (pushObserver != nil) {
+        [pushObserver notifyPushMessage:data withCmdId:cid];
+    }
+}
+// TopicViewController
+- (void)notifyPushMessage:(NSData*)pushData withCmdId:(int)cmdId {
+    MessagePush* messagePush = [MessagePush parseFromData:pushData error:nil];
+    if (messagePush != nil) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSString *recvtext = [NSString stringWithFormat:@&quot;%@ : %@&quot;, messagePush.from, messagePush.content];
+            [self.messages addObject:recvtext];
+            [self.tableView reloadData];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:self.messages.count-1 inSection:0];
+            [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+        });
+    }
+}
+</code></pre>
+<p>画成图大概长这样：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FtRSj6-8QkS9QFzBs7CYSRH9l5YO.png" alt="" loading="lazy"></p>
+<h2 id="写到最后">写到最后</h2>
+<p>这里要提个醒，如果你以为网络上传输的就是纯 HelloRequest、HelloResponse、MessagePush 这样的数据，那说明你还没完全理解。<br>
+毕竟这里还有个疑问，怎么区分后台返回的数据是 HelloResponse 还是 MessagePush🤔。</p>
+<p>回想前面创建 CGITask 的过程，其实还有 cmdid 这个东西。</p>
+<pre><code class="language-objectivec">- (IBAction)onButtonClick:(id)sender forEvent:(UIEvent *)event {
+    CGITask *helloCGI = [[CGITask alloc] initAll:ChannelType_All AndCmdId:kSayHello AndCGIUri:@&quot;/mars/hello&quot; AndHost:@&quot;192.168.1.101&quot;];
+    [[NetworkService sharedInstance] startTask:helloCGI ForUI:self];
+}
+</code></pre>
+<p>这样，客户端在请求时把这个 cmdid 也带上，后台就知道客户端请求的是什么内容。<br>
+后台返回时把 cmdid 带上，客户端就知道后台返回的是什么内容。<br>
+在 Demo 中，客户端和后台之间的传输协议如下：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fjf92KFNF4RKejLQe3RcksxEdxSr.png" alt="" loading="lazy"></p>
+<p>客户端这部分代码在 longlink_packer.cc 中</p>
+<pre><code class="language-objectivec">void (*longlink_pack)(uint32_t _cmdid, uint32_t _seq, const AutoBuffer&amp; _body, const AutoBuffer&amp; _extension, AutoBuffer&amp; _packed, longlink_tracker* _tracker)
+    = [](uint32_t _cmdid, uint32_t _seq, const AutoBuffer&amp; _body, const AutoBuffer&amp; _extension, AutoBuffer&amp; _packed, longlink_tracker* _tracker) {
+    __STNetMsgXpHeader st = {0};
+    st.head_length = htonl(sizeof(__STNetMsgXpHeader));
+    st.client_version = htonl(sg_client_version);
+    st.cmdid = htonl(_cmdid);
+    st.seq = htonl(_seq);
+    st.body_length = htonl(_body.Length());
+
+    _packed.AllocWrite(sizeof(__STNetMsgXpHeader) + _body.Length());
+    _packed.Write(&amp;st, sizeof(st));
+
+    if (NULL != _body.Ptr()) _packed.Write(_body.Ptr(), _body.Length());
+
+    _packed.Seek(0, AutoBuffer::ESeekStart);
+};
+</code></pre>
+<p>服务器这部分代码在 NetMsgHeader.java 中</p>
+<pre><code class="language-java">public byte[] encode() throws InvalidHeaderException {
+    if (body == null &amp;&amp; cmdId != CMDID_NOOPING &amp;&amp; cmdId != CMDID_NOOPING_RESP) {
+        throw new InvalidHeaderException(&quot;invalid header body&quot;);
+    }
+
+    final int headerLength = FIXED_HEADER_SKIP + (options == null ? 0 : options.length);
+    final int bodyLength = (body == null ? 0 : body.length);
+    final int packLength = headerLength + bodyLength;
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream(packLength);
+
+    try {
+        final DataOutputStream dos = new DataOutputStream(baos);
+
+        dos.writeInt(headerLength);
+        dos.writeInt(CLIENTVERSION);
+        dos.writeInt(cmdId);
+        dos.writeInt(seq);
+        dos.writeInt(bodyLength);
+
+        if (options != null) {
+            dos.write(options);
+        }
+
+        if (body != null) {
+            dos.write(body);
+        }
+
+    } catch (IOException e) {
+        e.printStackTrace();
+
+    } finally {
+        try {
+            baos.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    return baos.toByteArray();
+}
+</code></pre>
+<p>最后的最后，我还要插一句。这个协议是客户端跟后台协商的，每个业务定的都不一样，微信也不是这样搞的。具体怎么定义取决于自身业务，更好的设计是减少传输数据大小，又能有扩展性，更安全。</p>
+<h2 id="其他">其他</h2>
+<p>如果你对 mars 的源码有兴趣，可以参考下面的博客<br>
+<a href="https://tbfungeek.github.io/2019/12/05/Tencent-Mars-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">Tencent Mars 源码解析</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[[转] 游戏中的AI-行为树]]></title>
+        <id>https://jayying007.github.io/post/[转] 游戏中的AI-行为树/</id>
+        <link href="https://jayying007.github.io/post/[转] 游戏中的AI-行为树/">
+        </link>
+        <updated>2023-05-27T08:15:27.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://lifan.tech/2020/02/15/game/behavior-tree/">https://lifan.tech/2020/02/15/game/behavior-tree/</a></p>
+<blockquote>
+<p>游戏里有不少算法，如本文的行为树，以及还有排行榜的排序算法、寻路算法、物体碰撞，如果你是做 3D 引擎的，还得懂图形学、物理学、数学...<br>
+这里的行为树虽然在 iOS 中基本用不到，但跟它关联的状态机还是有可能的。</p>
+</blockquote>
+<p>游戏中，常见用 AI 实现方式有 2 种，状态机和行为树。下面主要简介绍行为树，行为树是用一棵多叉树来表示 AI，树的中间节点为控制节点控制着 AI 的执行流程，叶子节点为行为节点，描述了 AI 的具体行为。</p>
+<h4 id="一-案例描述">一、案例描述</h4>
+<p>山贼的 AI 需求描述如下：</p>
+<ul>
+<li>视野内没有敌人则在一定范围内巡逻</li>
+<li>视野出现敌人则走过去攻击敌人</li>
+<li>当自己血量 &lt; 20% 则逃跑</li>
+</ul>
+<p>下面将分别用状态机和行为树来描述山贼的 AI</p>
+<h4 id="二-状态机">二、状态机</h4>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiihbE-NXdmVllv3lPin1dZ2iSlf.png" alt="" loading="lazy"><br>
+上图是用状态机来描述山贼的 AI, 目前来看状态机的逻辑还是非常清晰，代码实现也比较简单。但随着项目的推进，策划随时可能增加需求。假如现在需要加一个 “石化”状态，描述如下：<br>
+在逃跑的过程中，如果追击者数量&gt;2，则立即把自己石化，持续 5s，此时自己不能被攻击也不能攻击目标<br>
+在状态机中加入“石化”状态时，我们需要考虑它跟现有每个状态之间是否有联系，输入输出状态分别有哪些。</p>
+<h5 id="11-状态机存在的不足">1.1 状态机存在的不足</h5>
+<p>在项目中随时可能增加新状态、减少状态或者改变状态之间的迁移关系，如果状态越来越多，任何一点小修改都会产生很大的工作量，代码中会出现大量的判断跳转，代码的逻辑会变得越来越混乱，如果负责状态机的同事离职了，这会带来很大的问题。<br>
+行为树的出现从根本上解决了这些问题，它把每个行为作为一个原子项，提供给策划编辑，让策划来决定 AI 的执行流程，程序只需要集中精力根据需求增加新的行为，不用关心具体流程。用种方式，程序的工作会得到很大程度的解放，即使有一天交给其他同事维护也比较容易。</p>
+<h4 id="三-行为树">三、行为树</h4>
+<p>行为树是由控制节点、装饰节点、行为节点组成的一棵 n 叉树，中间节点一般为控制节点和装饰节，用于控制行为树的执行流程，它们相对固定，一旦确定几乎不会变化；叶子节点由行为节点或条件节点组成，它实现了 AI 中的各种行为，程序的大部分工作都是丰富行为节点。需要注意的是，行为树的每个节点都有一个返回值，它们分别是：</p>
+<ul>
+<li>成功（Success）</li>
+<li>失败（failed）</li>
+<li>运行中（running）：表示当前帧没有执行完成、下帧继续执行。</li>
+</ul>
+<p>下面列出了行为树常用的节点类型，主要用于说明行为树的原理，类型可能不全面；但只要明白了原理，根据项目需求增加类型即可。</p>
+<h5 id="11-控制类节点">1.1 控制类节点</h5>
+<p>控制节点一般为中间节点，用于控制行为树的执行流程，决定了其子节点是以顺序、并行、随机或其它方式执行。</p>
+<ul>
+<li>顺序节点（Sequences）<br>
+依次执行所有子节点，若当前子节点返回成功，则继续执行下一个子节点；若子当前节点返回失败，则中断后续子节点的执行，并把结果返回给父节点。<br>
+如下图所求：节点 1 返回成功，继续执行节点 2；节点 2 返回失败，则把结果返回给 Sequences 的父节点，节点 3 并不会执行。顺序节点相当于 and 语义。<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fs91eZc77NI6Z8Kgzs7Z6hpyC7cC.png" alt="" loading="lazy"></li>
+<li>选择节点（Selector）<br>
+依次执行所有子节点，若当前子节点返回成功，则中断后续节点运行，并把结果返回给父节点。如下图所示：<br>
+相当于 or 语义<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FhJfP1dHbJzbgQkLfSEjgB28lkBQ.png" alt="" loading="lazy"></li>
+<li>并行节点（Parallel）<br>
+依次执行所有子节点，无论失败与否，都会把所有子节点执行一遍。至于 Parallel 节点该返回什么值给父节点，这要看需求。比如：成功数 &gt; 失败数返回成功，否则返回失败。<br>
+如下图所示：<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Ftt3kut4XmIKOthbgNuffm_LXo81.png" alt="" loading="lazy"></li>
+<li>随机节点（Random）<br>
+随机选择一个子节点来运行。</li>
+<li>记忆节点（MemSequences、MemSelector）<br>
+功能和顺序节点、选择节点类似，唯一不同是会保存当前执行进度（比如：保存当前子节点索引），下一帧继续执行当前节点，如果当前节点是中间节点，则会跳过前面的节点。</li>
+</ul>
+<h5 id="12-装饰节点decorator">1.2 装饰节点（Decorator）</h5>
+<ul>
+<li>逆变节点（Inverter）：对子节点的返回值取反，相当于 not 语义，它只会有一个子节点。</li>
+<li>成功节点（Succeeder）：不管其子节点返回何值，都会返回 Success 给父节点</li>
+<li>重复节点（Repeater）：重复执行 n 次子节点。</li>
+<li>重复直至失败节点（Repeat Until Fail）：重复执行子节点，直到失败为上；同样也有类似的重复直至成功节点这里就不列出了。</li>
+<li>执行一段时间（MaxTime）：重复执行子节点一段时间</li>
+</ul>
+<p>节点的类型是灵活多变的，不同的项目有不同的需求，上面只列出了常用的。</p>
+<h5 id="13-行为节点action">1.3 行为节点（Action）</h5>
+<p>行为节点都是叶节点，控制节点用于控制行为执行的流程，行为节点则表示具体功能，比如：战斗，逃跑，巡逻等。它至少包含两个函数：</p>
+<ul>
+<li>Init:用于初始化节点，比如读取配置数据初始化当前节点，只会执行一次。</li>
+<li>OnTick:每一帧都会执行，节点的主要逻辑都在此函数中实现或调用。</li>
+</ul>
+<h6 id="131-行为节点代码实现">1.3.1 行为节点代码实现</h6>
+<p>这是一个在指定范围内查找道具的行为节点<a href="https://github.com/magicsea/h5game/blob/master/server/src/Server/battle/bevAction.go">例子</a>（Ation）:</p>
+<pre><code class="language-go">//节点结构
+type FindItem struct {
+    b3core.Action
+    index string
+    etype EntityType
+    dis   float32
+}
+
+//初始化函数，参数setting为节点的配置数据
+//此函数在加载节点时调用
+func (this *FindItem) Initialize(setting *b3config.BTNodeCfg) {
+    this.Action.Initialize(setting)
+    this.index = setting.GetPropertyAsString(&quot;index&quot;) //道具枚举用于缓存道具的key
+    this.etype = EntityType(setting.GetPropertyAsInt(&quot;etype&quot;))//道具类型
+    this.dis = float32(setting.GetProperty(&quot;range&quot;))//查找范围
+}
+
+//遍历节点时，此函数会被调用，每个节点都有OnTick函数
+func (this *FindItem) OnTick(tick *b3core.Tick) b3.Status {
+    f := tick.GetTarget().(*Fighter) //玩家对象
+    tick.Blackboard.Set(this.index, int32(0), &quot;&quot;, &quot;&quot;) //清空老数据
+    ball := f.FindNearItem(this.dis, this.etype) //在附近搜索道具
+    if nil == ball {//如果没找到，向父节点返回FAILURE
+        return b3.FAILURE
+    }
+
+    id := ball.GetID() //获取道具id
+    tick.Blackboard.Set(this.index, id, &quot;&quot;, &quot;&quot;) //缓存道具id
+    return b3.SUCCESS//向父节点返回SUCCESS
+
+    //因为行为树的节点返回值必须是FAILURE、SUCCESS、RUNNING, 所以Tick中产生的结果只能通过其它方式传回去，比如例子中的Blackboard
+}
+</code></pre>
+<h6 id="132-用行为树表示山贼-ai">1.3.2 用行为树表示山贼 AI</h6>
+<p>用行为树来表示的山贼 AI，并加上了“石化”需求，下图黄色部分：<br>
+需求描述：在逃跑的过程中，如果追击者数量&gt;2，则立即把自己石化，持续 5s，此时自己不能被攻击也不能攻击目标。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fkec8UI8CjD1y2Bvb6dH0HRl6L7J.png" alt="" loading="lazy"><br>
+对于程序来说，只需要写”石化”的逻辑即可，至于这个行为用在哪里，执行顺序以及和其它行为的关系，则由策划来决定。在本例中，条件判断其实可以放在行为节里，这里把它独立出来主要是为了方便表达。</p>
+<h4 id="四-状态机与行为树比较">四、状态机与行为树比较</h4>
+<h5 id="11-状态机">1.1 状态机</h5>
+<ul>
+<li>优点：实现简单、执行效率高。</li>
+<li>缺点：随着状态数量的增多，状态之间的关系会越来越复杂，代码变得难以维护。</li>
+</ul>
+<h5 id="12-行为树">1.2 行为树</h5>
+<ul>
+<li>优点：结构清晰、节点间关系弱，程序大部分工作是丰富行为节点，AI 流程交由策划完成。</li>
+<li>缺点：每次 tick 都会遍历整棵行为树(Mem 子节点除外)，若树的深度很深，效率将变得低下。</li>
+</ul>
+<h4 id="五-关于状态机行为树的思考">五、关于状态机行为树的思考</h4>
+<p>从状态机和行为树的特征可以看出，状态机和行为树都存在明显的优缺点。我们可不可以只取它们的优点呢？<br>
+在游戏中，若主动怪的视野范围内没有目标它的行为是很简单的，一般会在一定范围内巡逻。如果用行为树，不管视野内有没有人，每帧都会遍历所有非行为节点，这造成了很大的资源浪费。<br>
+如果用状态机实现巡逻、死亡、逃跑，进入战斗后的行为用行为树，这会是一个有效的优化。尤其是怪物很多时，大部分时间段，大部分怪都处于巡逻或 idle 状态，完全没有必要遍历行为树。<br>
+如果项目的 AI 比较简单，比如小游戏之类的。用状态机是个不错的选择。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[FastImageCache框架分析]]></title>
+        <id>https://jayying007.github.io/post/FastImageCache框架分析/</id>
+        <link href="https://jayying007.github.io/post/FastImageCache框架分析/">
+        </link>
+        <updated>2023-05-14T04:12:18.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://github.com/path/FastImageCache">https://github.com/path/FastImageCache</a></p>
+<h2 id="简介">简介</h2>
+<p>FastImageCahce 顾名思义，用于图像缓存。<br>
+传统的图像加载性能比较低，在列表滚动场景下特别容易掉帧。而 FastImageCache 就是专门针对列表滚动场景做的性能优化。<br>
+对于两者的性能对比，你可以参考官方的 Demo 工程去感受一下。</p>
+<h2 id="图像加载流程">图像加载流程</h2>
+<ol>
+<li>+[UIImage imageWithContentsOfFile:]通过 Image I/O 接口创建了一个<code>CGImageRef</code>，这个时候图像还没有解码。而且利用内存映射，数据也没加到内存中。</li>
+<li>将得到的图像赋值到 UIImageView 中。</li>
+<li>CATransaction 捕捉到 Layer Tree 发生变更。</li>
+<li>在下一个 RunLoop 中，Core Animation 提交该 CATransaction，根据 UIImage 解码与否，会有以下步骤：
+<ol>
+<li>分配 Buffer 用于解码相关操作</li>
+<li>将数据从磁盘加载到内存中</li>
+<li><strong>解码图片成位图，这个过程发生在 CPU</strong></li>
+<li>得到的位图会被 Core Animation 用于接下来的渲染</li>
+</ol>
+</li>
+</ol>
+<h2 id="fastimagecache-如何优化的">FastImageCache 如何优化的</h2>
+<h3 id="内存映射">内存映射</h3>
+<p>如果每张图片都存在不同的位置，那么将它们从磁盘读到内存中就会涉及多次 IO。<br>
+FastImageCache 则将它们都存在同一个文件中，然后利用 mmap 技术，你需要读取哪张图片，就会在常量时间内计算出其位置，然后读取。<br>
+这种技术似乎在 2D 游戏贴图中还挺常用的。</p>
+<h3 id="解码数据">解码数据</h3>
+<p>FastImageCache 存到文件中的都是已经解码的数据，所以后续不再需要解码。<br>
+当然，这是一个很典型的空间换时间的策略。</p>
+<h3 id="字节对齐">字节对齐</h3>
+<p>Core Animation 在提交图像数据时，如果其没有字节对齐，则会触发一次拷贝进行对齐。<br>
+一个合适的对齐数值是图片每行的字节数要对齐<code>8 pixels x bytes per pixel</code>，对于常见的 ARGB 图片，就是 64。</p>
+<h2 id="fastimagecache-如何设计的">FastImageCache 如何设计的</h2>
+<p>前面提到把所有图片数据都存到同一个文件上，大概长这么个样子：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FjvQjPRjng0ERlGC011wEPKmr6QP.png" alt="" loading="lazy"></p>
+<p>但是光有这个文件还不够，比如你不知道第三张图片的偏移量，也不知道图片对应的是什么东西。<br>
+解决图片偏移量的问题，FastImageCache 是<strong>限制了每一张图片都是一样的大小</strong>，包括图片的渲染格式等信息，这些信息存储在 ImageFormat 中。知道图片的大小，计算偏移量就简单多了。<br>
+解决图片是什么的问题，自然是要给每个图片分配一个 UUID，代码中每个图片模型都是 FICEntity</p>
+<pre><code class="language-objectivec">@protocol FICEntity &lt;NSObject&gt;
+/**
+ A string that uniquely identifies this entity.
+
+ @discussion Within each image table, each entry is identified by an entity's UUID. Ideally, this value should never change for an entity. For example, if your entity class is a person
+ model, its UUID might be an API-assigned, unchanging, unique user ID. No matter how the properties of the person change, its user ID should never change.
+ */
+@property (nonatomic, copy, readonly) NSString *fic_UUID;
+@end
+</code></pre>
+<p>另外还要记录哪个 UUID 是文件的第几个图片，这部分信息被记录到另一个文件中，称为 Meta 文件。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiuQ7K8D94BId6xiWS-44B1hQCcH.png" alt="" loading="lazy"></p>
+<p>总体上看，每个 ImageFormat 对应一种图片格式的文件存储，代码中用 ImageTable 维护每个图片文件。<br>
+缓存的接口无非就是 CRUD 那一套。</p>
+<pre><code class="language-objectivec">/**
+ `FICImageTable` is the primary class that efficiently stores and retrieves cached image data. Image tables are defined by instances of `&lt;FICImageFormat&gt;`. Each image table is backed by a single
+ file on disk that sequentially stores image entry data. All images in an image table are either opaque or not and have the same dimensions. Therefore, when defining your image formats, keep in
+ mind that you cannot mix image dimensions or whether or not an image is opaque.
+ */
+@interface FICImageTable : NSObject
+
+///------------------------------------------------
+/// @name Storing, Retrieving, and Deleting Entries
+///------------------------------------------------
+
+/**
+ Stores new image entry data in the image table.
+
+ @param entityUUID The UUID of the entity that uniquely identifies an image table entry. Must not be `nil`.
+
+ @param sourceImageUUID The UUID of the source image that represents the actual image data stored in an image table entry. Must not be `nil`.
+
+ @param imageDrawingBlock The drawing block provided by the entity that actually draws the source image into a bitmap context. Must not be `nil`.
+
+ @discussion Objects conforming to `&lt;FICEntity&gt;` are responsible for providing an image drawing block that does the actual drawing of their source images to a bitmap context provided
+ by the image table. Drawing in the provided bitmap context writes the uncompressed image data directly to the image table file on disk.
+
+ @note If any of the parameters to this method are `nil`, this method does nothing.
+
+ @see [FICEntity drawingBlockForImage:withFormatName:]
+ */
+- (void)setEntryForEntityUUID:(NSString *)entityUUID sourceImageUUID:(NSString *)sourceImageUUID imageDrawingBlock:(FICEntityImageDrawingBlock)imageDrawingBlock;
+
+/**
+ Returns a new image from the image entry data in the image table.
+
+ @param entityUUID The UUID of the entity that uniquely identifies an image table entry. Must not be `nil`.
+
+ @param sourceImageUUID The UUID of the source image that represents the actual image data stored in an image table entry. Must not be `nil`.
+
+ @param preheatData A `BOOL` indicating whether or not the entry's image data should be preheated. See `&lt;[FICImageTableEntry preheat]&gt;` for more information.
+
+ @return A new image created from the entry data stored in the image table or `nil` if something went wrong.
+
+ @discussion The `UIImage` returned by this method is initialized by a `CGImageRef` backed directly by mapped file data, so no memory copy occurs.
+
+ @note If either of the first two parameters to this method are `nil`, the return value is `nil`.
+
+ @note If either the entity UUID or the source image UUID doesn't match the corresponding UUIDs in the entry data, then something has changed. The entry data is deleted for the
+ provided entity UUID, and `nil` is returned.
+ */
+- (nullable UIImage *)newImageForEntityUUID:(NSString *)entityUUID sourceImageUUID:(NSString *)sourceImageUUID preheatData:(BOOL)preheatData;
+
+/**
+ Deletes image entry data in the image table.
+
+ @param entityUUID The UUID of the entity that uniquely identifies an image table entry. Must not be `nil`.
+
+ @note If `entityUUID` is `nil`, this method does nothing.
+ */
+- (void)deleteEntryForEntityUUID:(NSString *)entityUUID;
+
+@end
+</code></pre>
+<p>这里直接从 Bang 哥那里搬张图过来<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FjgUmgRTfNalj1Hei9isgz-VSaGz.png" alt="" loading="lazy"></p>
+<p>因为采用了 mmap 技术，所以每张图片的数据大小都是 page size align 的。<br>
+ImageTable 并不直接包含 Entry，而是在中间加了一层 Chunk。这个 Chunk 是每次运行时创建的，所以一个 Chunk 的大小、包含多少 Entry 你都可以随意设置。<br>
+mmap 的粒度是每一个 Chunk，这样既不会太大也不会太小，相当灵活。</p>
+<h3 id="基本流程">基本流程</h3>
+<p>这里简单描述一下整个 FastImageCache 与 App 的工作流程。</p>
+<ol>
+<li>
+<p>App 进入某个列表，需要显示图片，所以调用了<code>retrieveImageForEntity</code>相关接口获取图片。</p>
+</li>
+<li>
+<p>如果是第一次访问，此时还没有数据，则 FastImageCache 会要求 App 提供原始图片的数据。</p>
+<ol>
+<li>拿到原始图片后，接下来需要寻找放到文件的哪个地方合适。如果文件不够放，则需要<code>ftruncate</code>扩展一下文件大小。此时会得到一个 ImageTableEntry。</li>
+<li>根据 ImageFormat 的信息，创建一个 Bitmap，然后将图片绘制到 ImageTableEntry 其中的 bytes，其实就是写到文件中。</li>
+</ol>
+</li>
+<li>
+<p>根据<code>indexMap</code>查询到图片 UUID 对应在文件哪个位置，创建对应的 ImageTableEntry。</p>
+</li>
+<li>
+<p>将该位图数据读取出来，返回给 App</p>
+</li>
+</ol>
+<p>这里不想贴太多代码，自行查阅。<br>
+解码图片成位图的逻辑参考以下方法：<br>
+<code>-[FICImageTable setEntryForEntityUUID:sourceImageUUID:imageDrawingBlock:]</code><br>
+从内存映射文件中读取位图的逻辑参考以下方法：<br>
+<code>-[FICImageTable newImageForEntityUUID:sourceImageUUID:preheatData:]</code></p>
+<h2 id="注意点-吐槽">注意点 &amp; 吐槽</h2>
+<p>ImageFormat 限制了图片的大小等信息，所以 FastImageCache 适用于那种有统一图像大小的场景，比如聊天头像、相册。</p>
+<p>_sourceImageMap 没看到有什么作用，可能是个遗留代码。</p>
+<p>ImageTable 中的_imageLength 和 Entry 中的 imageLength 是不相等的，前者是准确的数值，后者由于 page size align，算出来的不是准确的。虽然不影响使用。</p>
+<p>ImageTable 里面用了一些奇奇怪怪的数据结果，看了好几遍代码才知道是什么意思。<br>
+比如_indexNumbers 缓存了 index 的 NSNumber 表示，用来**@synchronized**加锁，避免每次重新生成 NSNumber 变了。有 HashMap 锁表头那味了～<br>
+_inUseEntries 代表哪个 Entry 正在使用，发生缓存淘汰时，不能选这个 Entry。</p>
+<p>在请求图片时，由于是异步的，ImageCache 中设置了一个很复杂的结构，我感觉这里是有 bug 的。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FsyA7ivTbHH3QIdyvnz0Gm0CCyHy.png" alt="" loading="lazy"></p>
+<p>从图中可以看出，FormatKey 只对应一个 FormatName。但是 BlocksKey 里面有可能有多种 FormatName。<br>
+所以如果你的代码写成下面这样，同时图像加载失败了，你猜猜会有什么问题？</p>
+<pre><code class="language-objectivec">[[FICImageCache sharedImageCache] retrieveImageForEntity:photo withFormatName:FormatNameA completionBlock:^(id&lt;FICEntity&gt; entity, NSString *formatName, UIImage *image) {
+    NSLog(@&quot;%@&quot;, formatName);
+}];
+[[FICImageCache sharedImageCache] retrieveImageForEntity:photo withFormatName:FormatNameB completionBlock:^(id&lt;FICEntity&gt; entity, NSString *formatName, UIImage *image) {
+    NSLog(@&quot;%@&quot;, formatName);
+}];
+</code></pre>
+<p>框架有点复杂，如果你只是想简单提升一下滚动性能，可以在内存中做一下缓存即可。<br>
+在官方的 Demo 工程中，我给 FICDPhoto 加了几行代码，性能就飞上去了 🚀。</p>
+<pre><code class="language-objectivec">- (UIImage *)thumbnailImage {
+    if (_thumbImage) {
+        return _thumbImage;
+    }
+    UIImage *thumbnailImage = [UIImage imageWithContentsOfFile:[self _thumbnailFilePath]];
+    _thumbImage = thumbnailImage;
+
+    return thumbnailImage;
+}
+</code></pre>
+<p>这里因为是缩略图，所以内存不会有太大消耗。不过列表滚动的场景，基本都是缩略图吧。</p>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="http://blog.cnbang.net/tech/2578/">iOS 图片加载速度极限优化—FastImageCache 解析 « bang’s blog</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[AFNetworking源码分析]]></title>
+        <id>https://jayying007.github.io/post/AFNetworking源码分析/</id>
+        <link href="https://jayying007.github.io/post/AFNetworking源码分析/">
+        </link>
+        <updated>2023-05-07T11:56:55.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://github.com/AFNetworking/AFNetworking">https://github.com/AFNetworking/AFNetworking</a></p>
+<h2 id="简介">简介</h2>
+<p>AFNetworking 这个网络框架，相信 iOS 开发都不陌生。如果你的项目是通过 Http 进行通信，那么这个框架可以帮你简化网络请求和响应的逻辑。<br>
+实际上它就是对系统 NSURLSession、NSURLSessionTask 这些逻辑做了封装，提供了更安全更易用的接口。<br>
+虽然老早就知道这个框架，但一直没有去看其源码实现。等到最近终于抽出时间看时，这个框架已经寿终正寝了。。。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FqCBsO0axNH87FQL-fAExyIN8FPr.png" alt="" loading="lazy"></p>
+<blockquote>
+<p>虽然但是，大厂一般比较少用 Http 这种方式进行通信，而是直接基于 TCP 实现。所以 AFNetworking 的帮助就不大了。<br>
+这里推荐一个跨平台网络框架<a href="https://github.com/Tencent/mars">https://github.com/Tencent/mars</a>，也是微信客户端使用的网络框架。</p>
+</blockquote>
+<h2 id="与原生的对比">与原生的对比</h2>
+<p>这里简单写几个例子，演示用 AFNetworking 和不同 AFNetworking 代码的区别<br>
+{% tabs Get %}</p>
+<!-- tab 原生Get请求 -->
+<pre><code class="language-objectivec">- (void)get {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/get?name=123&amp;password=456&quot;];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  [request setValue:@&quot;testValue&quot; forHTTPHeaderField:@&quot;Test-Header-Field&quot;];
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                  completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+                                    if (error != nil) {
+                                      NSLog(@&quot;出错了，%@&quot;, error);
+                                    } else {
+                                      NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                      NSLog(@&quot;%@&quot;, result);
+                                    }
+                                  }];
+  [task resume];
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Get请求 -->
+<pre><code class="language-objectivec">- (void)af_get {
+  [[AFHTTPSessionManager manager] GET:@&quot;https://httpbin.org/get&quot;
+     parameters:@{ @&quot;name&quot; : @123, @&quot;password&quot; : @456 }
+     headers:@{ @&quot;Test-Header-Field&quot; : @&quot;testValue&quot; }
+     progress:nil
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       NSLog(@&quot;%@&quot;, responseObject);
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}</p>
+<p>{% tabs Post %}</p>
+<!-- tab 原生Post请求 -->
+<pre><code class="language-objectivec">- (void)post {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/post&quot;];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  [request setHTTPMethod:@&quot;POST&quot;];
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                  completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+                                    if (error != nil) {
+                                      NSLog(@&quot;出错了，%@&quot;, error);
+                                    } else {
+                                      NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                      NSLog(@&quot;%@&quot;, result);
+                                    }
+                                  }];
+  [task resume];
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Post请求 -->
+<pre><code class="language-objectivec">- (void)af_post {
+  [[AFHTTPSessionManager manager] POST:@&quot;https://httpbin.org/post&quot;
+     parameters:nil
+     headers:nil
+     progress:nil
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       NSLog(@&quot;%@&quot;, responseObject);
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}</p>
+<p>{% tabs Download %}</p>
+<!-- tab 原生Download请求 -->
+<pre><code class="language-objectivec">- (void)download {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/image/jpeg&quot;];
+  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+  NSURLSession *session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+  NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request];
+  [task resume];
+}
+#pragma mark - NSURLSessionDownloadDelegate
+- (void)URLSession:(NSURLSession *)session
+             downloadTask:(NSURLSessionDownloadTask *)downloadTask
+             didWriteData:(int64_t)bytesWritten
+        totalBytesWritten:(int64_t)totalBytesWritten
+totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+    float rate = 1.f * totalBytesWritten / totalBytesExpectedToWrite;
+    NSLog(@&quot;下载进度：%.2lf&quot;, rate);
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+    NSString *downloadPath = [location path];
+    NSLog(@&quot;已下载到路径：%@&quot;, downloadPath);
+    UIImage *image = [UIImage imageWithContentsOfFile:downloadPath];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //self.imageView.image = image;
+    });
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Download请求 -->
+<pre><code class="language-objectivec">- (void)af_download {
+  AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] init];
+  manager.responseSerializer = [[AFImageResponseSerializer alloc] init];
+  [manager GET:@&quot;https://httpbin.org/image/jpeg&quot;
+     parameters:nil
+     headers:nil
+     progress:^(NSProgress *_Nonnull downloadProgress) {
+       NSLog(@&quot;下载进度：%.2lf&quot;, downloadProgress.fractionCompleted);
+     }
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       dispatch_async(dispatch_get_main_queue(), ^{
+         //self.imageView.image = responseObject;
+       });
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}<br>
+如果是下载图片，其实 AFNetworking 还扩展了 UIKit 组件的功能，可以写更少的代码。</p>
+<p>{% tabs Upload %}</p>
+<!-- tab 原生Upload请求 -->
+<pre><code class="language-objectivec">- (void)upload {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/post&quot;];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  [request setHTTPMethod:@&quot;POST&quot;];
+  NSURLSession *session = [NSURLSession sharedSession];
+  UIImage *image = [UIImage imageNamed:@&quot;boss&quot;];
+  NSData *imgData = UIImagePNGRepresentation(image);
+  NSURLSessionUploadTask *task =
+    [session uploadTaskWithRequest:request
+     fromData:imgData
+     completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+       if (error != nil) {
+         NSLog(@&quot;出错了，%@&quot;, error);
+       } else {
+         NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+         NSLog(@&quot;%@&quot;, result);
+       }
+     }];
+  [task resume];
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Upload请求 -->
+<pre><code class="language-objectivec">- (void)af_upload {
+  [[AFHTTPSessionManager manager] POST:@&quot;https://httpbin.org/post&quot;
+     parameters:nil
+     headers:nil
+     constructingBodyWithBlock:^(id&lt;AFMultipartFormData&gt; _Nonnull formData) {
+       UIImage *image = [UIImage imageNamed:@&quot;boss&quot;];
+       NSData *imgData = UIImagePNGRepresentation(image);
+       [formData appendPartWithFormData:imgData name:@&quot;imgData&quot;];
+     }
+     progress:^(NSProgress *_Nonnull downloadProgress) {
+       NSLog(@&quot;上传进度：%.2lf&quot;, downloadProgress.fractionCompleted);
+     }
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       NSLog(@&quot;%@&quot;, responseObject);
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}</p>
+<p>对比代码看出，在 Apple 推出 NSURLSession 之后，AFNetworking 的作用相较于之前小了一些，但仍然还有用处。比如所有的网络请求都统一为 Block 的回调方式，而且带有 progess。</p>
+<h2 id="代码结构">代码结构</h2>
+<p>对其源码的阅读可以分下面几个类别去看：</p>
+<ol>
+<li><strong>对 NSURLSession 及其上传/下载任务的管理</strong></li>
+</ol>
+<p>相关文件：AFURLSessionManager、AFHTTPSessionManager<br>
+这两个类可以说是框架的核心了，也是你使用 AFNetworking 99%的原因。</p>
+<ol start="2">
+<li><strong>请求和响应的序列化</strong></li>
+</ol>
+<p>相关文件：AFURLRequestSerialization、AFURLResponseSerialization<br>
+比如你请求时带上的 queryString、HttpHeader、HttpBody，都可以通过 AFHTTPRequestSerializer 提供的更简单的接口实现。AFURLResponseSerialization 则可以将返回的 NSData 解析成你想要的数据类型。</p>
+<ol start="3">
+<li><strong>安全相关</strong></li>
+</ol>
+<p>主要就是 AFSecurityPolicy 这个类，用于 SSL Pinning。</p>
+<ol start="4">
+<li><strong>网络可达性</strong></li>
+</ol>
+<p>AFNetworkReachabilityManager 这个类框架本身并没有用到，是个相对独立的模块。</p>
+<ol start="5">
+<li><strong>UIKit 的扩展</strong></li>
+</ol>
+<p>如支持了 UIButton、UIImageView 设置网络图片，有点像 SDWebImage。</p>
+<h2 id="源码分析">源码分析</h2>
+<h3 id="对-nsurlsession-及其上传下载任务的管理">对 NSURLSession 及其上传/下载任务的管理</h3>
+<p>AFURLSessionManager 对 NSURLSession 做了封装，从某种意义上说，你不需要直接创建 or 调用 NSURLSession 的接口了，在 AFURLSessionManager 能找到常见的接口。</p>
+<pre><code class="language-objectivec">/**
+ Creates and returns a manager for a session created with the specified configuration. This is the designated initializer.
+
+ @param configuration The configuration used to create the managed session.
+
+ @return A manager for a newly-created session.
+ */
+- (instancetype)initWithSessionConfiguration:(nullable NSURLSessionConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
+
+/**
+ Creates an `NSURLSessionDataTask` with the specified request.
+
+ @param request The HTTP request for the request.
+ @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
+ @param downloadProgressBlock A block object to be executed when the download progress is updated. Note this block is called on the session queue, not the main queue.
+ @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
+ */
+- (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request
+                               uploadProgress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock
+                             downloadProgress:(nullable void (^)(NSProgress *downloadProgress))downloadProgressBlock
+                            completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject,  NSError * _Nullable error))completionHandler;
+
+/**
+ Creates an `NSURLSessionUploadTask` with the specified request for an HTTP body.
+
+ @param request The HTTP request for the request.
+ @param bodyData A data object containing the HTTP body to be uploaded.
+ @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
+ @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
+ */
+- (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request
+                                         fromData:(nullable NSData *)bodyData
+                                         progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock
+                                completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+</code></pre>
+<p>AFURLSessionManager 对 NSURLSessionTask 事件的回调采用的是 Block+Notification 的方式。</p>
+<pre><code class="language-objectivec">/**
+ Sets a block to be executed as the last message related to a specific task, as handled by the `NSURLSessionTaskDelegate` method `URLSession:task:didCompleteWithError:`.
+
+ @param block A block object to be executed when a session task is completed. The block has no return value, and takes three arguments: the session, the task, and any error that occurred in the process of executing the task.
+ */
+- (void)setTaskDidCompleteBlock:(nullable void (^)(NSURLSession *session, NSURLSessionTask *task, NSError * _Nullable error))block;
+
+/**
+ Sets a block to be executed when a download task has completed a download, as handled by the `NSURLSessionDownloadDelegate` method `URLSession:downloadTask:didFinishDownloadingToURL:`.
+
+ @param block A block object to be executed when a download task has completed. The block returns the URL the download should be moved to, and takes three arguments: the session, the download task, and the temporary location of the downloaded file. If the file manager encounters an error while attempting to move the temporary file to the destination, an `AFURLSessionDownloadTaskDidFailToMoveFileNotification` will be posted, with the download task as its object, and the user info of the error.
+ */
+- (void)setDownloadTaskDidFinishDownloadingBlock:(nullable NSURL * _Nullable  (^)(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, NSURL *location))block;
+
+/**
+ Posted when a task suspends its execution.
+ */
+FOUNDATION_EXPORT NSString * const AFNetworkingTaskDidSuspendNotification;
+</code></pre>
+<p>AFURLSessionManager 持有了 NSURLSession，将 delegate 设置为自己，同时也存储了一个 AFURLSessionManagerTaskDelegate 数组，用于关联 NSURLSession 创建的 Task。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FncP7pMujiV7TNkQsp_ODX34BZdw.png" alt="" loading="lazy"><br>
+AFURLSessionManagerTaskDelegate 中维护了 progressBlock、completeBlock 等信息。<br>
+大致逻辑是，启动 NSURLSessionTask 时，NSURLSession 通过 NSURLSessionDelegate 通知到 AFURLSessionManager。然后 AFURLSessionManager 再找出对应的 AFURLSessionManagerTaskDelegate，将相关信息传递过去。<br>
+核心代码如下：</p>
+<pre><code class="language-objectivec">- (void)URLSession:(__unused NSURLSession *)session
+              task:(NSURLSessionTask *)task
+didCompleteWithError:(NSError *)error
+{
+    error = objc_getAssociatedObject(task, AuthenticationChallengeErrorKey) ?: error;
+    __strong AFURLSessionManager *manager = self.manager;
+
+    __block id responseObject = nil;
+
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    userInfo[AFNetworkingTaskDidCompleteResponseSerializerKey] = manager.responseSerializer;
+
+    //Performance Improvement from #2672
+    NSData *data = nil;
+    if (self.mutableData) {
+        data = [self.mutableData copy];
+        //We no longer need the reference, so nil it out to gain back some memory.
+        self.mutableData = nil;
+    }
+
+		//省略无关代码
+
+    if (error) {
+        //略略略
+    } else {
+        dispatch_async(url_session_manager_processing_queue(), ^{
+            NSError *serializationError = nil;
+            responseObject = [manager.responseSerializer responseObjectForResponse:task.response data:data error:&amp;serializationError];
+
+            //省略无关代码
+
+            dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
+                if (self.completionHandler) {
+                    self.completionHandler(task.response, responseObject, serializationError);
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingTaskDidCompleteNotification object:task userInfo:userInfo];
+                });
+            });
+        });
+    }
+}
+</code></pre>
+<h3 id="请求和响应的序列化">请求和响应的序列化</h3>
+<p>AFHTTPRequestSerializer 用于简化 queryString、HttpHeader、HttpBody 等的设置。例如它会自动帮你加上 User-Agent、Accept-Language。</p>
+<pre><code class="language-objectivec">- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request
+                               withParameters:(id)parameters
+                                        error:(NSError *__autoreleasing *)error
+{
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+
+    [self.HTTPRequestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL * __unused stop) {
+        if (![request valueForHTTPHeaderField:field]) {
+            [mutableRequest setValue:value forHTTPHeaderField:field];
+        }
+    }];
+
+    NSString *query = @&quot;&quot;;
+    if (parameters) {
+        if (self.queryStringSerialization) {
+            //省略无关代码
+        } else {
+            switch (self.queryStringSerializationStyle) {
+                case AFHTTPRequestQueryStringDefaultStyle:
+                    query = AFQueryStringFromParameters(parameters);
+                    break;
+            }
+        }
+    }
+
+    if ([self.HTTPMethodsEncodingParametersInURI containsObject:[[request HTTPMethod] uppercaseString]]) {
+        if (query &amp;&amp; query.length &gt; 0) {
+            mutableRequest.URL = [NSURL URLWithString:[[mutableRequest.URL absoluteString] stringByAppendingFormat:mutableRequest.URL.query ? @&quot;&amp;%@&quot; : @&quot;?%@&quot;, query]];
+        }
+    } else {
+        if (![mutableRequest valueForHTTPHeaderField:@&quot;Content-Type&quot;]) {
+            [mutableRequest setValue:@&quot;application/x-www-form-urlencoded&quot; forHTTPHeaderField:@&quot;Content-Type&quot;];
+        }
+        [mutableRequest setHTTPBody:[query dataUsingEncoding:self.stringEncoding]];
+    }
+
+    return mutableRequest;
+}
+</code></pre>
+<p>AFHTTPResponseSerializer 用于简化返回结果。NSURLSession 返回的是 NSData，利用 AFJSONResponseSerializer，可以将其转为 NSDictionary。利用 AFImageResponseSerializer，可以将其转为 UIImage。省下自己去写转换的代码。</p>
+<pre><code class="language-objectivec">- (id)responseObjectForResponse:(NSURLResponse *)response
+                           data:(NSData *)data
+                          error:(NSError *__autoreleasing *)error
+{
+    if (![self validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
+        if (!error || AFErrorOrUnderlyingErrorHasCodeInDomain(*error, NSURLErrorCannotDecodeContentData, AFURLResponseSerializationErrorDomain)) {
+            return nil;
+        }
+    }
+
+    //省略无关代码
+    id responseObject = [NSJSONSerialization JSONObjectWithData:data options:self.readingOptions error:&amp;serializationError];
+
+    //省略无关代码
+    return responseObject;
+}
+
+- (BOOL)validateResponse:(NSHTTPURLResponse *)response
+                    data:(NSData *)data
+                   error:(NSError * __autoreleasing *)error
+{
+    BOOL responseIsValid = YES;
+    NSError *validationError = nil;
+
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        if (self.acceptableContentTypes &amp;&amp; ![self.acceptableContentTypes containsObject:[response MIMEType]] &amp;&amp;
+            !([response MIMEType] == nil &amp;&amp; [data length] == 0)) {
+            //省略无关代码
+            responseIsValid = NO;
+        }
+
+        if (self.acceptableStatusCodes &amp;&amp; ![self.acceptableStatusCodes containsIndex:(NSUInteger)response.statusCode] &amp;&amp; [response URL]) {
+            //省略无关代码
+            responseIsValid = NO;
+        }
+    }
+
+		//省略无关代码
+
+    return responseIsValid;
+}
+</code></pre>
+<p>其中，AFImageResponseSerializer 可以配置对 UIImage 立即解码，直接绘制 bitmap。因为是在子线程，所以降低了主线程解码的压力。</p>
+<h3 id="uikit-的扩展">UIKit 的扩展</h3>
+<p>这里以 UIImageView 支持设置网络图片为例，关键步骤都加了注释说明。</p>
+<pre><code class="language-objectivec">- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest
+              placeholderImage:(UIImage *)placeholderImage
+                       success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *_Nullable response, UIImage *image))success
+                       failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *_Nullable response, NSError *error))failure {
+    //1.是否已有相同的任务在下载
+    if ([self isActiveTaskURLEqualToURLRequest:urlRequest]) {
+        return;
+    }
+    //2.取消之前的下载任务
+    [self cancelImageDownloadTask];
+
+    AFImageDownloader *downloader = [[self class] sharedImageDownloader];
+    //3.检查是否有缓存
+    id&lt;AFImageRequestCache&gt; imageCache = downloader.imageCache;
+    UIImage *cachedImage = [imageCache imageforRequest:urlRequest withAdditionalIdentifier:nil];
+    if (cachedImage) {
+        self.image = cachedImage;
+        [self clearActiveDownloadInformation];
+        return;
+    }
+    //4.没有缓存，开始下载图片
+    if (placeholderImage) {
+        self.image = placeholderImage;
+    }
+    __weak __typeof(self) weakSelf = self;
+    NSUUID *downloadID = [NSUUID UUID];
+    AFImageDownloadReceipt *receipt = [downloader downloadImageForURLRequest:urlRequest
+    withReceiptID:downloadID
+    success:^(NSURLRequest *_Nonnull request, NSHTTPURLResponse *_Nullable response, UIImage *_Nonnull responseObject) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        //5.下载完成要检查downloadID是否跟当前最新的receipt匹配，有可能出现下载途中加入了新的下载任务or清除了下载任务
+        if ([strongSelf.af_activeImageDownloadReceipt.receiptID isEqual:downloadID]) {
+            strongSelf.image = responseObject;
+            [strongSelf clearActiveDownloadInformation];
+        }
+    }
+    failure:^(NSURLRequest *_Nonnull request, NSHTTPURLResponse *_Nullable response, NSError *_Nonnull error) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if ([strongSelf.af_activeImageDownloadReceipt.receiptID isEqual:downloadID]) {
+            if (failure) {
+                failure(request, response, error);
+            }
+            [strongSelf clearActiveDownloadInformation];
+        }
+    }];
+
+    self.af_activeImageDownloadReceipt = receipt;
+}
+</code></pre>
+<p>这其实就是一个标准的图片下载框架的实现逻辑。</p>
+<p>下面简单看看 AFImageDownloader 的实现。</p>
+<pre><code class="language-objectivec">- (nullable AFImageDownloadReceipt *)downloadImageForURLRequest:(NSURLRequest *)request
+                                                  withReceiptID:(nonnull NSUUID *)receiptID
+                                                        success:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse  * _Nullable response, UIImage *responseObject))success
+                                                        failure:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse * _Nullable response, NSError *error))failure {
+    __block NSURLSessionDataTask *task = nil;
+    dispatch_sync(self.synchronizationQueue, ^{
+        NSString *URLIdentifier = request.URL.absoluteString;
+        if (URLIdentifier == nil) {
+            if (failure) {
+                NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:nil];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failure(request, nil, error);
+                });
+            }
+            return;
+        }
+
+        // 1) Append the success and failure blocks to a pre-existing request if it already exists
+        AFImageDownloaderMergedTask *existingMergedTask = self.mergedTasks[URLIdentifier];
+        if (existingMergedTask != nil) {
+            AFImageDownloaderResponseHandler *handler = [[AFImageDownloaderResponseHandler alloc] initWithUUID:receiptID success:success failure:failure];
+            [existingMergedTask addResponseHandler:handler];
+            task = existingMergedTask.task;
+            return;
+        }
+
+        // 2) Attempt to load the image from the image cache if the cache policy allows it
+        switch (request.cachePolicy) {
+            case NSURLRequestUseProtocolCachePolicy:
+            case NSURLRequestReturnCacheDataElseLoad:
+            case NSURLRequestReturnCacheDataDontLoad: {
+                UIImage *cachedImage = [self.imageCache imageforRequest:request withAdditionalIdentifier:nil];
+                if (cachedImage != nil) {
+                    if (success) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            success(request, nil, cachedImage);
+                        });
+                    }
+                    return;
+                }
+                break;
+            }
+            default:
+                break;
+        }
+
+        // 3) Create the request and set up authentication, validation and response serialization
+        NSUUID *mergedTaskIdentifier = [NSUUID UUID];
+        NSURLSessionDataTask *createdTask;
+        __weak __typeof__(self) weakSelf = self;
+
+        createdTask = [self.sessionManager
+                       dataTaskWithRequest:request
+                       uploadProgress:nil
+                       downloadProgress:nil
+                       completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                           dispatch_async(self.responseQueue, ^{
+                               __strong __typeof__(weakSelf) strongSelf = weakSelf;
+                               AFImageDownloaderMergedTask *mergedTask = [strongSelf safelyGetMergedTask:URLIdentifier];
+                               if ([mergedTask.identifier isEqual:mergedTaskIdentifier]) {
+                                   mergedTask = [strongSelf safelyRemoveMergedTaskWithURLIdentifier:URLIdentifier];
+                                   if (error) {
+                                       for (AFImageDownloaderResponseHandler *handler in mergedTask.responseHandlers) {
+                                           if (handler.failureBlock) {
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   handler.failureBlock(request, (NSHTTPURLResponse *)response, error);
+                                               });
+                                           }
+                                       }
+                                   } else {
+                                       if ([strongSelf.imageCache shouldCacheImage:responseObject forRequest:request withAdditionalIdentifier:nil]) {
+                                           [strongSelf.imageCache addImage:responseObject forRequest:request withAdditionalIdentifier:nil];
+                                       }
+
+                                       for (AFImageDownloaderResponseHandler *handler in mergedTask.responseHandlers) {
+                                           if (handler.successBlock) {
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   handler.successBlock(request, (NSHTTPURLResponse *)response, responseObject);
+                                               });
+                                           }
+                                       }
+
+                                   }
+                               }
+                               [strongSelf safelyDecrementActiveTaskCount];
+                               [strongSelf safelyStartNextTaskIfNecessary];
+                           });
+                       }];
+
+        // 4) Store the response handler for use when the request completes
+        AFImageDownloaderResponseHandler *handler = [[AFImageDownloaderResponseHandler alloc] initWithUUID:receiptID
+                                                                                                   success:success
+                                                                                                   failure:failure];
+        AFImageDownloaderMergedTask *mergedTask = [[AFImageDownloaderMergedTask alloc]
+                                                   initWithURLIdentifier:URLIdentifier
+                                                   identifier:mergedTaskIdentifier
+                                                   task:createdTask];
+        [mergedTask addResponseHandler:handler];
+        self.mergedTasks[URLIdentifier] = mergedTask;
+
+        // 5) Either start the request or enqueue it depending on the current active request count
+        if ([self isActiveRequestCountBelowMaximumLimit]) {
+            [self startMergedTask:mergedTask];
+        } else {
+            [self enqueueMergedTask:mergedTask];
+        }
+
+        task = mergedTask.task;
+    });
+    if (task) {
+        return [[AFImageDownloadReceipt alloc] initWithReceiptID:receiptID task:task];
+    } else {
+        return nil;
+    }
+}
+</code></pre>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FoYzJoQkRF0LogflV8nay1RhJtl_.png" alt="" loading="lazy"><br>
+下载某个 URLRequest 时，会先在下载队列 mergedTasks 中检查是否已存在。<br>
+如果任务已存在，则给 AFImageDownloaderMergedTask 添加一个新的监听者即可（下载完成时会通知所有监听者），然后返回一个下载票据 AFImageDownloadReceipt。<br>
+如果不存在，则先查询本地缓存，有的话直接返回；<br>
+本地缓存不存在时，则需要创建一个新的 AFImageDownloaderMergedTask，然后加上监听者。这个过程通过 AFURLSessionManager 创建了一个 NSURLSessionDataTask。如果当前并发下载的次数还没达到上限的话，则直接启动 Task，否则就先进入队列等待。</p>
+<h2 id="参考资料">参考资料</h2>
+<p>找的资料有点古老，一些还是讲的 NSURLConnection，可以直接跳过。<br>
+<a href="https://nshipster.cn/afnetworking-2/">AFNetworking 2.0</a><br>
+<a href="http://blog.cnbang.net/tech/2320/">AFNetworking2.0 源码解析 « bang’s blog</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[FBRetainCycleDetector源码分析]]></title>
+        <id>https://jayying007.github.io/post/FBRetainCycleDetector源码分析/</id>
+        <link href="https://jayying007.github.io/post/FBRetainCycleDetector源码分析/">
+        </link>
+        <updated>2023-04-23T15:02:06.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://github.com/facebook/FBRetainCycleDetector">https://github.com/facebook/FBRetainCycleDetector</a></p>
+<h2 id="内存管理概念">内存管理概念</h2>
+<p>对于程序中的内存对象管理，一般分为手动管理、引用计数管理、垃圾回收。<br>
+手动管理：例如 C 语言，malloc 后不需要时，需要 free，不然就会内存泄露。<br>
+引用计数：Objective-C 的内存管理方式，稍有不慎就会造成循环引用，这也是<code>FBRetainCycleDetector</code>要解决的问题。<br>
+垃圾回收：Java 的内存管理方式，之前写过文章<a href="https://blog.csdn.net/qq_17190121/article/details/115145066">简述 - 垃圾回收算法_Mrzhuang007 的博客-CSDN 博客</a></p>
+<h2 id="循环引用的检测原理">循环引用的检测原理</h2>
+<p>首先需要知道程序创建了哪些 OC 对象，这个可以通过 hook alloc 或者 allocWithZone 去监测；<br>
+接下来要知道每个对象强引用了哪些对象；<br>
+寻找是否有引用回路；<br>
+最后需要去重，比如 A-&gt;B-&gt;C-&gt;A 和 B-&gt;C-&gt;A-&gt;B 属于同一条链路。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FoazLbNEWxnVBY3mFjcpTFyvo734.png" alt="" loading="lazy"><br>
+可以看出，检测循环引用，相当于在一个有向图中找到环。<br>
+这就很简单了，遍历每个对象做一下 dfs，就可以知道每个对象是否位于环中，以及属于哪个环。</p>
+<h2 id="fbretaincycledetector-的实现">FBRetainCycleDetector 的实现</h2>
+<h3 id="对象检测">对象检测</h3>
+<p><code>FBRetainCycleDetector</code>实际上没有 hook alloc 之类的方法，要检测是否存在循环引用，需要我们自己主动添加对象，通过<code>addCandidate:</code>方法。<br>
+即只对这些对象做 dfs，毕竟实际项目中对象实在太多了，检测起来内存和性能都是问题。</p>
+<p><code>FBRetainCycleDetector</code>的方法只有三个：</p>
+<ul>
+<li>构造函数可配置哪些边可以忽略，毕竟有些循环引用是故意的，会在之后自行打断；</li>
+<li>添加 dfs 搜索的初始对象；</li>
+<li>返回搜索结果，数组代表环的数量，数组里的元素为集合，代表每个环的组成。</li>
+</ul>
+<pre><code class="language-objectivec">/**
+ FBRetainCycleDetector
+
+ The main class responsible for detecting retain cycles.
+
+ Be cautious, the class is NOT thread safe.
+
+ The process of detecting retain cycles is relatively slow and consumes a lot of CPU.
+ */
+
+@interface FBRetainCycleDetector : NSObject
+
+/**
+ Designated initializer
+
+ @param configuration Configuration for detector. Can include specific filters and options.
+ @see FBRetainCycleDetectorConfiguration
+ */
+- (nonnull instancetype)initWithConfiguration:(nonnull FBObjectGraphConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
+
+/**
+ Adds candidate you are interested in getting retain cycles from.
+
+ @param candidate Any Objective-C object you want to verify for cycles.
+ */
+- (void)addCandidate:(nonnull id)candidate;
+
+/**
+ Searches for all retain cycles for all candidates the detector has been
+ provided with.
+
+ @return NSSet with retain cycles. An element of this array will be
+ an array representing retain cycle. That array will hold elements
+ of type FBObjectiveCGraphElement.
+
+ @discussion For given candidate, the detector will go through all object graph rooted in this candidate and return
+ ALL retain cycles that this candidate references. It will also take care of removing duplicates. It will not look for
+ cycles longer than 10 elements. If you want to look for longer ones use findRetainCyclesWithMaxCycleLenght:
+ */
+- (nonnull NSSet&lt;NSArray&lt;FBObjectiveCGraphElement *&gt; *&gt; *)findRetainCycles;
+
+@end
+</code></pre>
+<h3 id="对象结构与引用描述">对象结构与引用描述</h3>
+<p>对于有向图上的所有节点，都是用<code>FBObjectiveCGraphElement</code>来描述。</p>
+<pre><code class="language-objectivec">/**
+ Base Graph Element representation. It carries some data about the object and should be overridden in subclass
+ to provide references that subclass holds strongly (different for blocks, objects, other specializations).
+ The Graph Element itself can only provide references from FBAssociationManager.
+ */
+@interface FBObjectiveCGraphElement : NSObject
+
+/**
+ Designated initializer.
+ @param object Object this Graph Element will represent.
+ @param configuration Provides detector's configuration that contains filters and options
+ @param namePath Description of how the object was retrieved from it's parent. Check namePath property.
+ */
+- (nonnull instancetype)initWithObject:(nullable id)object
+                         configuration:(nonnull FBObjectGraphConfiguration *)configuration
+                              namePath:(nullable NSArray&lt;NSString *&gt; *)namePath;
+/**
+ Name path that describes how this object was retrieved from its parent object by names
+ (for example ivar names, struct references). For more check FBObjectReference protocol.
+ */
+@property (nonatomic, copy, readonly, nullable) NSArray&lt;NSString *&gt; *namePath;
+@property (nonatomic, weak, nullable) id object;
+@property (nonatomic, readonly, nonnull) FBObjectGraphConfiguration *configuration;
+
+/**
+ Main accessor to all objects that the given object is retaining. Thread unsafe.
+ @return NSSet of all objects this object is retaining.
+ */
+- (nullable NSSet *)allRetainedObjects;
+
+@end
+</code></pre>
+<p>结合 ObjC 的特性，可以扩展出以下类型：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FuFB3_C4YzH9LzT3UB7wD93CpJkQ.png" alt="" loading="lazy"><br>
+之所以有不同的派生类，主要是获取强引用对象的方法<code>allRetainedObjects</code>有所不同</p>
+<p><strong>FBObjectiveCGraphElement</strong>：获取 associate 绑定的对象；<br>
+<strong>FBObjectiveCBlock</strong>：原有基础上，利用 Block 的结构体，计算出强引用的对象；<br>
+<strong>FBObjectiveCObject</strong>：原有基础上，获取 Ivars，如果为集合对象，则获取其 keys 和 values；<br>
+<strong>FBObjectiveCNSCFTimer</strong>：原有基础上，获取 NSTimer 中的 target 和 userInfo；</p>
+<blockquote>
+<p>Ivars 可以利用 ObjC Runtime 获取，利用 IvarsLayout 可以知道是弱引用还是强引用。对于 IvarsLayout 的说明可以参考<a href="https://www.jianshu.com/p/6b218d12caae">这篇文章</a><br>
+对于结构体内部变量的获取则稍微复杂一些，需要考虑结构体对齐问题，然后利用 typeEncoding 获得 OC 对象。<br>
+Block 则创建一些虚拟的对象，然后调用 Block 的 dispose 方法，谁调用了 release 方法就可以知道哪个是真正的 OC 强引用对象。<br>
+Ivars、结构体、Block 强引用对象的方法还挺有意思的，建议自行阅读源码，感受其奥秘。</p>
+</blockquote>
+<h3 id="循环引用的检测">循环引用的检测</h3>
+<p>上文也说了，检测用的是 DFS，不过这里并没有用递归，而是利用循环去模拟桟的运行。代码如下：</p>
+<pre><code class="language-objectivec">- (NSSet&lt;NSArray&lt;FBObjectiveCGraphElement *&gt; *&gt; *)_findRetainCyclesInObject:(FBObjectiveCGraphElement *)graphElement
+                                                                 stackDepth:(NSUInteger)stackDepth
+{
+  NSMutableSet&lt;NSArray&lt;FBObjectiveCGraphElement *&gt; *&gt; *retainCycles = [NSMutableSet new];
+  FBNodeEnumerator *wrappedObject = [[FBNodeEnumerator alloc] initWithObject:graphElement];
+
+  // We will be doing DFS over graph of objects
+  // Stack will keep current path in the graph
+  NSMutableArray&lt;FBNodeEnumerator *&gt; *stack = [NSMutableArray new];
+
+  // To make the search non-linear we will also keep
+  // a set of previously visited nodes.
+  NSMutableSet&lt;FBNodeEnumerator *&gt; *objectsOnPath = [NSMutableSet new];
+
+  // Let's start with the root
+  [stack addObject:wrappedObject];
+
+  while ([stack count] &gt; 0) {
+    // Take topmost node in stack and mark it as visited
+    FBNodeEnumerator *top = [stack lastObject];
+    [objectsOnPath addObject:top];
+    // Take next adjecent node to that child. Wrapper object can
+    // persist iteration state. If we see that node again, it will
+    // give us new adjacent node unless it runs out of them
+    FBNodeEnumerator *firstAdjacent = [top nextObject];
+    if (firstAdjacent) {
+      // Current node still has some adjacent not-visited nodes
+      BOOL shouldPushToStack = NO;
+
+      // Check if child was already seen in that path
+      if ([objectsOnPath containsObject:firstAdjacent]) {
+        // We have caught a retain cycle
+        NSUInteger index = [stack indexOfObject:firstAdjacent];
+        NSInteger length = [stack count] - index;
+        NSRange cycleRange = NSMakeRange(index, length);
+        NSMutableArray&lt;FBNodeEnumerator *&gt; *cycle = [[stack subarrayWithRange:cycleRange] mutableCopy];
+        [cycle replaceObjectAtIndex:0 withObject:firstAdjacent];
+        [retainCycles addObject:[self _unwrapCycle:cycle]];
+      } else {
+        // Node is clear to check, add it to stack and continue
+        shouldPushToStack = YES;
+      }
+
+      if (shouldPushToStack &amp;&amp; [stack count] &lt; stackDepth) {
+        [stack addObject:firstAdjacent];
+      }
+    } else {
+      // Node has no more adjacent nodes, it itself is done, move on
+      [stack removeLastObject];
+      [objectsOnPath removeObject:top];
+    }
+  }
+  return retainCycles;
+}
+</code></pre>
+<p>为了代码的易读性，这里删了一些代码。</p>
+<p>其实这里还做了 dfs 的剪枝优化，跳过了一些不必要的遍历路径，代码如下</p>
+<pre><code class="language-objectivec">// We don't want to retraverse the same subtree
+if (![objectsOnPath containsObject:top]) {
+  if ([_objectSet containsObject:@([top.object objectAddress])]) {
+    [stack removeLastObject];
+    continue;
+  }
+  // Add the object address to the set as an NSNumber to avoid
+  // unnecessarily retaining the object
+  [_objectSet addObject:@([top.object objectAddress])];
+}
+</code></pre>
+<p>设想下面的场景<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FvpEz6JhKUJOpfa1mel8YBdZxq4U.png" alt="" loading="lazy"><br>
+dfs 通过路径 A-&gt;B-&gt;D-&gt;E-&gt;F-&gt;D，已经发现了 D、E、F 之间的循环引用。而且按照 dfs 的特性，D、E、F 所有关联的路径都已经遍历完了。<br>
+后面当 dfs 来到 A-&gt;C-&gt;E 时，其实就没必要再往下检测了，因为 E 所有路径都检查过了。</p>
+<h3 id="补充">补充</h3>
+<p>对于最后检测出来的环，选择其中对象地址最小的作为环的头节点。然后在根据类名进行字符串排序，找到一个字典序最小的。<br>
+最后这两个感觉可有可无，没发现有什么场景需要用到。<br>
+查看 Git 的提交记录，可以发现是最初的去重版本。后面引入剪枝后，就没作用了，只是代码还没删。。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Mach-O文件的构建、解析与运行]]></title>
+        <id>https://jayying007.github.io/post/Mach-O文件的构建、解析与运行/</id>
+        <link href="https://jayying007.github.io/post/Mach-O文件的构建、解析与运行/">
+        </link>
+        <updated>2023-04-09T04:40:54.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>省流：如果你还没有看过《程序员的自我修养》，那建议还是先去看完这本书吧。</p>
+</blockquote>
+<h1 id="简介">简介</h1>
+<p>类似于 Window 的 PE 文件、Linux 的 ELF 文件，OS X 上所有的 App、Framework、Libiary、Command-Line Tool 都可以称为 Mach-O 文件。<br>
+对这些 Mach-O 文件的进一步描述，可以参考<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/1-Articles/building_files.html#//apple_ref/doc/uid/TP40001828-97030">The Products—Types of Mach-O Files You Can Build</a></p>
+<p>一个 Mach-O 文件由三部分组成：Header、Load Commands、Data。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fkk8pOAP_-UZXZta955gFg_tffP0.png" alt="" loading="lazy"><br>
+Header：包含该文件的目标架构等信息；<br>
+Load Commands：描述了该文件的基本结构（比如符号表在哪个地方，Segment 要加到虚拟内存地址的哪个地方）；<br>
+Data：裸的数据，具体每个 Byte 代表啥就看 Load Commands 中的定义了。</p>
+<p>一个 Mach-O 只包含一种架构的代码和数据，包含多个的被称为 universal binary。这种情况下，文件开头为一个<code>fat_header</code>结构体，跟随一个<code>fat_arch</code>结构体数组，根据这个<code>fat_arch</code>的信息，就能快速找到适合当前机器执行的代码和数据的位置。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FqtXecpFB_uJTRut3aLKSlmRSXwM.png" alt="" loading="lazy"></p>
+<h1 id="程序运行过程浅析">程序运行过程浅析</h1>
+<p>Mach-O 文件有可能是一个可执行文件类型，这里简单说明一下通过命令行或双击启动一个可执行文件的过程。<br>
+再说一次，想获取这部分更完整的知识，去看《程序员的自我修养》。</p>
+<p>当运行一个程序时，内核为该程序创建对应的进程，并将其载入进程空间中，同时也会把动态链接器（通常是/usr/lib/dyld）载入进程空间中。随后把控制器交给动态链接器，即跳转到动态链接器指定的入口地址。<br>
+这个过程涉及两个系统调用，<code>fork</code>和<code>execve</code>。<code>fork</code>创建了进程，<code>execve</code>将程序载入进程空间并执行。载入的 Mach-O 文件中，会有一条 load command 指示从哪里加载动态链接器。</p>
+<p>动态链接器会查找程序依赖的所有动态库（这部分信息也在 load command 中），然后递归将它们也加进来。<br>
+随后动态链接器会做必要的<strong>符号绑定</strong>，然后调用程序的入口点。这个入口点函数是静态链接时添加的，它会做一些 C++静态对象初始化、ObjC 运行时之类的操作，最后会调用 main 函数。</p>
+<h2 id="小结">小结</h2>
+<p>App 启动过程其实之前也写过文章分享，传送门 <a href="https://www.yuque.com/jayying/uk3dsf/ntpxwg">iOS App 的启动过程（流程篇）</a><br>
+或者看下苹果文档：<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/1-Articles/executing_files.html#//apple_ref/doc/uid/TP40001829-96913-TPXREF103">Forking and Executing the Process</a>、<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/1-Articles/executing_files.html#//apple_ref/doc/uid/TP40001829-97021-TPXREF121">Finding Imported Symbols</a><br>
+下面稍微介绍一下符号绑定。</p>
+<h2 id="符号绑定">符号绑定</h2>
+<p>讲解符合绑定之前，先简单说明一下模块（module）的含义，模块是由数据和代码构成的最小单元，可以独立跟其他单元链接。例如编译文件 main.c、thing.c、foo.c，产生了 main.o、thing.o、foo.o，这里就是三个模块。不过在编译 App 时，静态链接器会把它们合并为同一模块。</p>
+<p>同一模块内，由于知道函数、数据的地址，所有模块内的符号引用都可以在静态阶段确定下来。但是程序也会存在引用 open、printf 这类系统库中的符号，属于跨模块符号引用。<br>
+一个模块（源程序）引用了另一个模块（动态库）的数据或函数，需要等另一个模块加载到进程空间后，才能确定该模块函数和数据的具体地址，然后再做引用符号地址的修正，或者叫符号绑定。</p>
+<p>符号绑定的方式通常有以下几种：<br>
+lazy-binding，虽然程序运行时就把共享库加到进程空间中，但直到第一次引用符号时，动态链接器才去做绑定。<br>
+load-time binding，顾名思义，程序运行时就进行绑定。默认情况下，动态链接器执行 lazy-binding 的策略。在 ld 阶段，通过添加参数<code>-bind_at_load</code>即可强制运行时绑定。<br>
+prebinding，少用，不多做说明。</p>
+<p>不过符号绑定没有这么简单，仔细一想，你知道了 open、printf 等函数的地址，但是你无法将这些信息填充到源程序的代码段中，因为代码段的权限是只读和可执行，不能写。<br>
+似乎陷入了僵局，动态库的函数地址要运行时才能确定，而修改代码段只能在静态链接阶段，一旦载入内存就无法修改。<br>
+不过退一万步讲，即使代码段可写，也会有其他问题。除了源程序引用动态库，也会有动态库引用另一个动态库的情况，也就是说，动态库里面也有引用符号需要修正。问题就在这里，你的程序修正了动态库里面的符号引用地址，但是动态库是所有进程共享的呀。有可能其他进程也依赖这个动态库，而它对应的符号地址不见得跟你的一样，这样搞其他进程就崩溃了。那你只能每个进程都搞一份自己的，不过这样就失去了动态库节省空间的一大优势了。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiYfAS7bDkO0ZSxJZKrc_9sb7mPx.png" alt="" loading="lazy"></p>
+<p>不过办法总比困难多，代码段不可写，但是数据段可写呀，于是就有了曲线救国的方式。动态库的函数地址运行时确定后，把地址写到<code>__DATA</code>的某个地方。由于<code>__TEXT</code>和<code>__DATA</code>的相对位置是固定的，所以代码上可以利用当前 PC+偏移量得到地址存放的位置，然后再访问地址。这种方式又叫间接符号引用。</p>
+<blockquote>
+<p><a href="https://github.com/facebook/fishhook">fishhook</a>利用这个特性实现了 Hook C 函数。<br>
+PS：本来想写一篇源码分析文章的，但源码其实就两百来行，知道 Mach-O 和动态链接的特性后也不难理解，于是放弃了。</p>
+</blockquote>
+<h1 id="庖丁解牛">庖丁解牛</h1>
+<p>前面已经讲了 Mach-O 文件执行的一些细节，接下来就亲自动手，逐个 Byte 分析 Mach-O 文件的奥秘。中间会穿插各种 🧑‍💻Coding，用于验证。</p>
+<h2 id="工欲善其事必先利其器">工欲善其事，必先利其器</h2>
+<p>查看一个 Mach-O 文件包含什么信息，有很多工具可以使用。<br>
+lipo：分析体系结构<br>
+file：显示文件类型<br>
+otool：查看 Mach-O 文件具体的 Segment、Section 数据<br>
+pagestuff：按页查看文件信息<br>
+nm：查看符号表<br>
+libtool：可将多个中间文件合并为静态库 a</p>
+<blockquote>
+<p>💡 上面的都是命令行工具，其实还有一个常用的可视化工具 MachOView</p>
+</blockquote>
+<p>另外再补一下我的电脑配置<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FgzxoCveBndgMDmE_NSkEI74FzF6.png" alt="" loading="lazy"><br>
+emmm，当时 M1 Max 刚出时买的，等了快一个月才到货...</p>
+<h2 id="coding-环节">🧑‍💻Coding 环节</h2>
+<p>创建一个文件<code>file_b.c</code>，内容如下</p>
+<pre><code class="language-c">int base = 0xfff0;
+
+int getAddress(int base, int offset) {
+    return base + offset;
+}
+</code></pre>
+<p>然后编译</p>
+<pre><code class="language-shell">//单独编译，不链接
+clang -c file_b.c -o file_b.o
+</code></pre>
+<h2 id="header">Header</h2>
+<p>Mach-O 文件开头是一个<code>mach_header</code>结构体。代码位于 mach-o/loader.h，其在 32 位和 64 位机器下结构稍有不同。</p>
+<pre><code class="language-c">/*
+ * The 32-bit mach header appears at the very beginning of the object file for
+ * 32-bit architectures.
+ */
+struct mach_header {
+	uint32_t	magic;		/* mach magic number identifier */
+	int32_t		cputype;	/* cpu specifier */
+	int32_t		cpusubtype;	/* machine specifier */
+	uint32_t	filetype;	/* type of file */
+	uint32_t	ncmds;		/* number of load commands */
+	uint32_t	sizeofcmds;	/* the size of all the load commands */
+	uint32_t	flags;		/* flags */
+};
+
+struct mach_header_64 {
+	uint32_t	magic;		/* mach magic number identifier */
+	int32_t		cputype;	/* cpu specifier */
+	int32_t		cpusubtype;	/* machine specifier */
+	uint32_t	filetype;	/* type of file */
+	uint32_t	ncmds;		/* number of load commands */
+	uint32_t	sizeofcmds;	/* the size of all the load commands */
+	uint32_t	flags;		/* flags */
+	uint32_t	reserved;	/* reserved */
+};
+</code></pre>
+<p>magic 表示当前 Mach-O 文件可运行于 32 位还是 64 位机器，以及机器的端序。</p>
+<pre><code class="language-c">/* Constant for the magic field of the mach_header (32-bit architectures) */
+#define	MH_MAGIC	0xfeedface	/* the mach magic number */
+#define MH_CIGAM	0xcefaedfe	/* NXSwapInt(MH_MAGIC) */
+
+/* Constant for the magic field of the mach_header_64 (64-bit architectures) */
+#define MH_MAGIC_64 0xfeedfacf /* the 64-bit mach magic number */
+#define MH_CIGAM_64 0xcffaedfe /* NXSwapInt(MH_MAGIC_64) */
+</code></pre>
+<p>cputype、cpusubtype 表示机器架构，如 CPU_TYPE_ARM64、CPU_TYPE_X86_64。更多定义可以查看 mach/machine.h</p>
+<p>filetype 表示 Mach-O 文件的类型，常见的有：中间对象文件（MH_OBJECT）、可执行二进制（MH_EXECUTE）、VM 共享库文件（MH_FVMLIB）、Crash 产生的 Core 文件（MH_CORE）、动态共享库（MH_DYLIB）、动态链接器（MH_DYLINKER）、静态链接文件（MH_DYLIB_STUB）、符号文件和调试信息（MH_DSYM）</p>
+<p>ncmds 和 sizeofcmds 代表有多少 load command 以及所占大小</p>
+<p>flags 是一些标记字段，具体含义可参考 loader.h 中的说明。</p>
+<h3 id="coding-环节-2">🧑‍💻Coding 环节</h3>
+<p>我们可以用命令行工具打印一下</p>
+<pre><code class="language-shell">otool -v -h file_b.o
+</code></pre>
+<p>结果如下</p>
+<pre><code>Mach header
+magic  cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
+MH_MAGIC_64    ARM64        ALL  0x00      OBJECT     4        440 SUBSECTIONS_VIA_SYMBOLS
+</code></pre>
+<p>直接用代码验证<br>
+为了便于后续代码编写，这里加几个别名和宏定义，新出现的也按同样规则处理</p>
+<pre><code class="language-c">#ifdef __LP64__
+typedef struct mach_header_64 mach_header_t;
+typedef struct segment_command_64 segment_command_t;
+typedef struct section_64 section_t;
+typedef struct nlist_64 nlist_t;
+#define LC_SEGMENT_ARCH_DEPENDENT LC_SEGMENT_64
+#else
+typedef struct mach_header mach_header_t;
+typedef struct segment_command segment_command_t;
+typedef struct section section_t;
+typedef struct nlist nlist_t;
+#define LC_SEGMENT_ARCH_DEPENDENT LC_SEGMENT
+#endif
+
+#ifndef SEG_DATA_CONST
+#define SEG_DATA_CONST  &quot;__DATA_CONST&quot;
+#endif
+
+typedef struct load_command load_command_t;
+typedef struct dylib_command dylib_command_t;
+typedef struct dylinker_command dylinker_command_t;
+typedef struct symtab_command symtab_command_t;
+typedef struct dysymtab_command dysymtab_command_t;
+</code></pre>
+<pre><code class="language-c">void *getFilePointer(const char *filePath) {
+    int fd = open(filePath, O_RDONLY, S_IRUSR);
+    struct stat st = {};
+    fstat(fd, &amp;st);
+    uint64_t fileSize = (uint64_t)st.st_size;
+    void *ptr = mmap(NULL, fileSize, PROT_READ, MAP_SHARED, fd, 0);
+    return ptr;
+}
+
+void startReadMachO(const char *filePath) {
+    void *filePtr = getFilePointer(filePath);
+    void *curPtr = filePtr;
+
+    mach_header_t *header = (mach_header_t *)curPtr;
+    printf(&quot;magic: %x\n&quot;, header-&gt;magic);
+    printf(&quot;cputype: %u\n&quot;, header-&gt;cputype);
+    printf(&quot;cpusubtype: %u\n&quot;, header-&gt;cpusubtype);
+    printf(&quot;filetype: %u\n&quot;, header-&gt;filetype);
+    printf(&quot;ncmds: %u\n&quot;, header-&gt;ncmds);
+    printf(&quot;sizeofcmds: %u\n&quot;, header-&gt;sizeofcmds);
+    printf(&quot;flags: %u\n&quot;, header-&gt;flags);
+}
+</code></pre>
+<p>传入 file_b.o 的路径，得到以下输出，数据吻合</p>
+<pre><code>magic: feedfacf
+cputype: 16777228
+cpusubtype: 0
+filetype: 1
+ncmds: 4
+sizeofcmds: 440
+flags: 8192
+</code></pre>
+<h2 id="load-commands">Load Commands</h2>
+<p>下一步来到 load command，从 mach_header 那里我们已经知道了 load commands 的总体大小。<br>
+load command 有很多种，但是所有 load command 结构体的前两个属性是一样的，类似于面向对象中的基类。</p>
+<pre><code class="language-c">struct load_command {
+	uint32_t cmd;		/* type of load command */
+	uint32_t cmdsize;	/* total size of command in bytes */
+};
+</code></pre>
+<p>cmd 代表了 load command 的类型，cmdsize 代表具体 load command 的结构体大小 + 额外数据大小。具体的 load command 结构可在 loader.h 中查看</p>
+<p>在我们的<code>file_b.o</code>中，共有 4 个 load commands，分别为 LC_BUILD_VERSION、LC_SEGMENT_64、LC_SYMTAB、LC_DYSYMTAB，第一个不太重要，直接忽略。</p>
+<h3 id="lc_segment_64">LC_SEGMENT_64</h3>
+<p>对应结构体<code>segment_command_64</code>，指定了 Mach-O 文件某个段的信息，段是会被载入进程空间的，结构体中同时还说明了载入的虚拟地址位置。</p>
+<p>再次祭出这张图<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fkk8pOAP_-UZXZta955gFg_tffP0.png" alt="" loading="lazy"><br>
+Data 包含一个或多个 segment 的数据，一个 segment 有 0 个或多个 section，每个 section 包含 code 或者 data。<br>
+每个 section 都有编号，从 1 开始，且跨多个 segment。比如第一个 segment 有 section1 section2 section3，第二个 segment 有 section4 section5...</p>
+<p>section 对应结构体<code>section_64</code>，跟在<code>segment_command_64</code>之后。</p>
+<pre><code class="language-c">/*
+ * The 64-bit segment load command indicates that a part of this file is to be
+ * mapped into a 64-bit task's address space.  If the 64-bit segment has
+ * sections then section_64 structures directly follow the 64-bit segment
+ * command and their size is reflected in cmdsize.
+ */
+struct segment_command_64 { /* for 64-bit architectures */
+	uint32_t	cmd;		/* LC_SEGMENT_64 */
+	uint32_t	cmdsize;	/* includes sizeof section_64 structs */
+	char		segname[16];	/* segment name */
+	uint64_t	vmaddr;		/* memory address of this segment */
+	uint64_t	vmsize;		/* memory size of this segment */
+	uint64_t	fileoff;	/* file offset of this segment */
+	uint64_t	filesize;	/* amount to map from the file */
+	int32_t		maxprot;	/* maximum VM protection */
+	int32_t		initprot;	/* initial VM protection */
+	uint32_t	nsects;		/* number of sections in segment */
+	uint32_t	flags;		/* flags */
+};
+
+
+struct section_64 { /* for 64-bit architectures */
+	char		sectname[16];	/* name of this section */
+	char		segname[16];	/* segment this section goes in */
+	uint64_t	addr;		/* memory address of this section */
+	uint64_t	size;		/* size in bytes of this section */
+	uint32_t	offset;		/* file offset of this section */
+	uint32_t	align;		/* section alignment (power of 2) */
+	uint32_t	reloff;		/* file offset of relocation entries */
+	uint32_t	nreloc;		/* number of relocation entries */
+	uint32_t	flags;		/* flags (section type and attributes)*/
+	uint32_t	reserved1;	/* reserved (for offset or index) */
+	uint32_t	reserved2;	/* reserved (for count or sizeof) */
+	uint32_t	reserved3;	/* reserved */
+};
+</code></pre>
+<p>segment 和 section 都有名字，一般来说，segment 用双下划线+大写字母，section 用双下划线+小写字母。</p>
+<p>可执行文件的 segment 通常有以下六种类型：</p>
+<ul>
+<li>__PAGEZERO，可执行文件中的第一个 segment，在虚拟内存中的地址为零，size 代表虚拟内存中一页的大小。</li>
+<li>__TEXT，包含可执行的代码、只读数据。因为不可写，所以可以当做共享内存，其他进程也能获取。例如运行同一个程序多次、Framework 的代码、共享库。</li>
+<li>__DATA，可读写的数据。因此每个进程都要单独拷贝一份 Framework、共享库的数据，拷贝采用 copy-on-write 策略。</li>
+<li>__OBJC，用于支持 Objective-C Runtime 的相关数据</li>
+<li>__IMPORT，包含一些未被定义的符号，只为 IA-32 架构使用，现在可以忽略。</li>
+<li>__LINKEDIT，包含符号表、字符串表、重定位表等数据。</li>
+</ul>
+<p>在用户最终链接成的 Mach-O 文件中，最后一个 segment 为__LINKEDIT。</p>
+<h4 id="coding-环节-3">🧑‍💻Coding 环节</h4>
+<pre><code class="language-c">curPtr = curPtr + sizeof(mach_header_t);
+load_command_t *command;
+for (int i = 0; i &lt; header-&gt;ncmds; i++, curPtr += command-&gt;cmdsize) {
+    command = (load_command_t *)curPtr;
+    if (command-&gt;cmd == LC_SEGMENT_ARCH_DEPENDENT) {
+        segment_command_t *segment_command = (segment_command_t *)command;
+        printf(&quot;segment: %s \n&quot;, segment_command-&gt;segname);
+        printf(&quot;sections:\n&quot;);
+        section_t *sections = (section_t *)(curPtr + sizeof(segment_command_t));
+        for (int j = 0; j &lt; segment_command-&gt;nsects; j++) {
+            printf(&quot;%s %s \n&quot;, sections[j].segname, sections[j].sectname);
+            printf(&quot;flags: 0x%x \n&quot;, sections[j].flags);
+        }
+        printf(&quot;\n\n&quot;);
+    }
+}
+</code></pre>
+<p>输出结果如下</p>
+<pre><code>segment:
+sections:
+__TEXT __text
+flags: 0x80000400
+__DATA __data
+flags: 0x0
+__LD __compact_unwind__LD
+flags: 0x2000000
+</code></pre>
+<p>打印之后你会发现，只有一个 segment，而且还没有名字。这是为了中间目标文件的紧凑性故意处理的，这个 segment 里面包含了各种各样的 section，属于不同 segment，会在静态链接时放置到合理的位置上。</p>
+<p>这里有三个 section。</p>
+<ul>
+<li><code>__compact_unwind__LD</code>，这是一个 debug 用的，可以忽略。</li>
+<li><code>__text</code>，包含可执行的机器指令。</li>
+<li><code>__data</code>，包含有初始化值的变量。在<code>file_b.c</code>中，我们只有<code>int base = 0xfff0</code>这么个初始化变量。</li>
+</ul>
+<p>可以打印出来验证</p>
+<pre><code class="language-c">if (strcmp(sections[j].sectname, SECT_DATA) == 0) {
+    int *value = (int *)(filePtr + sections[j].offset);
+    printf(&quot;%x \n&quot;, *value);
+}
+</code></pre>
+<h3 id="lc_symtab">LC_SYMTAB</h3>
+<p>对应结构体<code>symtab_command</code>，描述了符号表的位置和大小。所谓的符号表，是由<code>nlist_64</code>构成的结构体数组。</p>
+<pre><code class="language-c">/*
+ * The symtab_command contains the offsets and sizes of the link-edit 4.3BSD
+ * &quot;stab&quot; style symbol table information as described in the header files
+ * &lt;nlist.h&gt; and &lt;stab.h&gt;.
+ */
+struct symtab_command {
+	uint32_t	cmd;		/* LC_SYMTAB */
+	uint32_t	cmdsize;	/* sizeof(struct symtab_command) */
+	uint32_t	symoff;		/* symbol table offset */
+	uint32_t	nsyms;		/* number of symbol table entries */
+	uint32_t	stroff;		/* string table offset */
+	uint32_t	strsize;	/* string table size in bytes */
+};
+
+/*
+ * This is the symbol table entry structure for 64-bit architectures.
+ */
+struct nlist_64 {
+    union {
+        uint32_t  n_strx; /* index into the string table */
+    } n_un;
+    uint8_t n_type;        /* type flag, see below */
+    uint8_t n_sect;        /* section number or NO_SECT */
+    uint16_t n_desc;       /* see &lt;mach-o/stab.h&gt; */
+    uint64_t n_value;      /* value of this symbol (or stab offset) */
+};
+</code></pre>
+<h4 id="coding-环节-4">🧑‍💻Coding 环节</h4>
+<pre><code class="language-c">if (command-&gt;cmd == LC_SYMTAB) {
+    symtab_command_t *symtab_command = (symtab_command_t *)command;
+    nlist_t *nlists = (nlist_t *)(filePtr + symtab_command-&gt;symoff);
+    uint32_t strOffset = symtab_command-&gt;stroff;
+    for (int j = 0; j &lt; symtab_command-&gt;nsyms; j++) {
+        nlist_t nlist = nlists[j];
+        printf(&quot;symbol: %s type:%u sect:%u desc:%u value:%llu \n&quot;, (char *)(filePtr + strOffset + nlist.n_un.n_strx), nlist.n_type, nlist.n_sect, nlist.n_desc, nlist.n_value);
+    }
+}
+</code></pre>
+<p>输出结果中，可以看到符号_base 和_getAddress</p>
+<pre><code>symbol: ltmp0 type:14 sect:1 desc:0 value:0
+symbol: ltmp1 type:14 sect:2 desc:0 value:32
+symbol: ltmp2 type:14 sect:3 desc:0 value:40
+symbol: _base type:15 sect:2 desc:0 value:32
+symbol: _getAddress type:15 sect:1 desc:0 value:0
+</code></pre>
+<p>根据 value 可以知道_base 是一个全局符号</p>
+<pre><code class="language-c">#define	N_GSYM		0x20	/* global symbol */
+</code></pre>
+<h3 id="lc_dysymtab">LC_DYSYMTAB</h3>
+<p>对应结构体<code>dysymtab_command</code>，描述了用于动态链接部分的符号表。</p>
+<h4 id="coding-环节-5">🧑‍💻Coding 环节</h4>
+<pre><code class="language-c">if (command-&gt;cmd == LC_DYSYMTAB) {
+    dysymtab_command_t *dysymtab_command = (dysymtab_command_t *)command;
+    printf(&quot;local: %u extdef: %u undef: %u \n&quot;, dysymtab_command-&gt;nlocalsym, dysymtab_command-&gt;nextdefsym, dysymtab_command-&gt;nundefsym);
+}
+</code></pre>
+<p>这里有三个本地符号，两个对外符号，符合预期</p>
+<pre><code>local: 3 extdef: 2 undef: 0
+</code></pre>
+<h3 id="coding-环节-6">🧑‍💻Coding 环节</h3>
+<p>file_b.o 我们已经扒得差不多了，是时候写个新的代码了，就叫 file_a.c</p>
+<pre><code class="language-c">#include &quot;file_b.h&quot;
+
+int printf(const char *, ...);
+
+int main(int argc, char *argv[]) {
+    int offset = 0x10;
+    int address = getAddress(base, offset);
+    printf(&quot;address is %x&quot;, address);
+    return 0;
+}
+</code></pre>
+<p>file_a.c 需要用到 base 和 getAddress，所以要把这两个信息提供出来</p>
+<pre><code class="language-c">extern int base;
+
+int getAddress(int base, int offset);
+</code></pre>
+<p>然后编译</p>
+<pre><code class="language-shell">//单独编译，不链接
+clang -c file_a.c -o file_a.o
+</code></pre>
+<p>接下来的代码跟之前的一样，我们直接看输出</p>
+<pre><code>magic: feedfacf
+cputype: 16777228
+cpusubtype: 0
+filetype: 1
+ncmds: 4
+sizeofcmds: 440
+flags: 8192
+
+segment:
+sections:
+__TEXT __text
+flags: 0x80000400
+__TEXT __cstring
+flags: 0x2
+__LD __compact_unwind__LD
+flags: 0x2000000
+
+
+symbol: ltmp0 type:14 sect:1 desc:0 value:0
+symbol: l_.str type:14 sect:2 desc:0 value:108
+symbol: ltmp1 type:14 sect:2 desc:0 value:108
+symbol: ltmp2 type:14 sect:3 desc:0 value:128
+symbol: _main type:15 sect:1 desc:0 value:0
+symbol: _base type:1 sect:0 desc:0 value:0
+symbol: _getAddress type:1 sect:0 desc:0 value:0
+symbol: _printf type:1 sect:0 desc:0 value:0
+
+
+local: 4 extdef: 1 undef: 3
+</code></pre>
+<p>这里多了一个前面没有的 section __cstring，里面包含 C 字符串，即<code>&quot;address is %x&quot;</code>，可以验证下</p>
+<pre><code class="language-c">if (sections[j].flags == S_CSTRING_LITERALS) {
+    printf(&quot;%s \n&quot;, (char *)(filePtr + sections[j].offset));
+}
+</code></pre>
+<p>然后也没有多余的可分析了，把两个 Mach-O 链接成可执行文件看看</p>
+<pre><code class="language-shell">//链接成可执行文件target.o
+ld -lSystem -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -o target.o file_a.o file_b.o
+//执行一下target.o，可正常运行
+./target.o
+</code></pre>
+<p>链接成可执行文件后，又多了好几个 load commands，这里同样只挑几个有意思的讲讲</p>
+<h3 id="lc_load_dylinker">LC_LOAD_DYLINKER</h3>
+<p>对应结构体<code>dylinker_command</code>，指示了动态链接器的路径。<br>
+每个动态链接的可执行文件都包含该 command，该 command 包含指明了内核在启动进程时，从哪个地方启动 dyld。如果这个文件就是动态链接器本身，则通过 LC_ID_DYLINKER 指明。</p>
+<pre><code class="language-c">if (command-&gt;cmd == LC_LOAD_DYLINKER) {
+    dylinker_command_t *dylinker_command = (dylinker_command_t *)command;
+    uint32_t length = dylinker_command-&gt;cmdsize - sizeof(dylinker_command_t);
+    uint32_t offset = dylinker_command-&gt;name.offset;
+    printf(&quot;length: %u dylinker: %s \n\n&quot;, length, (char *)(curPtr + offset));
+}
+</code></pre>
+<p>输出</p>
+<pre><code>length: 20 dylinker: /usr/lib/dyld
+</code></pre>
+<h3 id="lc_load_dylib">LC_LOAD_DYLIB</h3>
+<p>对应结构体<code>dylib_command</code>，指示了依赖的动态库。前面提过，动态链接器会把所有依赖的库加到进程中，如果动态库依赖其他动态库，则递归进行加载，然后再做符号绑定。</p>
+<pre><code class="language-c">if (command-&gt;cmd == LC_LOAD_DYLIB) {
+    dylib_command_t *dylib_command = (dylib_command_t *)command;
+    uint32_t length = dylib_command-&gt;cmdsize - sizeof(dylib_command_t); //得到dylib.name的长度
+    uint32_t offset = dylib_command-&gt;dylib.name.offset;
+    printf(&quot;length:%u  dylib: %s \n\n&quot;, length, (char *)(curPtr + offset));
+}
+</code></pre>
+<p>输出</p>
+<pre><code>length:32  dylib: /usr/lib/libSystem.B.dylib
+</code></pre>
+<h3 id="lc_main">LC_MAIN</h3>
+<p>对应结构体<code>entry_point_command</code>，即 main 函数的地址</p>
+<h3 id="lc_data_in_code">LC_DATA_IN_CODE</h3>
+<p>对应结构体<code>linkedit_data_command</code>，在代码段的数据，即只读数据。</p>
+<pre><code class="language-c">/*
+ * The linkedit_data_command contains the offsets and sizes of a blob
+ * of data in the __LINKEDIT segment.
+ */
+struct linkedit_data_command {
+    uint32_t	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
+				   LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
+				   LC_DYLIB_CODE_SIGN_DRS,
+				   LC_LINKER_OPTIMIZATION_HINT,
+				   LC_DYLD_EXPORTS_TRIE, or
+				   LC_DYLD_CHAINED_FIXUPS. */
+    uint32_t	cmdsize;	/* sizeof(struct linkedit_data_command) */
+    uint32_t	dataoff;	/* file offset of data in __LINKEDIT segment */
+    uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
+};
+</code></pre>
+<p><code>linkedit_data_command</code>结构体被很多 load command 共用。</p>
+<h2 id="data">Data</h2>
+<p>在最终的 target.o 中，多了一个 segment,<code>__DATA_CONST</code>，里面有一个 section,<code>__got</code>。这其实就是我们符号绑定时提到的间接符号引用，因为我们这里引用了 printf 这个动态库符号。<br>
+关于如何判断这个 section 每个位置代表哪个间接符号引用的地址，可以参考<a href="https://github.com/facebook/fishhook">fishhook</a>中的实现。</p>
+<h1 id="参考资料">参考资料</h1>
+<p>除了上面贴过的链接外<br>
+<a href="https://github.com/aidansteele/osx-abi-macho-file-format-reference">https://github.com/aidansteele/osx-abi-macho-file-format-reference</a><br>
+<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/0-Introduction/introduction.html">Mach-O Programming Topics</a><br>
+<a href="https://ming1016.github.io/2020/03/29/apple-system-executable-file-macho/">Apple 操作系统可执行文件 Mach-O</a><br>
+《iOS 应用安全与逆向之道》<br>
+<a href="https://draveness.me/fishhook/">动态修改 C 语言函数的实现 - 面向信仰编程</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[一个简单的天气App]]></title>
+        <id>https://jayying007.github.io/post/一个简单的天气App/</id>
+        <link href="https://jayying007.github.io/post/一个简单的天气App/">
+        </link>
+        <updated>2023-04-02T07:19:12.000Z</updated>
+        <content type="html"><![CDATA[<p>这两天看了一个 iOS 开发教程，虽然是 iOS7 那会的，但这篇教程非常细致，即使是今天也有可学习的地方。当做对 iOS 开发的回顾也挺不错的。<br>
+<a href="https://www.kodeco.com/2579-ios-7-best-practices-a-weather-app-case-study-part-1-2">iOS 7 Best Practices; A Weather App Case Study: Part 1/2</a><br>
+<a href="https://www.kodeco.com/2578-ios-7-best-practices-a-weather-app-case-study-part-2-2">iOS 7 Best Practices; A Weather App Case Study: Part 2/2</a><br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Ftby4P9z0qTiSNzdbmYuFVX4vIpA.png" alt="" loading="lazy"></p>
+<p>就是你是一个 iOS 小白，相信也能很容易学会。</p>
+<h3 id="知识点">知识点</h3>
+<p>主要用的技术有 Mantle（类似 YYModel）、ReactiveCocoa。<br>
+YYModel 之前分析过源码，Mantle 倒还没研究过，（印象里 YYModel 作者的测试中，Mantle 的性能是很差的，但好在稳定）<br>
+这个 App 可以当做 ReactiveCocoa 使用的入门教程，虽然只用了很少部分的功能，但还是可以感受到响应式编程的思维模式。（就这个项目用到的部分功能，个人感觉如果用之前的编程方式，也可以用 KVO 或 Notification 的方式解决，只是代码位置相对分散）</p>
+<p>最近也有做 App 内通知 View 的需求，所以顺便学习了 TSMessage 的源码。</p>
+<h3 id="小问题">小问题</h3>
+<p>当时的 iPhone 还没有刘海，在我的 iPhone 13 Pro 上，UI 布局其实是有 bug 的，当然这不是重点。</p>
+<p>另一个就是 iOS8 之后，读取位置需要授权，需要在 Info.plist 里面补充<br>
+iOS9 之后 Https 需要配置，在 Info.plist 里面补充</p>
+<p>作者使用的免费天气 API，在我的尝试时是用不了的，现在官网会要求多加一个 appid 的参数，然而即使传了，也是返回 401。这也不是重点，所以我用了本地模拟的 json 文件去替代。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[mmap--读写文件的另一种选择]]></title>
+        <id>https://jayying007.github.io/post/mmap--读写文件的另一种选择/</id>
+        <link href="https://jayying007.github.io/post/mmap--读写文件的另一种选择/">
+        </link>
+        <updated>2023-03-25T14:00:44.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="前言">前言</h2>
+<p>在编写 C/C++等语言时，如果需要读写文件，通常会想到用 read 和 write 两个系统库接口。或者是 fread、fwrite 等标准库接口。</p>
+<p>近期在做一个需求，为了避免数据丢失，每次有新数据时，我都会立即调用 write 相关接口写入磁盘。如果频率很高，就会造成大量的 IO。<br>
+于是开始寻找是否有能避免频繁 IO，同时又保证数据不丢失的方式，最终发现了 mmap。</p>
+<h2 id="mmap-介绍">mmap 介绍</h2>
+<p>mmap 是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对映关系。实现这样的映射关系后，进程就可以采用指针的方式读写操作这一段内存，而系统会自动回写脏页面到对应的文件磁盘上，即完成了对文件的操作而不必再调用 read,write 等系统调用函数。相反，内核空间对这段区域的修改也直接反映用户空间，从而可以实现不同进程间的文件共享。如下图所示：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fg7AaBgkvED4-xohi4D7XBoG0yGv.png" alt="" loading="lazy"></p>
+<p>相关的接口有：mmap()，munmap()，msync()<br>
+具体的用法和参数等说明，可以参考文档<a href="https://man7.org/linux/man-pages/man2/mmap.2.html">mmap(2) - Linux manual page</a></p>
+<blockquote>
+<p>调用 mmap 接口，需要传递文件描述符 fd。而一旦创建完成，就可以关闭文件描述符了。因为映射的是磁盘的地址，不是文件本身，和文件句柄无关。</p>
+</blockquote>
+<h2 id="mmap-和常规文件读写的区别">mmap 和常规文件读写的区别</h2>
+<h3 id="常规文件读写">常规文件读写</h3>
+<ol>
+<li>进程发起读文件请求。</li>
+<li>内核通过查找进程文件符表，定位到内核已打开文件集上的文件信息，从而找到此文件的 inode。</li>
+<li>inode 在 address_space 上查找要请求的文件页是否已经缓存在页缓存中。如果存在，则直接返回这片文件页的内容。</li>
+<li>如果不存在，则通过 inode 定位到文件磁盘地址，将数据从磁盘复制到页缓存。之后再次发起读页面过程，进而将页缓存中的数据发给用户进程。</li>
+</ol>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Frfys7m3-Mu6PWdlL_wY4ugQC3wa.png" alt="" loading="lazy"><br>
+总结来说，<strong>常规文件操作为了提高读写效率和保护磁盘，使用了页缓存机制。<strong>这样造成读文件时需要先</strong>将文件页从磁盘拷贝到页缓存中</strong>，由于页缓存处在内核空间，不能被用户进程直接寻址，所以还需要<strong>将数据页从页缓存中再次拷贝到内存对应的用户空间中</strong>。这样，通过了两次数据拷贝过程，才能完成进程对文件内容的获取任务。写操作也是一样，待写入的 buffer 在内核空间不能直接访问，必须要先拷贝至内核空间对应的主存，再写回磁盘中（延迟写回），也是需要两次数据拷贝。</p>
+<h3 id="mmap-读写">mmap 读写</h3>
+<ol>
+<li>进程启动映射过程，并在虚拟地址空间中为映射创建虚拟映射区域</li>
+<li>调用内核空间的系统调用函数 mmap（不同于用户空间函数），实现文件物理地址和进程虚拟地址的一一映射关系</li>
+<li>进程发起对这片映射空间的访问，引发缺页异常，实现文件内容到物理内存（主存）的拷贝</li>
+</ol>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fu3iCjrI2mGAKx_9z6Xdjf6uaYLH.png" alt="" loading="lazy"><br>
+**总而言之，常规文件操作需要从磁盘到页缓存再到用户主存的两次数据拷贝。而 mmap 操控文件，只需要从磁盘到用户主存的一次数据拷贝过程。**说白了，mmap 的关键点是实现了用户空间和内核空间的数据直接交互而省去了空间不同数据不通的繁琐过程。因此 mmap 效率更高。</p>
+<h2 id="mmap-回写时机">mmap 回写时机</h2>
+<p>mmap 是映射到进程的虚拟内存空间的，如果刚 memcpy 一份数据，进程就挂了，那数据会丢失吗？</p>
+<p>答案是不会的，以下是 Linus 的回复：<br>
+{% note %}</p>
+<h4 id="linus-torvalds">Linus Torvalds</h4>
+<p>The mapped pages are part of the filesystem cache,which means that even if the user process that made a change to that page dies, the page is still managed by the kernel and as all concurrent accesses to that file will go through the kernel, other processes will get served from that cache. In some old Linux kernels it was different, that’s the reason why some kernel documents still tell to force msync.<br>
+{% endnote %}</p>
+<p>查看 Linux 内核代码，可以发现在收到异常信号时，是会帮你把 mmap 数据写会磁盘的。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FvJ0iHeTq0mZZUqiWCdWHHDNgVM9.png" alt="" loading="lazy"></p>
+<p>do_exit 的代码在 kernel/exit.c，里面会调用 exit_mm，exit_mm 又调用 mmput</p>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fqgwo9apdnqNNSnZnoHvz27gzwvj.png" alt="" loading="lazy"></figure>
+<p>不过正如 Linus 所说，部分老的 Linux 内核可能表现不同，所以为了确保数据回写，你可以用 msync</p>
+<h2 id="mmap-优缺点">mmap 优缺点</h2>
+<p>一路看下来，好像 mmap 完全碾压 read 系统接口？<br>
+mmap 减少了数据的拷贝次数，用内存读写取代 I/O 读写，提高了文件读取效率。<br>
+mmap 在随机访问场景下很有优势。</p>
+<p>不过 mmap 也有一些限制，因为 mmap 映射到了进程虚拟地址空间，其最小粒度为页，所以其占用大小在内存中是页的整数倍。</p>
+<blockquote>
+<p>当把一个文件大小不为页的倍数映射进来时，可以访问最后页其他部分，不会报错。但是对该区域的修改也不会影响原文件。</p>
+</blockquote>
+<figure data-type="image" tabindex="2"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Foa54Ba7c-2CEpQ3TmWHH0S421N0.png" alt="" loading="lazy"></figure>
+<p>mmap 后内存大小就是固定的了，如果之后有其他地方改变了文件的大小，就会出现不一致的情况。</p>
+<p>另外，因为文件是映射到内存空间的，如果文件很大，就会占用很多内存空间。即把文件映射到内存后，这部分内存地址就不能用做其他了，只能用于该文件读写。而且虚拟内存空间也很难找到那么大一块连续的地址。</p>
+<h2 id="讨论">讨论</h2>
+<p>关于什么时候用 read、write，什么时候用 mmap，StackOverflow 上有很不错的讨论：<br>
+传送门：<a href="https://stackoverflow.com/questions/258091/when-should-i-use-mmap-for-file-access">When should I use mmap for file access?</a></p>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="https://www.jianshu.com/p/59dad2d290a1">mmap()的原理与应用</a><br>
+<a href="http://nineright.github.io/2014/03/12/mmap-io.html">mmap 与 read write 的对比</a><br>
+<a href="https://www.cnblogs.com/zhujiwei/p/14726211.html">什么时候选择 mmap 而非 read? - 珠玑位 - 博客园</a><br>
+<a href="http://wangxuemin.github.io/2015/07/24/linux%E4%B8%ADmmap%E6%96%87%E4%BB%B6%E5%88%B0%E5%86%85%E5%AD%98%E4%B8%AD%EF%BC%8C%E8%AF%A5%E8%BF%9B%E7%A8%8B%E5%8F%91%E7%94%9F%E9%94%99%E8%AF%AF%E8%A2%AB%E6%8C%82%E6%8E%89%E5%90%8Emmap%E6%98%A0%E5%B0%84%E7%9A%84%E5%86%85%E5%AD%98%E8%83%BD%E5%90%A6%E5%86%99%E5%9B%9E%E5%88%B0%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E9%97%AE%E9%A2%98/">linux 中 mmap 文件到内存中，该进程发生错误被挂掉后 mmap 映射的内存能否写回到文件中的问题</a></p>
+]]></content>
+    </entry>
+</feed>

@@ -1,0 +1,293 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>数字音频技术介绍 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    数字音频技术介绍
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-12-12 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/xoFHmdm0z9/" class="post-tags">
+                            # 声音
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/6h-86PWBx19/" class="post-tags">
+                            # PCM
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="1-声音">1 声音</h2>
+<blockquote>
+<p>音频技术是为了记录、存储和回放声学现象才发明的，了解声学现象对学习数字音频是有很大帮助。</p>
+</blockquote>
+<p>我们都知道，<strong>声音是由物体振动而产生的</strong>。当拍打某个物体时，物体的振动引起空气分子有节奏的振动，使周围的空气产生疏密变化，形成疏密相间的纵波，从而产生声波。</p>
+<p>声波的三要素是：音调、响度、音色。</p>
+<ul>
+<li>
+<p>音调：又称频率，频率高的波长短，人耳能听到的频率范围大概为20Hz~20kHz</p>
+</li>
+<li>
+<p>响度：又称振幅，代表着能量的大小，常用分贝DB来描述响度的大小</p>
+</li>
+<li>
+<p>音色：振动的介质不同，波形也不同，听起来自然不一样</p>
+</li>
+</ul>
+<p>一般来说，一个物体发出的声波频率都是固定的（人的声带引起不同部位振动，能同时产生不同频率），假设我们以一定频率敲击杯子，其表现将会是下面这样：随着时间的变化，其振幅以固定频率上下波动</p>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211212225942819.png" alt="image-20211212225942819" loading="lazy"></figure>
+<p>不过现实生活中我们听到的声音都是多个声波混合而成的，比如下面这张图（实际声音信号是连续的，下面这张图是离散的，这里忽略）：</p>
+<figure data-type="image" tabindex="2"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211212231036442.png" alt="image-20211212231036442" loading="lazy"></figure>
+<p>此处来一个🐮🍺的技术：傅立叶变换，它能够将上述的时域图转为频域图。</p>
+<figure data-type="image" tabindex="3"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211212232102475.png" alt="image-20211212232102475" loading="lazy"></figure>
+<p>在频域图下我们可以对特定频率做处理，然后再变换回去，从而达到对音频的特殊处理。</p>
+<blockquote>
+<p><strong>题外话🤔</strong></p>
+<p>人的声带引起不同部位振动，能同时产生不同频率。</p>
+<p>比较有意思的一点是主动降噪耳机，通过产生一个跟外界声音相位相反的音频，使声音抵消了。</p>
+<figure data-type="image" tabindex="4"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/v2-58691b0c44295baac33925221a290edd_720w.webp" alt="img" loading="lazy"></figure>
+<p>https://vdn1.vzuu.com/SD/56bfedde-1f57-11eb-abed-422f8ef9d330.mp4?disable_local_cache=1&amp;auth_key=1639326243-0-0-5b107e55ec782294b920c439212d28e1&amp;f=mp4&amp;bu=pico&amp;expiration=1639326243&amp;v=hw</p>
+</blockquote>
+<h2 id="2-数字音频的采集">2 数字音频的采集</h2>
+<p>主要涉及将模拟信号转为数字信号，这个概念在计算机网络中同样有介绍到。主要过程有：采样、量化、编码。</p>
+<ul>
+<li>采样：在时间轴上对信号进行数字化，比如每隔0.01s采集一次，此时采样频率为 1/0.01 = 100Hz</li>
+</ul>
+<figure data-type="image" tabindex="5"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211211155640155.png" alt="image-20211211155640155" loading="lazy"></figure>
+<ul>
+<li>量化：在振幅轴上对信号进行数字化，比如用16bit来表示一个采样，则振幅范围可以分为65536层</li>
+</ul>
+<figure data-type="image" tabindex="6"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20211211160215150.png" alt="image-20211211160215150" loading="lazy"></figure>
+<ul>
+<li>编码：采集到的数据如何存储，是顺序存储还是压缩存储，取决于你采用的编码格式，比如常见的wav、mp3。一般来说，采集到的音频裸数据都是很大的，需要采用合适的音频压缩技术减小其大小。</li>
+</ul>
+<h2 id="3-数字音频的表示">3 数字音频的表示</h2>
+<p>脉冲调制编码（Pluse Code Modulation，PCM），是使用最多的无压缩音频格式，其实就是上一节声音采集到的裸数据。</p>
+<p>描述一段PCM数据通常需要以下几个概念：</p>
+<ul>
+<li>采样率（SampleRate）：在前面有提到</li>
+<li>声道数（Channel）：常见的就是单声道或者立体声道</li>
+<li>位深度（Depth）：前面提到的量化</li>
+</ul>
+<p>根据这些信息，我们可以计算一段PCM音频1s会产生多少数据，或者知道总大小反推PCM音频的时长。</p>
+<p>比如CD的音质：采样率44100，双声道，16bit深度，则1秒产生的数据大小为：1 * 44100 * 2 * 16 = 1411200（bit） = 176400（bytes） = 172.3KB</p>
+<p>除了上面几个外，描述音频数据的还有下面几个术语：</p>
+<ul>
+<li>样本（Sample）：代表采集到的一条通道的数据</li>
+<li>帧（Frame）：某一时刻所有Sample的集合，比如立体声下，一个Frame包含两个Samle，分别为左声道和右声道的</li>
+<li>包（Packet）：一个或多个连续的Frame，在linear PCM下，一个Packet总是对应一个Frame。其他压缩的音频格式，一个Packet则可能对应多个Frame。一个Packet是一组具有意义的最少Frames的集合（就好像一组方程式，只有它们在一起才能得出唯一解）</li>
+</ul>
+<h2 id="参考资料">参考资料</h2>
+<ul>
+<li>
+<p>声波的概念 https://www.bilibili.com/video/BV1Zq4y1u7Lq?from=search&amp;seid=6426463179542804956&amp;spm_id_from=333.337.0.0</p>
+</li>
+<li>
+<p>基础乐谱🎼知识 https://www.lightnote.co/</p>
+</li>
+<li>
+<p>人是怎么感知声音频率高低的？ https://www.zhihu.com/question/307507978/answer/563839879</p>
+</li>
+<li>
+<p>傅立叶变换 https://www.bilibili.com/video/BV1A4411Y7vj?spm_id_from=333.999.0.0</p>
+</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/IOS15导航栏透明的问题/" class="post-title gt-a-link">
+                    IOS15导航栏透明的问题
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

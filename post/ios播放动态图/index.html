@@ -1,0 +1,397 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>ios播放动态图 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    ios播放动态图
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-09-05 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <p>项目中偶尔会需要播放动态图片，比如一些动态的表情包。常见的动态图格式大家可能都知道Gif，但其实还有一个APNG格式也是动态的，这也是设计师给我设计稿时我才知道有这种格式的动态图。</p>
+<!-- more -->
+<h3 id="问题">问题</h3>
+<p>IOS自带的ImageView并不能播放动态图，它只会显示第一帧</p>
+<blockquote>
+<p>ImageView有个方法setAnimationImages，确实能播放图片。但注意这里GIF和APNG都是单张图片，所以ImageView并不适用。</p>
+</blockquote>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210905132502662.png" alt="image-20210905132502662" style="zoom: 33%;" />
+<pre><code class="language-objectivec">- (void)loadData {
+    NSString *gifPath = [[NSBundle mainBundle] pathForResource:@&quot;1.gif&quot; ofType:nil];
+    self.gifData = [NSData dataWithContentsOfFile:gifPath];
+    NSString *apngPath = [[NSBundle mainBundle] pathForResource:@&quot;2.png&quot; ofType:nil];
+    self.apngData = [NSData dataWithContentsOfFile:apngPath];
+}
+
+- (void)showWithImageView {
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 150, 100, 40)];
+    label.text = @&quot;UIImageView&quot;;
+    [self.view addSubview:label];
+    
+    UIImageView *gifImageView = [[UIImageView alloc] initWithFrame:CGRectMake(120, 100, 100, 100)];
+    gifImageView.image = [UIImage imageWithData:self.gifData];
+    [self.view addSubview:gifImageView];
+    UILabel *gifLabel = [[UILabel alloc] initWithFrame:CGRectMake(160, 200, 100, 40)];
+    gifLabel.text = @&quot;Gif&quot;;
+    [self.view addSubview:gifLabel];
+    
+    UIImageView *apngImageView = [[UIImageView alloc] initWithFrame:CGRectMake(240, 100, 100, 100)];
+    apngImageView.image = [UIImage imageWithData:self.apngData];
+    [self.view addSubview:apngImageView];
+    UILabel *apngLabel = [[UILabel alloc] initWithFrame:CGRectMake(280, 200, 100, 40)];
+    apngLabel.text = @&quot;Apng&quot;;
+    [self.view addSubview:apngLabel];
+}
+</code></pre>
+<h3 id="方法一">方法一</h3>
+<p>使用WebView展示，基本上只要你的浏览器能播放动态图，使用WebView也就能显示了，但好像无法改变图片大小</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/11.gif" alt="11" style="zoom:33%;" />
+<pre><code class="language-objectivec">- (void)showWithWebView {
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 270, 100, 40)];
+    label.text = @&quot;WKWebView&quot;;
+    [self.view addSubview:label];
+    
+    WKWebView *gifWebView = [[WKWebView alloc] initWithFrame:CGRectMake(120, 270, 100, 100)];
+    [gifWebView loadData:self.gifData MIMEType:@&quot;image/gif&quot; characterEncodingName:@&quot;UTF-8&quot; baseURL:nil];
+    [self.view addSubview:gifWebView];
+    UILabel *gifLabel = [[UILabel alloc] initWithFrame:CGRectMake(160, 320, 100, 40)];
+    gifLabel.text = @&quot;Gif&quot;;
+    [self.view addSubview:gifLabel];
+    
+    WKWebView *apngWebView = [[WKWebView alloc] initWithFrame:CGRectMake(240, 270, 100, 100)];
+    [apngWebView loadData:self.apngData MIMEType:@&quot;image/png&quot; characterEncodingName:@&quot;UTF-8&quot; baseURL:nil];
+    [self.view addSubview:apngWebView];
+    UILabel *apngLabel = [[UILabel alloc] initWithFrame:CGRectMake(280, 320, 100, 40)];
+    apngLabel.text = @&quot;Apng&quot;;
+    [self.view addSubview:apngLabel];
+}
+</code></pre>
+<h3 id="方法二">方法二</h3>
+<p>借助ImageIO的API接口，我们自己封装一个AnimateImageView。这里我们既能调整图片大小，也能通过参数控制播放速度等，非常灵活。</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/33.gif" alt="33" style="zoom:33%;" />
+<p><strong>AnimateImageView.h</strong></p>
+<pre><code class="language-objectivec">//
+//  AnimateImageView.h
+//  demo-image
+//
+//  Created by jieying zhuang on 2021/9/5.
+//
+
+#import &lt;UIKit/UIKit.h&gt;
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface AnimateImageView : UIImageView
+- (instancetype)initWithData:(NSData *)data;
+- (void)startPlay;
+//回到第一帧
+- (void)stopPlay;
+@end
+
+NS_ASSUME_NONNULL_END
+</code></pre>
+<p><strong>AnimateImageView.m</strong></p>
+<pre><code class="language-objectivec">//
+//  AnimateImageView.m
+//  demo-image
+//
+//  Created by jieying zhuang on 2021/9/5.
+//
+
+#import &quot;AnimateImageView.h&quot;
+#import &lt;ImageIO/CGImageAnimation.h&gt;
+
+/**
+ 可以用来显示Gif，APng这类动态图；
+ 限制：IOS13.0及以上
+ */
+@interface AnimateImageView ()
+@property (nonatomic, strong) UIImage *firstFrameImage;
+@property (nonatomic, strong) NSData *data;
+
+@property (nonatomic) NSUInteger beginningFrameIndex; //从哪一帧开始
+@property (nonatomic) CGFloat delayPerFrame; //每一帧播放时长
+@property (nonatomic) NSUInteger loopCount; //循环次数
+@property (nonatomic) BOOL stopPlayback; //是否停止播放
+@end
+
+@implementation AnimateImageView
+- (instancetype)initWithData:(NSData *)data {
+    if ([super init]) {
+        self.firstFrameImage = [UIImage imageWithData:data];
+        self.data = data;
+
+        self.beginningFrameIndex = 0;
+        self.delayPerFrame = 0.04f;
+        self.loopCount = 0;
+        self.stopPlayback = NO;
+
+        self.image = self.firstFrameImage;
+    }
+    return self;
+}
+
+- (void)startPlay {
+    self.stopPlayback = NO;
+    [self startAnimateImage];
+}
+
+- (void)stopPlay {
+    self.stopPlayback = YES;
+}
+#pragma mark - Private
+- (void)startAnimateImage {
+    __weak typeof(self) weakSelf = self;
+    NSDictionary *options = [self animationOptionsDictionary];
+    if (@available(iOS 13.0, *)) {
+        CGAnimateImageDataWithBlock((CFDataRef)self.data, (CFDictionaryRef)options, ^(size_t index, CGImageRef _Nonnull image, bool *_Nonnull stop) {
+            *stop = weakSelf.stopPlayback;
+            if (weakSelf.stopPlayback) {
+                weakSelf.image = weakSelf.firstFrameImage;
+            } else {
+                weakSelf.image = [UIImage imageWithCGImage:image];
+            }
+        });
+    }
+}
+
+- (NSDictionary *)animationOptionsDictionary {
+    NSMutableDictionary&lt;NSString *, NSNumber *&gt; *options = [NSMutableDictionary new];
+    if (@available(iOS 13.0, *)) {
+        [options addEntriesFromDictionary:@{
+            (NSString *)kCGImageAnimationStartIndex : @(self.beginningFrameIndex),
+            (NSString *)kCGImageAnimationDelayTime : @(self.delayPerFrame)
+        }];
+        if (self.loopCount &gt; 0) {
+            options[(NSString *)kCGImageAnimationLoopCount] = @(self.loopCount);
+        }
+    }
+    return [options copy];
+}
+@end
+</code></pre>
+<p><strong>使用方法</strong></p>
+<pre><code class="language-objectivec">- (void)showAnimateImageView {
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 450, 150, 40)];
+    label.text = @&quot;AnimateImageView&quot;;
+    [self.view addSubview:label];
+    
+    AnimateImageView *gifImageView = [[AnimateImageView alloc] initWithData:self.gifData];
+    gifImageView.frame = CGRectMake(160, 400, 100, 100);
+    [gifImageView startPlay];
+    [self.view addSubview:gifImageView];
+    UILabel *gifLabel = [[UILabel alloc] initWithFrame:CGRectMake(200, 520, 100, 40)];
+    gifLabel.text = @&quot;Gif&quot;;
+    [self.view addSubview:gifLabel];
+    
+    AnimateImageView *apngImageView = [[AnimateImageView alloc] initWithData:self.apngData];
+    apngImageView.frame = CGRectMake(270, 400, 100, 100);
+    [apngImageView startPlay];
+    [self.view addSubview:apngImageView];
+    UILabel *apngLabel = [[UILabel alloc] initWithFrame:CGRectMake(310, 520, 100, 40)];
+    apngLabel.text = @&quot;Apng&quot;;
+    [self.view addSubview:apngLabel];
+}
+</code></pre>
+<h3 id="参考资料">参考资料</h3>
+<p>https://www.swiftjectivec.com/animating-images-using-image-io/</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/ios自定义转场动画/" class="post-title gt-a-link">
+                    ios自定义转场动画
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

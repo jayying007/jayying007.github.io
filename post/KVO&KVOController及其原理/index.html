@@ -1,0 +1,438 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>KVO&amp;KVOController及其原理 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    KVO&amp;KVOController及其原理
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-06-27 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/8RMpMVz2YoOR/" class="post-tags">
+                            # KVO
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="kvo介绍">KVO介绍</h3>
+<p>KVO全名Key Value Observing，是一种通知机制，使得当某个Object的Property发生变化时，能够得到通知，它基于KVC实现。</p>
+<p>KVO一般代码实现分为三个步骤：</p>
+<!-- more -->
+<ul>
+<li>添加观察</li>
+</ul>
+<pre><code class="language-objective-c">@implementation Person
+- (void)observeNTESStock {
+    [self.stock addObserver:self forKeyPath:@&quot;price&quot; options:NSKeyValueObservingOptionNew context:nil];
+}
+@end
+</code></pre>
+<ul>
+<li>添加回调</li>
+</ul>
+<pre><code class="language-objective-c">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context {
+    // To Do Something···
+}
+</code></pre>
+<ul>
+<li>移除观察</li>
+</ul>
+<pre><code class="language-objc">[self.stock removeObserver:self forKeyPath:@&quot;price&quot;];
+</code></pre>
+<p>但是KVO在使用中也有一些问题：</p>
+<ol>
+<li>
+<p>由于观察者可以观察多个键值，当观察的键值比较多的时候，在回调的方法中会存在大量的if语句去判断被观察者以及KeyPath</p>
+</li>
+<li>
+<p>需要手动移除观察，操作不当容易Crash</p>
+</li>
+<li>
+<p>可重复添加观察（导致多次回调），当移除观察方法 &gt; 添加观察方法的次数时，会crash</p>
+</li>
+<li>
+<p>在多线程并发下，可能存在这样的问题：</p>
+<p>线程一：观察者正在执行dealloc方法，并且还未执行<code>removeObserver</code></p>
+<p>线程二：被观察对象的键值发现改变，触发了KVO的<code>observeValueForKeyPath</code>回调，但此时观察者已经变成野指针了</p>
+</li>
+</ol>
+<h3 id="kvocontroller介绍">KVOController介绍</h3>
+<p>KVOController是FaceBook开源的基于KVO封装的框架，提高了代码的可读性和安全性。下图是其在Github上的介绍：</p>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627190457920.png" alt="image-20210627190457920" style="zoom: 50%;" />
+<p>引入KVOController以后，键值观察的实现将变得非常简单。</p>
+<pre><code class="language-objective-c">@interface ViewController ()
+@property (nonatomic, strong) FBKVOController *KVOController;
+@end
+
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.KVOController = [[FBKVOController alloc] initWithObserver:self];
+    Person *person = [[Person alloc] init];
+    [self.KVOController observe:person keyPath:@&quot;name&quot; options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary&lt;NSKeyValueChangeKey,id&gt; * _Nonnull change) {
+        NSLog(@&quot;%@&quot;, change);
+    }];
+    person.name = @&quot;Jane&quot;;
+}
+@end
+=====输出=====
+{
+    FBKVONotificationKeyPathKey = name;
+    kind = 1;
+    new = Jane;
+}
+</code></pre>
+<p>KVOController提供了Block、Action、原生方法三种回调方法。</p>
+<p>KVOController也对NSObject做了category，动态绑定了KVOController属性，使用起来更方便。</p>
+<h3 id="kvocontroller源码分析">KVOController源码分析</h3>
+<p>KVOController的源码非常少，一共五个文件。</p>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627192143311.png" alt="image-20210627192143311" loading="lazy"></figure>
+<p>NSObject+FBKVOController主要是动态增加了NSObject的两个属性，区别在于是否持有被观察对象的强引用，它们都采用了懒加载。</p>
+<pre><code class="language-objc">@interface NSObject (FBKVOController)
+@property (nonatomic, strong) FBKVOController *KVOController;
+@property (nonatomic, strong) FBKVOController *KVOControllerNonRetaining;
+@end
+  
+
+static void *NSObjectKVOControllerKey = &amp;NSObjectKVOControllerKey;
+static void *NSObjectKVOControllerNonRetainingKey = &amp;NSObjectKVOControllerNonRetainingKey;
+
+@implementation NSObject (FBKVOController)
+- (FBKVOController *)KVOController
+{
+  id controller = objc_getAssociatedObject(self, NSObjectKVOControllerKey);
+  
+  // lazily create the KVOController
+  if (nil == controller) {
+    controller = [FBKVOController controllerWithObserver:self];
+    self.KVOController = controller;
+  }
+  
+  return controller;
+}
+
+- (void)setKVOController:(FBKVOController *)KVOController
+{
+  objc_setAssociatedObject(self, NSObjectKVOControllerKey, KVOController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (FBKVOController *)KVOControllerNonRetaining
+{
+  id controller = objc_getAssociatedObject(self, NSObjectKVOControllerNonRetainingKey);
+  
+  if (nil == controller) {
+    controller = [[FBKVOController alloc] initWithObserver:self retainObserved:NO];
+    self.KVOControllerNonRetaining = controller;
+  }
+  
+  return controller;
+}
+
+- (void)setKVOControllerNonRetaining:(FBKVOController *)KVOControllerNonRetaining
+{
+  objc_setAssociatedObject(self, NSObjectKVOControllerNonRetainingKey, KVOControllerNonRetaining, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+@end
+</code></pre>
+<h4 id="初始化与销毁代码">初始化与销毁代码</h4>
+<p>FBKVOController内的属性<code>_objectInfosMap</code> 根据retainObserved是YES还是NO，在初始化时选择对Key值进行强引用还是弱引用。<code>_objectInfosMap</code>的Key记录了被观察者，Value记录了被观察者的所有FBKVOInfo集合。</p>
+<figure data-type="image" tabindex="2"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627194253013.png" alt="image-20210627194253013" loading="lazy"></figure>
+<p>下图描述了KVOController和KVOInfo的关系：</p>
+<p>KVOController把观察的键值路径、回调block等信息封装到一个KVOInfo中，内部重写了hash和isEqual方法。</p>
+<figure data-type="image" tabindex="3"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210819175158731.png" alt="image-20210819175158731" loading="lazy"></figure>
+<h4 id="添加观察者">添加观察者</h4>
+<p>这里以Block的为例。首先将参数封装到FBKVOInfo中，然后调用内部的_observe:info方法</p>
+<figure data-type="image" tabindex="4"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627210553489.png" alt="image-20210627210553489" loading="lazy"></figure>
+<p>内部的_observe:info方法，将FBKVOInfo加入到对应object的集合中。最后调用了_FBKVOSharedController的方法，这个FBKVOSharedController采用单例实现，所有的FBKVOController共享。</p>
+<figure data-type="image" tabindex="5"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627210720980.png" alt="image-20210627210720980" loading="lazy"></figure>
+<p>在这里，可以看到调用了原生的addObserver方法了。</p>
+<figure data-type="image" tabindex="6"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627211922146.png" alt="image-20210627211922146" loading="lazy"></figure>
+<p>Observer指定为self，所以当键值发生变化时，就会回调这个FBKVOSharedController里面的方法。这里会依次判断FBKVOInfo中是否有Block、Action、默认回调方法，选择一个执行。</p>
+<figure data-type="image" tabindex="7"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210627212422089-20210819235605531.png" alt="image-20210627212422089" loading="lazy"></figure>
+<p>使用了KVOController进行键值监听的，所有的回调都会回到KVOSharedController这个类中，然后在根据KVOInfo里面的信息进行转发。</p>
+<figure data-type="image" tabindex="8"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/2017-03-06-KVOSharedController.png-1000width" alt="KVOSharedControlle" loading="lazy"></figure>
+<p>移除观察者的流程和上面类似，这里不再展开。</p>
+<h3 id="kvocontroller注意事项">KVOController注意事项</h3>
+<p>虽然KVOController已经修复了KVO的一些问题，但是如果用得不恰当，还是会有Crash发生。如果在dealloc中第一次调用了KVOController，就会导致Crash。</p>
+<pre><code class="language-objc">@implementation SecondViewController
+- (void)viewDidLoad {
+    [super viewDidLoad];
+  	//模拟一种情况，满足某种条件时才使用KVOController
+    if(arc4random_uniform(4) == 1) {
+        NSLog(@&quot;%@&quot;, self.KVOController);
+    }
+}
+
+- (void)dealloc {
+    [self.KVOController unobserveAll];
+}
+@end
+</code></pre>
+<p>原因也比较简单，KVOController采用了懒加载，在init方法中会把当前对象赋值给其内部属性observer，但是当前对象已经到了dealloc的处理流程，无法赋值。</p>
+<p>不过一般也不需要在当前对象的dealloc方法中移除监听，因为KVOController的dealloc方法已经做了这样的处理。</p>
+<p>又比如当观察的对象是本身时，需要注意避免出现循环引用。</p>
+<h3 id="kvo的基本原理">KVO的基本原理</h3>
+<p>KVOController本质是对原有KVO的封装，那么原有KVO又是如何实现的呢？</p>
+<blockquote>
+<p>苹果文档中对其进行了描述：</p>
+<p>Automatic key-value observing is implemented using a technique called <em>isa-swizzling</em>.</p>
+<p>The <code>isa</code> pointer, as the name suggests, points to the object's class which maintains a dispatch table. This dispatch table essentially contains pointers to the methods the class implements, among other data.</p>
+<p>When an observer is registered for an attribute of an object the isa pointer of the observed object is modified, pointing to an intermediate class rather than at the true class. As a result the value of the isa pointer does not necessarily reflect the actual class of the instance.</p>
+<p>You should never rely on the <code>isa</code> pointer to determine class membership. Instead, you should use the <code>class</code> method to determine the class of an object instance.</p>
+</blockquote>
+<p>当对象添加了KVO监听之后，系统会修改对象的isa指针，这个过程称为isa-swizzling。新isa指针指向的类是原来的子类，通过运行时机制生成，其中重写了set方法。set方法调用了 Fundation框架中C语言函数 _NSsetIntValueAndNotifyset，这个方法的大致调用逻辑为：调用willChangeValueForKey方法，然后调用原来的set方法，最后调用didChangeValueForKey。其中didChangeValueForKey方法内部调用了observeValueForKeyPath:ofObject:change:context:监听方法。</p>
+<p><strong>未添加KVO时</strong></p>
+<figure data-type="image" tabindex="9"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/926.png" alt="img" loading="lazy"></figure>
+<p><strong>添加KVO之后</strong></p>
+<figure data-type="image" tabindex="10"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1024.png" alt="img" loading="lazy"></figure>
+<p>下面通过代码调试来验证上面这个结论。</p>
+<p>创建一个Person类，里面只有一个age属性</p>
+<pre><code class="language-objc">@interface Person : NSObject
+@property (nonatomic, assign) int age;
+@end
+  
+@implementation Person
+@end
+</code></pre>
+<p>代码中创建两个Person对象p1和p2。首先打印出未添加KVO之前的IMP指针，然后给p1添加KVO，再打印IMP指针。我们会看到，在添加KVO监听之后，p1的setAge方法的IMP已经变了。</p>
+<figure data-type="image" tabindex="11"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628003922406.png" alt="image-20210628003922406" loading="lazy"></figure>
+<p>把这两个IMP打印出来，发现p1的已经变成了NSSetIntValueAndNotify。</p>
+<figure data-type="image" tabindex="12"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628004138336.png" alt="image-20210628004138336" loading="lazy"></figure>
+<p>下面我们看一下p1指向的类是否已经改变，并查看该类的内部结构。</p>
+<p>可以看到，p1指向的类已经变为NSKVONotifying_Person，里面有四个方法。</p>
+<figure data-type="image" tabindex="13"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628005405029.png" alt="image-20210628005405029" loading="lazy"></figure>
+<p>为什么有class方法，主要是为了对外屏蔽这个子类的存在。要取得真实的class类型，需要通过object_getClass的方式</p>
+<figure data-type="image" tabindex="14"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628005924792.png" alt="image-20210628005924792" loading="lazy"></figure>
+<figure data-type="image" tabindex="15"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628010126761.png" alt="image-20210628010126761" loading="lazy"></figure>
+<p>下面验证didChangeValueForKey:内部会调用observer的observeValueForKeyPath:ofObject:change:context:方法</p>
+<figure data-type="image" tabindex="16"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628011008650.png" alt="image-20210628011008650" loading="lazy"></figure>
+<p>知道这个特点后，我们甚至可以在不更新属性的情况下调用KVO回调方法。不过我们一般不会直接这么做，而是先通过+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey置为NO，表示手动触发KVO。</p>
+<figure data-type="image" tabindex="17"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210628011343881-20210819235657211.png" alt="image-20210628011343881" loading="lazy"></figure>
+<h3 id="扩展阅读">扩展阅读</h3>
+<p>KVO位于Foundation框架中，而这部分代码苹果没有开源。不过我们可以参考GNU Step中的相关实现逻辑。</p>
+<p>GNU Step的代码可以从这里获取：https://github.com/gnustep/libs-base</p>
+<p>这里简单介绍一下其中的逻辑。如下图所示，A观察B中price的变化，C观察B中price和name的变化。KVO会为每一个对象关联一份GSKVOInfo，里面Key为属性名，Value为GSKVOPathInfo，GSKVOPathInfo内部包含一个GSKVOObservation构成的数组，里面弱引用着A和C。</p>
+<figure data-type="image" tabindex="18"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210819200302952.png" alt="image-20210819200302952" loading="lazy"></figure>
+<p>当然，除了参考GNU Step里面的写法，我们也可以自己仿造写一个KVO。</p>
+<p>这里我写了一个例子：https://github.com/jayying007/demo-KVO</p>
+<h3 id="总结">总结</h3>
+<p>本篇介绍了KVO以及其实现原理，针对KVO在开发过程中的问题，介绍了更好的替代方式--采用KVOController。</p>
+<p>另外，对一些常见的问题我们也能解答：</p>
+<ul>
+<li>
+<p>设置成员变量 _age，没有触发 setter 方法 ，也不会触发 KVO 相关的代码；</p>
+</li>
+<li>
+<p>一个被声明为public的变量，而不是类的属性，只要其拥有对应的setter方法，也可以触发KVO；</p>
+</li>
+<li>
+<p>当观察的键值比较复杂，比如Person的dog.name的时候，动态生成的类包含Person和Dog，即Person的dog属性和Dog的name属性变化时，都会触发KVO；</p>
+</li>
+<li>
+<p>通过setValue:ForKey的方式也可以触发KVO，因为其逻辑就是找setXXX，_setXXX这些方法。</p>
+</li>
+</ul>
+<h3 id="参考资料">参考资料</h3>
+<p><a href="https://mp.weixin.qq.com/s?__biz=MzUxODg0MzU2OQ==&amp;mid=2247484301&amp;idx=1&amp;sn=14488ad70e79f5e9f91b026e47bbb13c&amp;chksm=f983fe53cef47745ec9f768f4aff2e4e93d34083d4dd66da5fd18ce0ee44fc488df3a0ee12e5&amp;token=1147085013&amp;lang=zh_CN#rd">你的KVO用对了吗</a></p>
+<p><a href="https://github.com/facebookarchive/KVOController">KVOController源码</a></p>
+<p><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html">苹果官方KVO文档</a></p>
+<p><a href="https://draveness.me/kvocontroller/">如何优雅地使用KVO</a></p>
+<p><a href="https://blog.csdn.net/kyl282889543/article/details/93859511">KVO底层实现原理</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/搭建个人博客/" class="post-title gt-a-link">
+                    搭建个人博客
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

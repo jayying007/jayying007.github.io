@@ -1,0 +1,395 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>FastImageCache框架分析 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    FastImageCache框架分析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-05-14 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/Jyshrk607hz/" class="post-tags">
+                            # 源码
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/E1Ls79mZbIj/" class="post-tags">
+                            # 图像
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/x2NFXhFTQ7x/" class="post-tags">
+                            # 缓存
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a href="https://github.com/path/FastImageCache">https://github.com/path/FastImageCache</a></p>
+<h2 id="简介">简介</h2>
+<p>FastImageCahce 顾名思义，用于图像缓存。<br>
+传统的图像加载性能比较低，在列表滚动场景下特别容易掉帧。而 FastImageCache 就是专门针对列表滚动场景做的性能优化。<br>
+对于两者的性能对比，你可以参考官方的 Demo 工程去感受一下。</p>
+<h2 id="图像加载流程">图像加载流程</h2>
+<ol>
+<li>+[UIImage imageWithContentsOfFile:]通过 Image I/O 接口创建了一个<code>CGImageRef</code>，这个时候图像还没有解码。而且利用内存映射，数据也没加到内存中。</li>
+<li>将得到的图像赋值到 UIImageView 中。</li>
+<li>CATransaction 捕捉到 Layer Tree 发生变更。</li>
+<li>在下一个 RunLoop 中，Core Animation 提交该 CATransaction，根据 UIImage 解码与否，会有以下步骤：
+<ol>
+<li>分配 Buffer 用于解码相关操作</li>
+<li>将数据从磁盘加载到内存中</li>
+<li><strong>解码图片成位图，这个过程发生在 CPU</strong></li>
+<li>得到的位图会被 Core Animation 用于接下来的渲染</li>
+</ol>
+</li>
+</ol>
+<h2 id="fastimagecache-如何优化的">FastImageCache 如何优化的</h2>
+<h3 id="内存映射">内存映射</h3>
+<p>如果每张图片都存在不同的位置，那么将它们从磁盘读到内存中就会涉及多次 IO。<br>
+FastImageCache 则将它们都存在同一个文件中，然后利用 mmap 技术，你需要读取哪张图片，就会在常量时间内计算出其位置，然后读取。<br>
+这种技术似乎在 2D 游戏贴图中还挺常用的。</p>
+<h3 id="解码数据">解码数据</h3>
+<p>FastImageCache 存到文件中的都是已经解码的数据，所以后续不再需要解码。<br>
+当然，这是一个很典型的空间换时间的策略。</p>
+<h3 id="字节对齐">字节对齐</h3>
+<p>Core Animation 在提交图像数据时，如果其没有字节对齐，则会触发一次拷贝进行对齐。<br>
+一个合适的对齐数值是图片每行的字节数要对齐<code>8 pixels x bytes per pixel</code>，对于常见的 ARGB 图片，就是 64。</p>
+<h2 id="fastimagecache-如何设计的">FastImageCache 如何设计的</h2>
+<p>前面提到把所有图片数据都存到同一个文件上，大概长这么个样子：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FjvQjPRjng0ERlGC011wEPKmr6QP.png" alt="" loading="lazy"></p>
+<p>但是光有这个文件还不够，比如你不知道第三张图片的偏移量，也不知道图片对应的是什么东西。<br>
+解决图片偏移量的问题，FastImageCache 是<strong>限制了每一张图片都是一样的大小</strong>，包括图片的渲染格式等信息，这些信息存储在 ImageFormat 中。知道图片的大小，计算偏移量就简单多了。<br>
+解决图片是什么的问题，自然是要给每个图片分配一个 UUID，代码中每个图片模型都是 FICEntity</p>
+<pre><code class="language-objectivec">@protocol FICEntity &lt;NSObject&gt;
+/**
+ A string that uniquely identifies this entity.
+
+ @discussion Within each image table, each entry is identified by an entity's UUID. Ideally, this value should never change for an entity. For example, if your entity class is a person
+ model, its UUID might be an API-assigned, unchanging, unique user ID. No matter how the properties of the person change, its user ID should never change.
+ */
+@property (nonatomic, copy, readonly) NSString *fic_UUID;
+@end
+</code></pre>
+<p>另外还要记录哪个 UUID 是文件的第几个图片，这部分信息被记录到另一个文件中，称为 Meta 文件。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiuQ7K8D94BId6xiWS-44B1hQCcH.png" alt="" loading="lazy"></p>
+<p>总体上看，每个 ImageFormat 对应一种图片格式的文件存储，代码中用 ImageTable 维护每个图片文件。<br>
+缓存的接口无非就是 CRUD 那一套。</p>
+<pre><code class="language-objectivec">/**
+ `FICImageTable` is the primary class that efficiently stores and retrieves cached image data. Image tables are defined by instances of `&lt;FICImageFormat&gt;`. Each image table is backed by a single
+ file on disk that sequentially stores image entry data. All images in an image table are either opaque or not and have the same dimensions. Therefore, when defining your image formats, keep in
+ mind that you cannot mix image dimensions or whether or not an image is opaque.
+ */
+@interface FICImageTable : NSObject
+
+///------------------------------------------------
+/// @name Storing, Retrieving, and Deleting Entries
+///------------------------------------------------
+
+/**
+ Stores new image entry data in the image table.
+
+ @param entityUUID The UUID of the entity that uniquely identifies an image table entry. Must not be `nil`.
+
+ @param sourceImageUUID The UUID of the source image that represents the actual image data stored in an image table entry. Must not be `nil`.
+
+ @param imageDrawingBlock The drawing block provided by the entity that actually draws the source image into a bitmap context. Must not be `nil`.
+
+ @discussion Objects conforming to `&lt;FICEntity&gt;` are responsible for providing an image drawing block that does the actual drawing of their source images to a bitmap context provided
+ by the image table. Drawing in the provided bitmap context writes the uncompressed image data directly to the image table file on disk.
+
+ @note If any of the parameters to this method are `nil`, this method does nothing.
+
+ @see [FICEntity drawingBlockForImage:withFormatName:]
+ */
+- (void)setEntryForEntityUUID:(NSString *)entityUUID sourceImageUUID:(NSString *)sourceImageUUID imageDrawingBlock:(FICEntityImageDrawingBlock)imageDrawingBlock;
+
+/**
+ Returns a new image from the image entry data in the image table.
+
+ @param entityUUID The UUID of the entity that uniquely identifies an image table entry. Must not be `nil`.
+
+ @param sourceImageUUID The UUID of the source image that represents the actual image data stored in an image table entry. Must not be `nil`.
+
+ @param preheatData A `BOOL` indicating whether or not the entry's image data should be preheated. See `&lt;[FICImageTableEntry preheat]&gt;` for more information.
+
+ @return A new image created from the entry data stored in the image table or `nil` if something went wrong.
+
+ @discussion The `UIImage` returned by this method is initialized by a `CGImageRef` backed directly by mapped file data, so no memory copy occurs.
+
+ @note If either of the first two parameters to this method are `nil`, the return value is `nil`.
+
+ @note If either the entity UUID or the source image UUID doesn't match the corresponding UUIDs in the entry data, then something has changed. The entry data is deleted for the
+ provided entity UUID, and `nil` is returned.
+ */
+- (nullable UIImage *)newImageForEntityUUID:(NSString *)entityUUID sourceImageUUID:(NSString *)sourceImageUUID preheatData:(BOOL)preheatData;
+
+/**
+ Deletes image entry data in the image table.
+
+ @param entityUUID The UUID of the entity that uniquely identifies an image table entry. Must not be `nil`.
+
+ @note If `entityUUID` is `nil`, this method does nothing.
+ */
+- (void)deleteEntryForEntityUUID:(NSString *)entityUUID;
+
+@end
+</code></pre>
+<p>这里直接从 Bang 哥那里搬张图过来<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FjgUmgRTfNalj1Hei9isgz-VSaGz.png" alt="" loading="lazy"></p>
+<p>因为采用了 mmap 技术，所以每张图片的数据大小都是 page size align 的。<br>
+ImageTable 并不直接包含 Entry，而是在中间加了一层 Chunk。这个 Chunk 是每次运行时创建的，所以一个 Chunk 的大小、包含多少 Entry 你都可以随意设置。<br>
+mmap 的粒度是每一个 Chunk，这样既不会太大也不会太小，相当灵活。</p>
+<h3 id="基本流程">基本流程</h3>
+<p>这里简单描述一下整个 FastImageCache 与 App 的工作流程。</p>
+<ol>
+<li>
+<p>App 进入某个列表，需要显示图片，所以调用了<code>retrieveImageForEntity</code>相关接口获取图片。</p>
+</li>
+<li>
+<p>如果是第一次访问，此时还没有数据，则 FastImageCache 会要求 App 提供原始图片的数据。</p>
+<ol>
+<li>拿到原始图片后，接下来需要寻找放到文件的哪个地方合适。如果文件不够放，则需要<code>ftruncate</code>扩展一下文件大小。此时会得到一个 ImageTableEntry。</li>
+<li>根据 ImageFormat 的信息，创建一个 Bitmap，然后将图片绘制到 ImageTableEntry 其中的 bytes，其实就是写到文件中。</li>
+</ol>
+</li>
+<li>
+<p>根据<code>indexMap</code>查询到图片 UUID 对应在文件哪个位置，创建对应的 ImageTableEntry。</p>
+</li>
+<li>
+<p>将该位图数据读取出来，返回给 App</p>
+</li>
+</ol>
+<p>这里不想贴太多代码，自行查阅。<br>
+解码图片成位图的逻辑参考以下方法：<br>
+<code>-[FICImageTable setEntryForEntityUUID:sourceImageUUID:imageDrawingBlock:]</code><br>
+从内存映射文件中读取位图的逻辑参考以下方法：<br>
+<code>-[FICImageTable newImageForEntityUUID:sourceImageUUID:preheatData:]</code></p>
+<h2 id="注意点-吐槽">注意点 &amp; 吐槽</h2>
+<p>ImageFormat 限制了图片的大小等信息，所以 FastImageCache 适用于那种有统一图像大小的场景，比如聊天头像、相册。</p>
+<p>_sourceImageMap 没看到有什么作用，可能是个遗留代码。</p>
+<p>ImageTable 中的_imageLength 和 Entry 中的 imageLength 是不相等的，前者是准确的数值，后者由于 page size align，算出来的不是准确的。虽然不影响使用。</p>
+<p>ImageTable 里面用了一些奇奇怪怪的数据结果，看了好几遍代码才知道是什么意思。<br>
+比如_indexNumbers 缓存了 index 的 NSNumber 表示，用来**@synchronized**加锁，避免每次重新生成 NSNumber 变了。有 HashMap 锁表头那味了～<br>
+_inUseEntries 代表哪个 Entry 正在使用，发生缓存淘汰时，不能选这个 Entry。</p>
+<p>在请求图片时，由于是异步的，ImageCache 中设置了一个很复杂的结构，我感觉这里是有 bug 的。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FsyA7ivTbHH3QIdyvnz0Gm0CCyHy.png" alt="" loading="lazy"></p>
+<p>从图中可以看出，FormatKey 只对应一个 FormatName。但是 BlocksKey 里面有可能有多种 FormatName。<br>
+所以如果你的代码写成下面这样，同时图像加载失败了，你猜猜会有什么问题？</p>
+<pre><code class="language-objectivec">[[FICImageCache sharedImageCache] retrieveImageForEntity:photo withFormatName:FormatNameA completionBlock:^(id&lt;FICEntity&gt; entity, NSString *formatName, UIImage *image) {
+    NSLog(@&quot;%@&quot;, formatName);
+}];
+[[FICImageCache sharedImageCache] retrieveImageForEntity:photo withFormatName:FormatNameB completionBlock:^(id&lt;FICEntity&gt; entity, NSString *formatName, UIImage *image) {
+    NSLog(@&quot;%@&quot;, formatName);
+}];
+</code></pre>
+<p>框架有点复杂，如果你只是想简单提升一下滚动性能，可以在内存中做一下缓存即可。<br>
+在官方的 Demo 工程中，我给 FICDPhoto 加了几行代码，性能就飞上去了 🚀。</p>
+<pre><code class="language-objectivec">- (UIImage *)thumbnailImage {
+    if (_thumbImage) {
+        return _thumbImage;
+    }
+    UIImage *thumbnailImage = [UIImage imageWithContentsOfFile:[self _thumbnailFilePath]];
+    _thumbImage = thumbnailImage;
+
+    return thumbnailImage;
+}
+</code></pre>
+<p>这里因为是缩略图，所以内存不会有太大消耗。不过列表滚动的场景，基本都是缩略图吧。</p>
+<h2 id="参考资料">参考资料</h2>
+<p><a href="http://blog.cnbang.net/tech/2578/">iOS 图片加载速度极限优化—FastImageCache 解析 « bang’s blog</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/AFNetworking源码分析/" class="post-title gt-a-link">
+                    AFNetworking源码分析
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

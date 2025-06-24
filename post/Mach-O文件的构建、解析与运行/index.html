@@ -1,0 +1,685 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Mach-O文件的构建、解析与运行 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Mach-O文件的构建、解析与运行
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-04-09 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/9geQNEqiroK/" class="post-tags">
+                            # Mach-O
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/Uii3Mk5puEf/" class="post-tags">
+                            # dyld
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/8Q9GjgvwlhA/" class="post-tags">
+                            # 链接
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <blockquote>
+<p>省流：如果你还没有看过《程序员的自我修养》，那建议还是先去看完这本书吧。</p>
+</blockquote>
+<h1 id="简介">简介</h1>
+<p>类似于 Window 的 PE 文件、Linux 的 ELF 文件，OS X 上所有的 App、Framework、Libiary、Command-Line Tool 都可以称为 Mach-O 文件。<br>
+对这些 Mach-O 文件的进一步描述，可以参考<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/1-Articles/building_files.html#//apple_ref/doc/uid/TP40001828-97030">The Products—Types of Mach-O Files You Can Build</a></p>
+<p>一个 Mach-O 文件由三部分组成：Header、Load Commands、Data。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fkk8pOAP_-UZXZta955gFg_tffP0.png" alt="" loading="lazy"><br>
+Header：包含该文件的目标架构等信息；<br>
+Load Commands：描述了该文件的基本结构（比如符号表在哪个地方，Segment 要加到虚拟内存地址的哪个地方）；<br>
+Data：裸的数据，具体每个 Byte 代表啥就看 Load Commands 中的定义了。</p>
+<p>一个 Mach-O 只包含一种架构的代码和数据，包含多个的被称为 universal binary。这种情况下，文件开头为一个<code>fat_header</code>结构体，跟随一个<code>fat_arch</code>结构体数组，根据这个<code>fat_arch</code>的信息，就能快速找到适合当前机器执行的代码和数据的位置。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FqtXecpFB_uJTRut3aLKSlmRSXwM.png" alt="" loading="lazy"></p>
+<h1 id="程序运行过程浅析">程序运行过程浅析</h1>
+<p>Mach-O 文件有可能是一个可执行文件类型，这里简单说明一下通过命令行或双击启动一个可执行文件的过程。<br>
+再说一次，想获取这部分更完整的知识，去看《程序员的自我修养》。</p>
+<p>当运行一个程序时，内核为该程序创建对应的进程，并将其载入进程空间中，同时也会把动态链接器（通常是/usr/lib/dyld）载入进程空间中。随后把控制器交给动态链接器，即跳转到动态链接器指定的入口地址。<br>
+这个过程涉及两个系统调用，<code>fork</code>和<code>execve</code>。<code>fork</code>创建了进程，<code>execve</code>将程序载入进程空间并执行。载入的 Mach-O 文件中，会有一条 load command 指示从哪里加载动态链接器。</p>
+<p>动态链接器会查找程序依赖的所有动态库（这部分信息也在 load command 中），然后递归将它们也加进来。<br>
+随后动态链接器会做必要的<strong>符号绑定</strong>，然后调用程序的入口点。这个入口点函数是静态链接时添加的，它会做一些 C++静态对象初始化、ObjC 运行时之类的操作，最后会调用 main 函数。</p>
+<h2 id="小结">小结</h2>
+<p>App 启动过程其实之前也写过文章分享，传送门 <a href="https://www.yuque.com/jayying/uk3dsf/ntpxwg">iOS App 的启动过程（流程篇）</a><br>
+或者看下苹果文档：<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/1-Articles/executing_files.html#//apple_ref/doc/uid/TP40001829-96913-TPXREF103">Forking and Executing the Process</a>、<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/1-Articles/executing_files.html#//apple_ref/doc/uid/TP40001829-97021-TPXREF121">Finding Imported Symbols</a><br>
+下面稍微介绍一下符号绑定。</p>
+<h2 id="符号绑定">符号绑定</h2>
+<p>讲解符合绑定之前，先简单说明一下模块（module）的含义，模块是由数据和代码构成的最小单元，可以独立跟其他单元链接。例如编译文件 main.c、thing.c、foo.c，产生了 main.o、thing.o、foo.o，这里就是三个模块。不过在编译 App 时，静态链接器会把它们合并为同一模块。</p>
+<p>同一模块内，由于知道函数、数据的地址，所有模块内的符号引用都可以在静态阶段确定下来。但是程序也会存在引用 open、printf 这类系统库中的符号，属于跨模块符号引用。<br>
+一个模块（源程序）引用了另一个模块（动态库）的数据或函数，需要等另一个模块加载到进程空间后，才能确定该模块函数和数据的具体地址，然后再做引用符号地址的修正，或者叫符号绑定。</p>
+<p>符号绑定的方式通常有以下几种：<br>
+lazy-binding，虽然程序运行时就把共享库加到进程空间中，但直到第一次引用符号时，动态链接器才去做绑定。<br>
+load-time binding，顾名思义，程序运行时就进行绑定。默认情况下，动态链接器执行 lazy-binding 的策略。在 ld 阶段，通过添加参数<code>-bind_at_load</code>即可强制运行时绑定。<br>
+prebinding，少用，不多做说明。</p>
+<p>不过符号绑定没有这么简单，仔细一想，你知道了 open、printf 等函数的地址，但是你无法将这些信息填充到源程序的代码段中，因为代码段的权限是只读和可执行，不能写。<br>
+似乎陷入了僵局，动态库的函数地址要运行时才能确定，而修改代码段只能在静态链接阶段，一旦载入内存就无法修改。<br>
+不过退一万步讲，即使代码段可写，也会有其他问题。除了源程序引用动态库，也会有动态库引用另一个动态库的情况，也就是说，动态库里面也有引用符号需要修正。问题就在这里，你的程序修正了动态库里面的符号引用地址，但是动态库是所有进程共享的呀。有可能其他进程也依赖这个动态库，而它对应的符号地址不见得跟你的一样，这样搞其他进程就崩溃了。那你只能每个进程都搞一份自己的，不过这样就失去了动态库节省空间的一大优势了。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FiYfAS7bDkO0ZSxJZKrc_9sb7mPx.png" alt="" loading="lazy"></p>
+<p>不过办法总比困难多，代码段不可写，但是数据段可写呀，于是就有了曲线救国的方式。动态库的函数地址运行时确定后，把地址写到<code>__DATA</code>的某个地方。由于<code>__TEXT</code>和<code>__DATA</code>的相对位置是固定的，所以代码上可以利用当前 PC+偏移量得到地址存放的位置，然后再访问地址。这种方式又叫间接符号引用。</p>
+<blockquote>
+<p><a href="https://github.com/facebook/fishhook">fishhook</a>利用这个特性实现了 Hook C 函数。<br>
+PS：本来想写一篇源码分析文章的，但源码其实就两百来行，知道 Mach-O 和动态链接的特性后也不难理解，于是放弃了。</p>
+</blockquote>
+<h1 id="庖丁解牛">庖丁解牛</h1>
+<p>前面已经讲了 Mach-O 文件执行的一些细节，接下来就亲自动手，逐个 Byte 分析 Mach-O 文件的奥秘。中间会穿插各种 🧑‍💻Coding，用于验证。</p>
+<h2 id="工欲善其事必先利其器">工欲善其事，必先利其器</h2>
+<p>查看一个 Mach-O 文件包含什么信息，有很多工具可以使用。<br>
+lipo：分析体系结构<br>
+file：显示文件类型<br>
+otool：查看 Mach-O 文件具体的 Segment、Section 数据<br>
+pagestuff：按页查看文件信息<br>
+nm：查看符号表<br>
+libtool：可将多个中间文件合并为静态库 a</p>
+<blockquote>
+<p>💡 上面的都是命令行工具，其实还有一个常用的可视化工具 MachOView</p>
+</blockquote>
+<p>另外再补一下我的电脑配置<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FgzxoCveBndgMDmE_NSkEI74FzF6.png" alt="" loading="lazy"><br>
+emmm，当时 M1 Max 刚出时买的，等了快一个月才到货...</p>
+<h2 id="coding-环节">🧑‍💻Coding 环节</h2>
+<p>创建一个文件<code>file_b.c</code>，内容如下</p>
+<pre><code class="language-c">int base = 0xfff0;
+
+int getAddress(int base, int offset) {
+    return base + offset;
+}
+</code></pre>
+<p>然后编译</p>
+<pre><code class="language-shell">//单独编译，不链接
+clang -c file_b.c -o file_b.o
+</code></pre>
+<h2 id="header">Header</h2>
+<p>Mach-O 文件开头是一个<code>mach_header</code>结构体。代码位于 mach-o/loader.h，其在 32 位和 64 位机器下结构稍有不同。</p>
+<pre><code class="language-c">/*
+ * The 32-bit mach header appears at the very beginning of the object file for
+ * 32-bit architectures.
+ */
+struct mach_header {
+	uint32_t	magic;		/* mach magic number identifier */
+	int32_t		cputype;	/* cpu specifier */
+	int32_t		cpusubtype;	/* machine specifier */
+	uint32_t	filetype;	/* type of file */
+	uint32_t	ncmds;		/* number of load commands */
+	uint32_t	sizeofcmds;	/* the size of all the load commands */
+	uint32_t	flags;		/* flags */
+};
+
+struct mach_header_64 {
+	uint32_t	magic;		/* mach magic number identifier */
+	int32_t		cputype;	/* cpu specifier */
+	int32_t		cpusubtype;	/* machine specifier */
+	uint32_t	filetype;	/* type of file */
+	uint32_t	ncmds;		/* number of load commands */
+	uint32_t	sizeofcmds;	/* the size of all the load commands */
+	uint32_t	flags;		/* flags */
+	uint32_t	reserved;	/* reserved */
+};
+</code></pre>
+<p>magic 表示当前 Mach-O 文件可运行于 32 位还是 64 位机器，以及机器的端序。</p>
+<pre><code class="language-c">/* Constant for the magic field of the mach_header (32-bit architectures) */
+#define	MH_MAGIC	0xfeedface	/* the mach magic number */
+#define MH_CIGAM	0xcefaedfe	/* NXSwapInt(MH_MAGIC) */
+
+/* Constant for the magic field of the mach_header_64 (64-bit architectures) */
+#define MH_MAGIC_64 0xfeedfacf /* the 64-bit mach magic number */
+#define MH_CIGAM_64 0xcffaedfe /* NXSwapInt(MH_MAGIC_64) */
+</code></pre>
+<p>cputype、cpusubtype 表示机器架构，如 CPU_TYPE_ARM64、CPU_TYPE_X86_64。更多定义可以查看 mach/machine.h</p>
+<p>filetype 表示 Mach-O 文件的类型，常见的有：中间对象文件（MH_OBJECT）、可执行二进制（MH_EXECUTE）、VM 共享库文件（MH_FVMLIB）、Crash 产生的 Core 文件（MH_CORE）、动态共享库（MH_DYLIB）、动态链接器（MH_DYLINKER）、静态链接文件（MH_DYLIB_STUB）、符号文件和调试信息（MH_DSYM）</p>
+<p>ncmds 和 sizeofcmds 代表有多少 load command 以及所占大小</p>
+<p>flags 是一些标记字段，具体含义可参考 loader.h 中的说明。</p>
+<h3 id="coding-环节-2">🧑‍💻Coding 环节</h3>
+<p>我们可以用命令行工具打印一下</p>
+<pre><code class="language-shell">otool -v -h file_b.o
+</code></pre>
+<p>结果如下</p>
+<pre><code>Mach header
+magic  cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
+MH_MAGIC_64    ARM64        ALL  0x00      OBJECT     4        440 SUBSECTIONS_VIA_SYMBOLS
+</code></pre>
+<p>直接用代码验证<br>
+为了便于后续代码编写，这里加几个别名和宏定义，新出现的也按同样规则处理</p>
+<pre><code class="language-c">#ifdef __LP64__
+typedef struct mach_header_64 mach_header_t;
+typedef struct segment_command_64 segment_command_t;
+typedef struct section_64 section_t;
+typedef struct nlist_64 nlist_t;
+#define LC_SEGMENT_ARCH_DEPENDENT LC_SEGMENT_64
+#else
+typedef struct mach_header mach_header_t;
+typedef struct segment_command segment_command_t;
+typedef struct section section_t;
+typedef struct nlist nlist_t;
+#define LC_SEGMENT_ARCH_DEPENDENT LC_SEGMENT
+#endif
+
+#ifndef SEG_DATA_CONST
+#define SEG_DATA_CONST  &quot;__DATA_CONST&quot;
+#endif
+
+typedef struct load_command load_command_t;
+typedef struct dylib_command dylib_command_t;
+typedef struct dylinker_command dylinker_command_t;
+typedef struct symtab_command symtab_command_t;
+typedef struct dysymtab_command dysymtab_command_t;
+</code></pre>
+<pre><code class="language-c">void *getFilePointer(const char *filePath) {
+    int fd = open(filePath, O_RDONLY, S_IRUSR);
+    struct stat st = {};
+    fstat(fd, &amp;st);
+    uint64_t fileSize = (uint64_t)st.st_size;
+    void *ptr = mmap(NULL, fileSize, PROT_READ, MAP_SHARED, fd, 0);
+    return ptr;
+}
+
+void startReadMachO(const char *filePath) {
+    void *filePtr = getFilePointer(filePath);
+    void *curPtr = filePtr;
+
+    mach_header_t *header = (mach_header_t *)curPtr;
+    printf(&quot;magic: %x\n&quot;, header-&gt;magic);
+    printf(&quot;cputype: %u\n&quot;, header-&gt;cputype);
+    printf(&quot;cpusubtype: %u\n&quot;, header-&gt;cpusubtype);
+    printf(&quot;filetype: %u\n&quot;, header-&gt;filetype);
+    printf(&quot;ncmds: %u\n&quot;, header-&gt;ncmds);
+    printf(&quot;sizeofcmds: %u\n&quot;, header-&gt;sizeofcmds);
+    printf(&quot;flags: %u\n&quot;, header-&gt;flags);
+}
+</code></pre>
+<p>传入 file_b.o 的路径，得到以下输出，数据吻合</p>
+<pre><code>magic: feedfacf
+cputype: 16777228
+cpusubtype: 0
+filetype: 1
+ncmds: 4
+sizeofcmds: 440
+flags: 8192
+</code></pre>
+<h2 id="load-commands">Load Commands</h2>
+<p>下一步来到 load command，从 mach_header 那里我们已经知道了 load commands 的总体大小。<br>
+load command 有很多种，但是所有 load command 结构体的前两个属性是一样的，类似于面向对象中的基类。</p>
+<pre><code class="language-c">struct load_command {
+	uint32_t cmd;		/* type of load command */
+	uint32_t cmdsize;	/* total size of command in bytes */
+};
+</code></pre>
+<p>cmd 代表了 load command 的类型，cmdsize 代表具体 load command 的结构体大小 + 额外数据大小。具体的 load command 结构可在 loader.h 中查看</p>
+<p>在我们的<code>file_b.o</code>中，共有 4 个 load commands，分别为 LC_BUILD_VERSION、LC_SEGMENT_64、LC_SYMTAB、LC_DYSYMTAB，第一个不太重要，直接忽略。</p>
+<h3 id="lc_segment_64">LC_SEGMENT_64</h3>
+<p>对应结构体<code>segment_command_64</code>，指定了 Mach-O 文件某个段的信息，段是会被载入进程空间的，结构体中同时还说明了载入的虚拟地址位置。</p>
+<p>再次祭出这张图<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fkk8pOAP_-UZXZta955gFg_tffP0.png" alt="" loading="lazy"><br>
+Data 包含一个或多个 segment 的数据，一个 segment 有 0 个或多个 section，每个 section 包含 code 或者 data。<br>
+每个 section 都有编号，从 1 开始，且跨多个 segment。比如第一个 segment 有 section1 section2 section3，第二个 segment 有 section4 section5...</p>
+<p>section 对应结构体<code>section_64</code>，跟在<code>segment_command_64</code>之后。</p>
+<pre><code class="language-c">/*
+ * The 64-bit segment load command indicates that a part of this file is to be
+ * mapped into a 64-bit task's address space.  If the 64-bit segment has
+ * sections then section_64 structures directly follow the 64-bit segment
+ * command and their size is reflected in cmdsize.
+ */
+struct segment_command_64 { /* for 64-bit architectures */
+	uint32_t	cmd;		/* LC_SEGMENT_64 */
+	uint32_t	cmdsize;	/* includes sizeof section_64 structs */
+	char		segname[16];	/* segment name */
+	uint64_t	vmaddr;		/* memory address of this segment */
+	uint64_t	vmsize;		/* memory size of this segment */
+	uint64_t	fileoff;	/* file offset of this segment */
+	uint64_t	filesize;	/* amount to map from the file */
+	int32_t		maxprot;	/* maximum VM protection */
+	int32_t		initprot;	/* initial VM protection */
+	uint32_t	nsects;		/* number of sections in segment */
+	uint32_t	flags;		/* flags */
+};
+
+
+struct section_64 { /* for 64-bit architectures */
+	char		sectname[16];	/* name of this section */
+	char		segname[16];	/* segment this section goes in */
+	uint64_t	addr;		/* memory address of this section */
+	uint64_t	size;		/* size in bytes of this section */
+	uint32_t	offset;		/* file offset of this section */
+	uint32_t	align;		/* section alignment (power of 2) */
+	uint32_t	reloff;		/* file offset of relocation entries */
+	uint32_t	nreloc;		/* number of relocation entries */
+	uint32_t	flags;		/* flags (section type and attributes)*/
+	uint32_t	reserved1;	/* reserved (for offset or index) */
+	uint32_t	reserved2;	/* reserved (for count or sizeof) */
+	uint32_t	reserved3;	/* reserved */
+};
+</code></pre>
+<p>segment 和 section 都有名字，一般来说，segment 用双下划线+大写字母，section 用双下划线+小写字母。</p>
+<p>可执行文件的 segment 通常有以下六种类型：</p>
+<ul>
+<li>__PAGEZERO，可执行文件中的第一个 segment，在虚拟内存中的地址为零，size 代表虚拟内存中一页的大小。</li>
+<li>__TEXT，包含可执行的代码、只读数据。因为不可写，所以可以当做共享内存，其他进程也能获取。例如运行同一个程序多次、Framework 的代码、共享库。</li>
+<li>__DATA，可读写的数据。因此每个进程都要单独拷贝一份 Framework、共享库的数据，拷贝采用 copy-on-write 策略。</li>
+<li>__OBJC，用于支持 Objective-C Runtime 的相关数据</li>
+<li>__IMPORT，包含一些未被定义的符号，只为 IA-32 架构使用，现在可以忽略。</li>
+<li>__LINKEDIT，包含符号表、字符串表、重定位表等数据。</li>
+</ul>
+<p>在用户最终链接成的 Mach-O 文件中，最后一个 segment 为__LINKEDIT。</p>
+<h4 id="coding-环节-3">🧑‍💻Coding 环节</h4>
+<pre><code class="language-c">curPtr = curPtr + sizeof(mach_header_t);
+load_command_t *command;
+for (int i = 0; i &lt; header-&gt;ncmds; i++, curPtr += command-&gt;cmdsize) {
+    command = (load_command_t *)curPtr;
+    if (command-&gt;cmd == LC_SEGMENT_ARCH_DEPENDENT) {
+        segment_command_t *segment_command = (segment_command_t *)command;
+        printf(&quot;segment: %s \n&quot;, segment_command-&gt;segname);
+        printf(&quot;sections:\n&quot;);
+        section_t *sections = (section_t *)(curPtr + sizeof(segment_command_t));
+        for (int j = 0; j &lt; segment_command-&gt;nsects; j++) {
+            printf(&quot;%s %s \n&quot;, sections[j].segname, sections[j].sectname);
+            printf(&quot;flags: 0x%x \n&quot;, sections[j].flags);
+        }
+        printf(&quot;\n\n&quot;);
+    }
+}
+</code></pre>
+<p>输出结果如下</p>
+<pre><code>segment:
+sections:
+__TEXT __text
+flags: 0x80000400
+__DATA __data
+flags: 0x0
+__LD __compact_unwind__LD
+flags: 0x2000000
+</code></pre>
+<p>打印之后你会发现，只有一个 segment，而且还没有名字。这是为了中间目标文件的紧凑性故意处理的，这个 segment 里面包含了各种各样的 section，属于不同 segment，会在静态链接时放置到合理的位置上。</p>
+<p>这里有三个 section。</p>
+<ul>
+<li><code>__compact_unwind__LD</code>，这是一个 debug 用的，可以忽略。</li>
+<li><code>__text</code>，包含可执行的机器指令。</li>
+<li><code>__data</code>，包含有初始化值的变量。在<code>file_b.c</code>中，我们只有<code>int base = 0xfff0</code>这么个初始化变量。</li>
+</ul>
+<p>可以打印出来验证</p>
+<pre><code class="language-c">if (strcmp(sections[j].sectname, SECT_DATA) == 0) {
+    int *value = (int *)(filePtr + sections[j].offset);
+    printf(&quot;%x \n&quot;, *value);
+}
+</code></pre>
+<h3 id="lc_symtab">LC_SYMTAB</h3>
+<p>对应结构体<code>symtab_command</code>，描述了符号表的位置和大小。所谓的符号表，是由<code>nlist_64</code>构成的结构体数组。</p>
+<pre><code class="language-c">/*
+ * The symtab_command contains the offsets and sizes of the link-edit 4.3BSD
+ * &quot;stab&quot; style symbol table information as described in the header files
+ * &lt;nlist.h&gt; and &lt;stab.h&gt;.
+ */
+struct symtab_command {
+	uint32_t	cmd;		/* LC_SYMTAB */
+	uint32_t	cmdsize;	/* sizeof(struct symtab_command) */
+	uint32_t	symoff;		/* symbol table offset */
+	uint32_t	nsyms;		/* number of symbol table entries */
+	uint32_t	stroff;		/* string table offset */
+	uint32_t	strsize;	/* string table size in bytes */
+};
+
+/*
+ * This is the symbol table entry structure for 64-bit architectures.
+ */
+struct nlist_64 {
+    union {
+        uint32_t  n_strx; /* index into the string table */
+    } n_un;
+    uint8_t n_type;        /* type flag, see below */
+    uint8_t n_sect;        /* section number or NO_SECT */
+    uint16_t n_desc;       /* see &lt;mach-o/stab.h&gt; */
+    uint64_t n_value;      /* value of this symbol (or stab offset) */
+};
+</code></pre>
+<h4 id="coding-环节-4">🧑‍💻Coding 环节</h4>
+<pre><code class="language-c">if (command-&gt;cmd == LC_SYMTAB) {
+    symtab_command_t *symtab_command = (symtab_command_t *)command;
+    nlist_t *nlists = (nlist_t *)(filePtr + symtab_command-&gt;symoff);
+    uint32_t strOffset = symtab_command-&gt;stroff;
+    for (int j = 0; j &lt; symtab_command-&gt;nsyms; j++) {
+        nlist_t nlist = nlists[j];
+        printf(&quot;symbol: %s type:%u sect:%u desc:%u value:%llu \n&quot;, (char *)(filePtr + strOffset + nlist.n_un.n_strx), nlist.n_type, nlist.n_sect, nlist.n_desc, nlist.n_value);
+    }
+}
+</code></pre>
+<p>输出结果中，可以看到符号_base 和_getAddress</p>
+<pre><code>symbol: ltmp0 type:14 sect:1 desc:0 value:0
+symbol: ltmp1 type:14 sect:2 desc:0 value:32
+symbol: ltmp2 type:14 sect:3 desc:0 value:40
+symbol: _base type:15 sect:2 desc:0 value:32
+symbol: _getAddress type:15 sect:1 desc:0 value:0
+</code></pre>
+<p>根据 value 可以知道_base 是一个全局符号</p>
+<pre><code class="language-c">#define	N_GSYM		0x20	/* global symbol */
+</code></pre>
+<h3 id="lc_dysymtab">LC_DYSYMTAB</h3>
+<p>对应结构体<code>dysymtab_command</code>，描述了用于动态链接部分的符号表。</p>
+<h4 id="coding-环节-5">🧑‍💻Coding 环节</h4>
+<pre><code class="language-c">if (command-&gt;cmd == LC_DYSYMTAB) {
+    dysymtab_command_t *dysymtab_command = (dysymtab_command_t *)command;
+    printf(&quot;local: %u extdef: %u undef: %u \n&quot;, dysymtab_command-&gt;nlocalsym, dysymtab_command-&gt;nextdefsym, dysymtab_command-&gt;nundefsym);
+}
+</code></pre>
+<p>这里有三个本地符号，两个对外符号，符合预期</p>
+<pre><code>local: 3 extdef: 2 undef: 0
+</code></pre>
+<h3 id="coding-环节-6">🧑‍💻Coding 环节</h3>
+<p>file_b.o 我们已经扒得差不多了，是时候写个新的代码了，就叫 file_a.c</p>
+<pre><code class="language-c">#include &quot;file_b.h&quot;
+
+int printf(const char *, ...);
+
+int main(int argc, char *argv[]) {
+    int offset = 0x10;
+    int address = getAddress(base, offset);
+    printf(&quot;address is %x&quot;, address);
+    return 0;
+}
+</code></pre>
+<p>file_a.c 需要用到 base 和 getAddress，所以要把这两个信息提供出来</p>
+<pre><code class="language-c">extern int base;
+
+int getAddress(int base, int offset);
+</code></pre>
+<p>然后编译</p>
+<pre><code class="language-shell">//单独编译，不链接
+clang -c file_a.c -o file_a.o
+</code></pre>
+<p>接下来的代码跟之前的一样，我们直接看输出</p>
+<pre><code>magic: feedfacf
+cputype: 16777228
+cpusubtype: 0
+filetype: 1
+ncmds: 4
+sizeofcmds: 440
+flags: 8192
+
+segment:
+sections:
+__TEXT __text
+flags: 0x80000400
+__TEXT __cstring
+flags: 0x2
+__LD __compact_unwind__LD
+flags: 0x2000000
+
+
+symbol: ltmp0 type:14 sect:1 desc:0 value:0
+symbol: l_.str type:14 sect:2 desc:0 value:108
+symbol: ltmp1 type:14 sect:2 desc:0 value:108
+symbol: ltmp2 type:14 sect:3 desc:0 value:128
+symbol: _main type:15 sect:1 desc:0 value:0
+symbol: _base type:1 sect:0 desc:0 value:0
+symbol: _getAddress type:1 sect:0 desc:0 value:0
+symbol: _printf type:1 sect:0 desc:0 value:0
+
+
+local: 4 extdef: 1 undef: 3
+</code></pre>
+<p>这里多了一个前面没有的 section __cstring，里面包含 C 字符串，即<code>&quot;address is %x&quot;</code>，可以验证下</p>
+<pre><code class="language-c">if (sections[j].flags == S_CSTRING_LITERALS) {
+    printf(&quot;%s \n&quot;, (char *)(filePtr + sections[j].offset));
+}
+</code></pre>
+<p>然后也没有多余的可分析了，把两个 Mach-O 链接成可执行文件看看</p>
+<pre><code class="language-shell">//链接成可执行文件target.o
+ld -lSystem -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -o target.o file_a.o file_b.o
+//执行一下target.o，可正常运行
+./target.o
+</code></pre>
+<p>链接成可执行文件后，又多了好几个 load commands，这里同样只挑几个有意思的讲讲</p>
+<h3 id="lc_load_dylinker">LC_LOAD_DYLINKER</h3>
+<p>对应结构体<code>dylinker_command</code>，指示了动态链接器的路径。<br>
+每个动态链接的可执行文件都包含该 command，该 command 包含指明了内核在启动进程时，从哪个地方启动 dyld。如果这个文件就是动态链接器本身，则通过 LC_ID_DYLINKER 指明。</p>
+<pre><code class="language-c">if (command-&gt;cmd == LC_LOAD_DYLINKER) {
+    dylinker_command_t *dylinker_command = (dylinker_command_t *)command;
+    uint32_t length = dylinker_command-&gt;cmdsize - sizeof(dylinker_command_t);
+    uint32_t offset = dylinker_command-&gt;name.offset;
+    printf(&quot;length: %u dylinker: %s \n\n&quot;, length, (char *)(curPtr + offset));
+}
+</code></pre>
+<p>输出</p>
+<pre><code>length: 20 dylinker: /usr/lib/dyld
+</code></pre>
+<h3 id="lc_load_dylib">LC_LOAD_DYLIB</h3>
+<p>对应结构体<code>dylib_command</code>，指示了依赖的动态库。前面提过，动态链接器会把所有依赖的库加到进程中，如果动态库依赖其他动态库，则递归进行加载，然后再做符号绑定。</p>
+<pre><code class="language-c">if (command-&gt;cmd == LC_LOAD_DYLIB) {
+    dylib_command_t *dylib_command = (dylib_command_t *)command;
+    uint32_t length = dylib_command-&gt;cmdsize - sizeof(dylib_command_t); //得到dylib.name的长度
+    uint32_t offset = dylib_command-&gt;dylib.name.offset;
+    printf(&quot;length:%u  dylib: %s \n\n&quot;, length, (char *)(curPtr + offset));
+}
+</code></pre>
+<p>输出</p>
+<pre><code>length:32  dylib: /usr/lib/libSystem.B.dylib
+</code></pre>
+<h3 id="lc_main">LC_MAIN</h3>
+<p>对应结构体<code>entry_point_command</code>，即 main 函数的地址</p>
+<h3 id="lc_data_in_code">LC_DATA_IN_CODE</h3>
+<p>对应结构体<code>linkedit_data_command</code>，在代码段的数据，即只读数据。</p>
+<pre><code class="language-c">/*
+ * The linkedit_data_command contains the offsets and sizes of a blob
+ * of data in the __LINKEDIT segment.
+ */
+struct linkedit_data_command {
+    uint32_t	cmd;		/* LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
+				   LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
+				   LC_DYLIB_CODE_SIGN_DRS,
+				   LC_LINKER_OPTIMIZATION_HINT,
+				   LC_DYLD_EXPORTS_TRIE, or
+				   LC_DYLD_CHAINED_FIXUPS. */
+    uint32_t	cmdsize;	/* sizeof(struct linkedit_data_command) */
+    uint32_t	dataoff;	/* file offset of data in __LINKEDIT segment */
+    uint32_t	datasize;	/* file size of data in __LINKEDIT segment  */
+};
+</code></pre>
+<p><code>linkedit_data_command</code>结构体被很多 load command 共用。</p>
+<h2 id="data">Data</h2>
+<p>在最终的 target.o 中，多了一个 segment,<code>__DATA_CONST</code>，里面有一个 section,<code>__got</code>。这其实就是我们符号绑定时提到的间接符号引用，因为我们这里引用了 printf 这个动态库符号。<br>
+关于如何判断这个 section 每个位置代表哪个间接符号引用的地址，可以参考<a href="https://github.com/facebook/fishhook">fishhook</a>中的实现。</p>
+<h1 id="参考资料">参考资料</h1>
+<p>除了上面贴过的链接外<br>
+<a href="https://github.com/aidansteele/osx-abi-macho-file-format-reference">https://github.com/aidansteele/osx-abi-macho-file-format-reference</a><br>
+<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/MachOTopics/0-Introduction/introduction.html">Mach-O Programming Topics</a><br>
+<a href="https://ming1016.github.io/2020/03/29/apple-system-executable-file-macho/">Apple 操作系统可执行文件 Mach-O</a><br>
+《iOS 应用安全与逆向之道》<br>
+<a href="https://draveness.me/fishhook/">动态修改 C 语言函数的实现 - 面向信仰编程</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/一个简单的天气App/" class="post-title gt-a-link">
+                    一个简单的天气App
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

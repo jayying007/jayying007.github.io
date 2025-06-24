@@ -1,0 +1,410 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>FBRetainCycleDetector源码分析 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    FBRetainCycleDetector源码分析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-04-23 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/Jyshrk607hz/" class="post-tags">
+                            # 源码
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/KMjFbfpGhPp/" class="post-tags">
+                            # 循环引用
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a href="https://github.com/facebook/FBRetainCycleDetector">https://github.com/facebook/FBRetainCycleDetector</a></p>
+<h2 id="内存管理概念">内存管理概念</h2>
+<p>对于程序中的内存对象管理，一般分为手动管理、引用计数管理、垃圾回收。<br>
+手动管理：例如 C 语言，malloc 后不需要时，需要 free，不然就会内存泄露。<br>
+引用计数：Objective-C 的内存管理方式，稍有不慎就会造成循环引用，这也是<code>FBRetainCycleDetector</code>要解决的问题。<br>
+垃圾回收：Java 的内存管理方式，之前写过文章<a href="https://blog.csdn.net/qq_17190121/article/details/115145066">简述 - 垃圾回收算法_Mrzhuang007 的博客-CSDN 博客</a></p>
+<h2 id="循环引用的检测原理">循环引用的检测原理</h2>
+<p>首先需要知道程序创建了哪些 OC 对象，这个可以通过 hook alloc 或者 allocWithZone 去监测；<br>
+接下来要知道每个对象强引用了哪些对象；<br>
+寻找是否有引用回路；<br>
+最后需要去重，比如 A-&gt;B-&gt;C-&gt;A 和 B-&gt;C-&gt;A-&gt;B 属于同一条链路。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FoazLbNEWxnVBY3mFjcpTFyvo734.png" alt="" loading="lazy"><br>
+可以看出，检测循环引用，相当于在一个有向图中找到环。<br>
+这就很简单了，遍历每个对象做一下 dfs，就可以知道每个对象是否位于环中，以及属于哪个环。</p>
+<h2 id="fbretaincycledetector-的实现">FBRetainCycleDetector 的实现</h2>
+<h3 id="对象检测">对象检测</h3>
+<p><code>FBRetainCycleDetector</code>实际上没有 hook alloc 之类的方法，要检测是否存在循环引用，需要我们自己主动添加对象，通过<code>addCandidate:</code>方法。<br>
+即只对这些对象做 dfs，毕竟实际项目中对象实在太多了，检测起来内存和性能都是问题。</p>
+<p><code>FBRetainCycleDetector</code>的方法只有三个：</p>
+<ul>
+<li>构造函数可配置哪些边可以忽略，毕竟有些循环引用是故意的，会在之后自行打断；</li>
+<li>添加 dfs 搜索的初始对象；</li>
+<li>返回搜索结果，数组代表环的数量，数组里的元素为集合，代表每个环的组成。</li>
+</ul>
+<pre><code class="language-objectivec">/**
+ FBRetainCycleDetector
+
+ The main class responsible for detecting retain cycles.
+
+ Be cautious, the class is NOT thread safe.
+
+ The process of detecting retain cycles is relatively slow and consumes a lot of CPU.
+ */
+
+@interface FBRetainCycleDetector : NSObject
+
+/**
+ Designated initializer
+
+ @param configuration Configuration for detector. Can include specific filters and options.
+ @see FBRetainCycleDetectorConfiguration
+ */
+- (nonnull instancetype)initWithConfiguration:(nonnull FBObjectGraphConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
+
+/**
+ Adds candidate you are interested in getting retain cycles from.
+
+ @param candidate Any Objective-C object you want to verify for cycles.
+ */
+- (void)addCandidate:(nonnull id)candidate;
+
+/**
+ Searches for all retain cycles for all candidates the detector has been
+ provided with.
+
+ @return NSSet with retain cycles. An element of this array will be
+ an array representing retain cycle. That array will hold elements
+ of type FBObjectiveCGraphElement.
+
+ @discussion For given candidate, the detector will go through all object graph rooted in this candidate and return
+ ALL retain cycles that this candidate references. It will also take care of removing duplicates. It will not look for
+ cycles longer than 10 elements. If you want to look for longer ones use findRetainCyclesWithMaxCycleLenght:
+ */
+- (nonnull NSSet&lt;NSArray&lt;FBObjectiveCGraphElement *&gt; *&gt; *)findRetainCycles;
+
+@end
+</code></pre>
+<h3 id="对象结构与引用描述">对象结构与引用描述</h3>
+<p>对于有向图上的所有节点，都是用<code>FBObjectiveCGraphElement</code>来描述。</p>
+<pre><code class="language-objectivec">/**
+ Base Graph Element representation. It carries some data about the object and should be overridden in subclass
+ to provide references that subclass holds strongly (different for blocks, objects, other specializations).
+ The Graph Element itself can only provide references from FBAssociationManager.
+ */
+@interface FBObjectiveCGraphElement : NSObject
+
+/**
+ Designated initializer.
+ @param object Object this Graph Element will represent.
+ @param configuration Provides detector's configuration that contains filters and options
+ @param namePath Description of how the object was retrieved from it's parent. Check namePath property.
+ */
+- (nonnull instancetype)initWithObject:(nullable id)object
+                         configuration:(nonnull FBObjectGraphConfiguration *)configuration
+                              namePath:(nullable NSArray&lt;NSString *&gt; *)namePath;
+/**
+ Name path that describes how this object was retrieved from its parent object by names
+ (for example ivar names, struct references). For more check FBObjectReference protocol.
+ */
+@property (nonatomic, copy, readonly, nullable) NSArray&lt;NSString *&gt; *namePath;
+@property (nonatomic, weak, nullable) id object;
+@property (nonatomic, readonly, nonnull) FBObjectGraphConfiguration *configuration;
+
+/**
+ Main accessor to all objects that the given object is retaining. Thread unsafe.
+ @return NSSet of all objects this object is retaining.
+ */
+- (nullable NSSet *)allRetainedObjects;
+
+@end
+</code></pre>
+<p>结合 ObjC 的特性，可以扩展出以下类型：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FuFB3_C4YzH9LzT3UB7wD93CpJkQ.png" alt="" loading="lazy"><br>
+之所以有不同的派生类，主要是获取强引用对象的方法<code>allRetainedObjects</code>有所不同</p>
+<p><strong>FBObjectiveCGraphElement</strong>：获取 associate 绑定的对象；<br>
+<strong>FBObjectiveCBlock</strong>：原有基础上，利用 Block 的结构体，计算出强引用的对象；<br>
+<strong>FBObjectiveCObject</strong>：原有基础上，获取 Ivars，如果为集合对象，则获取其 keys 和 values；<br>
+<strong>FBObjectiveCNSCFTimer</strong>：原有基础上，获取 NSTimer 中的 target 和 userInfo；</p>
+<blockquote>
+<p>Ivars 可以利用 ObjC Runtime 获取，利用 IvarsLayout 可以知道是弱引用还是强引用。对于 IvarsLayout 的说明可以参考<a href="https://www.jianshu.com/p/6b218d12caae">这篇文章</a><br>
+对于结构体内部变量的获取则稍微复杂一些，需要考虑结构体对齐问题，然后利用 typeEncoding 获得 OC 对象。<br>
+Block 则创建一些虚拟的对象，然后调用 Block 的 dispose 方法，谁调用了 release 方法就可以知道哪个是真正的 OC 强引用对象。<br>
+Ivars、结构体、Block 强引用对象的方法还挺有意思的，建议自行阅读源码，感受其奥秘。</p>
+</blockquote>
+<h3 id="循环引用的检测">循环引用的检测</h3>
+<p>上文也说了，检测用的是 DFS，不过这里并没有用递归，而是利用循环去模拟桟的运行。代码如下：</p>
+<pre><code class="language-objectivec">- (NSSet&lt;NSArray&lt;FBObjectiveCGraphElement *&gt; *&gt; *)_findRetainCyclesInObject:(FBObjectiveCGraphElement *)graphElement
+                                                                 stackDepth:(NSUInteger)stackDepth
+{
+  NSMutableSet&lt;NSArray&lt;FBObjectiveCGraphElement *&gt; *&gt; *retainCycles = [NSMutableSet new];
+  FBNodeEnumerator *wrappedObject = [[FBNodeEnumerator alloc] initWithObject:graphElement];
+
+  // We will be doing DFS over graph of objects
+  // Stack will keep current path in the graph
+  NSMutableArray&lt;FBNodeEnumerator *&gt; *stack = [NSMutableArray new];
+
+  // To make the search non-linear we will also keep
+  // a set of previously visited nodes.
+  NSMutableSet&lt;FBNodeEnumerator *&gt; *objectsOnPath = [NSMutableSet new];
+
+  // Let's start with the root
+  [stack addObject:wrappedObject];
+
+  while ([stack count] &gt; 0) {
+    // Take topmost node in stack and mark it as visited
+    FBNodeEnumerator *top = [stack lastObject];
+    [objectsOnPath addObject:top];
+    // Take next adjecent node to that child. Wrapper object can
+    // persist iteration state. If we see that node again, it will
+    // give us new adjacent node unless it runs out of them
+    FBNodeEnumerator *firstAdjacent = [top nextObject];
+    if (firstAdjacent) {
+      // Current node still has some adjacent not-visited nodes
+      BOOL shouldPushToStack = NO;
+
+      // Check if child was already seen in that path
+      if ([objectsOnPath containsObject:firstAdjacent]) {
+        // We have caught a retain cycle
+        NSUInteger index = [stack indexOfObject:firstAdjacent];
+        NSInteger length = [stack count] - index;
+        NSRange cycleRange = NSMakeRange(index, length);
+        NSMutableArray&lt;FBNodeEnumerator *&gt; *cycle = [[stack subarrayWithRange:cycleRange] mutableCopy];
+        [cycle replaceObjectAtIndex:0 withObject:firstAdjacent];
+        [retainCycles addObject:[self _unwrapCycle:cycle]];
+      } else {
+        // Node is clear to check, add it to stack and continue
+        shouldPushToStack = YES;
+      }
+
+      if (shouldPushToStack &amp;&amp; [stack count] &lt; stackDepth) {
+        [stack addObject:firstAdjacent];
+      }
+    } else {
+      // Node has no more adjacent nodes, it itself is done, move on
+      [stack removeLastObject];
+      [objectsOnPath removeObject:top];
+    }
+  }
+  return retainCycles;
+}
+</code></pre>
+<p>为了代码的易读性，这里删了一些代码。</p>
+<p>其实这里还做了 dfs 的剪枝优化，跳过了一些不必要的遍历路径，代码如下</p>
+<pre><code class="language-objectivec">// We don't want to retraverse the same subtree
+if (![objectsOnPath containsObject:top]) {
+  if ([_objectSet containsObject:@([top.object objectAddress])]) {
+    [stack removeLastObject];
+    continue;
+  }
+  // Add the object address to the set as an NSNumber to avoid
+  // unnecessarily retaining the object
+  [_objectSet addObject:@([top.object objectAddress])];
+}
+</code></pre>
+<p>设想下面的场景<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FvpEz6JhKUJOpfa1mel8YBdZxq4U.png" alt="" loading="lazy"><br>
+dfs 通过路径 A-&gt;B-&gt;D-&gt;E-&gt;F-&gt;D，已经发现了 D、E、F 之间的循环引用。而且按照 dfs 的特性，D、E、F 所有关联的路径都已经遍历完了。<br>
+后面当 dfs 来到 A-&gt;C-&gt;E 时，其实就没必要再往下检测了，因为 E 所有路径都检查过了。</p>
+<h3 id="补充">补充</h3>
+<p>对于最后检测出来的环，选择其中对象地址最小的作为环的头节点。然后在根据类名进行字符串排序，找到一个字典序最小的。<br>
+最后这两个感觉可有可无，没发现有什么场景需要用到。<br>
+查看 Git 的提交记录，可以发现是最初的去重版本。后面引入剪枝后，就没作用了，只是代码还没删。。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/Mach-O文件的构建、解析与运行/" class="post-title gt-a-link">
+                    Mach-O文件的构建、解析与运行
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

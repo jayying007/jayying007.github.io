@@ -1,0 +1,577 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>深入理解Protobuf | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    深入理解Protobuf
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-03-14 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="简单介绍">简单介绍</h3>
+<p>Protobuf 是序列化数据的一种方式。<br>
+比如在前后端的数据交互中，我们可能采用 xml 或者 json 的数据格式进行通信，而 protobuf 则是另一种选择。<br>
+相比前两者，protobuf 序列化的数据体积更小，序列化速度更快。</p>
+<blockquote>
+<p>Protobuf 现在有 proto2 和 proto3 两个版本，这里默认使用 proto2</p>
+</blockquote>
+<h3 id="基本用法以-ios-为例">基本用法(以 iOS 为例)</h3>
+<p>首先创建一个 proto 文件，然后定义你的数据结构</p>
+<pre><code class="language-protobuf">message SearchRequest {
+  required string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3;
+}
+</code></pre>
+<p>接着到<a href="https://github.com/protocolbuffers/protobuf/releases">Protobuf 的 Github 网址</a>下载一个 protoc 编译器，用于编译上面的 proto 文件<br>
+大致命令为：</p>
+<pre><code class="language-shell">protoc --proto_path=src --objc_out=build/gen src/foo.proto
+</code></pre>
+<p>具体可以参考<a href="https://protobuf.dev/reference/objective-c/objective-c-generated/">官方教程</a></p>
+<p>这样你就得到了一个 pbobjc.h 和 pbobjc.m 文件，其中就有 SearchRequest 这个类，内容大概如下</p>
+<pre><code class="language-objectivec">@interface SearchRequest : GPBMessage
+@property(nonatomic, readwrite, copy, null_resettable) NSString *query;
+@property(nonatomic, readwrite) BOOL hasQuery;
+
+@property(nonatomic, readwrite) int32_t pageNumber;
+@property(nonatomic, readwrite) BOOL hasPageNumber;
+
+@property(nonatomic, readwrite) int32_t resultPerPage;
+@property(nonatomic, readwrite) BOOL hasResultPerPage;
+@end
+
+@implementation SearchRequest
+
+@dynamic hasQuery, query;
+@dynamic hasPageNumber, pageNumber;
+@dynamic hasResultPerPage, resultPerPage;
+
+typedef struct SearchRequest__storage_ {
+  uint32_t _has_storage_[1];
+  int32_t pageNumber;
+  int32_t resultPerPage;
+  NSString *query;
+} SearchRequest__storage_;
+
++ (GPBDescriptor *)descriptor {
+  //不用关心
+}
+
+@end
+</code></pre>
+<p>接下来你就可以把它当做一个 Model 来使用，或者用 Java 的术语来说，叫 PoJo 类。<br>
+当你需要序列化的时候，调用-[GPBMessage data]方法；<br>
+当你需要反序列化的时候，调用+[GPBMessage parseFromData:error:]等方法。</p>
+<h3 id="基本语法">基本语法</h3>
+<p>还是以上面的 proto 文件举例</p>
+<pre><code class="language-protobuf">message SearchRequest {
+  required string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3;
+}
+</code></pre>
+<h4 id="1">1</h4>
+<p>message 定义了一种数据结构，其后跟着对应的名称。一个 proto 文件可以定义多个 message，你也可以用 import 关键字，引入其他 proto，就像代码引入头文件一样。</p>
+<h4 id="2">2</h4>
+<p>每个属性前的关键字，有三种选择：required、optional、repeated，分别对应：必填、选填、重复填（即数组）</p>
+<h4 id="3">3</h4>
+<p>随后是其数据类型，基础类型如下表</p>
+<table>
+<thead>
+<tr>
+<th>.proto Type</th>
+<th>Notes</th>
+<th>Objective-C Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>double</td>
+<td></td>
+<td><strong>double</strong></td>
+</tr>
+<tr>
+<td>float</td>
+<td></td>
+<td><strong>float</strong></td>
+</tr>
+<tr>
+<td>int32</td>
+<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td>
+<td>int32_t</td>
+</tr>
+<tr>
+<td>int64</td>
+<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td>
+<td>int64_t</td>
+</tr>
+<tr>
+<td>uint32</td>
+<td>Uses variable-length encoding.</td>
+<td>uint32_t</td>
+</tr>
+<tr>
+<td>uint64</td>
+<td>Uses variable-length encoding.</td>
+<td>uint64_t</td>
+</tr>
+<tr>
+<td>sint32</td>
+<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td>
+<td>int32_t</td>
+</tr>
+<tr>
+<td>sint64</td>
+<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td>
+<td>int64_t</td>
+</tr>
+<tr>
+<td>fixed32</td>
+<td>Always four bytes. More efficient than uint32 if values are often greater than 228.</td>
+<td>uint32_t</td>
+</tr>
+<tr>
+<td>fixed64</td>
+<td>Always eight bytes. More efficient than uint64 if values are often greater than 256.</td>
+<td>uint64_t</td>
+</tr>
+<tr>
+<td>sfixed32</td>
+<td>Always four bytes.</td>
+<td>int32_t</td>
+</tr>
+<tr>
+<td>sfixed64</td>
+<td>Always eight bytes.</td>
+<td>int64_t</td>
+</tr>
+<tr>
+<td>bool</td>
+<td></td>
+<td><strong>BOOL</strong></td>
+</tr>
+<tr>
+<td>string</td>
+<td>A string must always contain UTF-8 encoded text.</td>
+<td>NSString</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td>May contain any arbitrary sequence of bytes.</td>
+<td>NSData</td>
+</tr>
+</tbody>
+</table>
+<p>此外也可以定义枚举和 message</p>
+<pre><code class="language-protobuf">enum Corpus {
+  CORPUS_UNSPECIFIED = 0;
+  CORPUS_UNIVERSAL = 1;
+  CORPUS_WEB = 2;
+  CORPUS_IMAGES = 3;
+  CORPUS_LOCAL = 4;
+  CORPUS_NEWS = 5;
+  CORPUS_PRODUCTS = 6;
+  CORPUS_VIDEO = 7;
+}
+
+message SearchRequest {
+  required string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3;
+  optional Corpus corpus = 4;
+}
+
+message SearchResponse {
+  repeated Result result = 1;
+}
+
+message Result {
+  required string url = 1;
+  optional string title = 2;
+  repeated string snippets = 3;
+}
+</code></pre>
+<p>另外你还可以定义 Map 类型，但 Map 本质上只是一个特殊的 message 数据结构而已。</p>
+<pre><code class="language-protobuf">message Example {
+  map&lt;key_type, value_type&gt; map_field = N;
+}
+
+||
+
+message MapFieldEntry {
+  optional key_type key = 1;
+  optional value_type value = 2;
+}
+
+message Example {
+  repeated MapFieldEntry map_field = N;
+}
+</code></pre>
+<h4 id="4">4</h4>
+<p>名称不必多说，只是生成 ObjC 代码时，会将蛇形命名改为驼峰命名。<br>
+当然，一些情况也没这么简单。</p>
+<h4 id="5">5</h4>
+<p>最后就是属性的编号了，可以从 1 到 536,870,911，但一般也不会定义那么多属性。<br>
+另外需要注意的是，一旦一个属性的编号确定了，就不要随意去改动它，以避免前后版本数据兼容带来的问题。</p>
+<p>更详细的内容，参考<a href="https://protobuf.dev/programming-guides/proto/">官方文档</a></p>
+<h3 id="编码原理">编码原理</h3>
+<p>在讲具体的编码之前，有必要提一下 TLV（Tag-Length-Value）。<br>
+还是以上面的 proto 为例子</p>
+<pre><code class="language-protobuf">message SearchRequest {
+  required string query = 1;
+  optional int32 page_number = 2;
+  optional int32 result_per_page = 3;
+}
+</code></pre>
+<p>如果我们要编译这段数据，就可以用 TLV 的方式：</p>
+<ul>
+<li>写入序号 1，你可以自己决定这个序号占多少字节，但后面所有序号就要固定这个字节数了，假设为 4</li>
+<li>因为 query 是 string，写入字段的长度，这个占多少字节也可以自定义，假设为 4</li>
+<li>写入 query 数据本身</li>
+<li>写入序号 2（4 个字节）</li>
+<li>因为 page_number 是 int32，直接 4 个字节写入其值</li>
+<li>写入序号 3（4 个字节）</li>
+<li>因为 result_per_page 是 int32，直接 4 个字节写入其值</li>
+</ul>
+<p>只要你按照这个格式写入，解析也就很简单：</p>
+<ul>
+<li>读取 4 个字节，得到序号 1</li>
+<li>查看 proto 知道是 string 类型，接着读取 4 个字节得到长度</li>
+<li>根据长度，读取相应的字节，得到的就是 query 的数据</li>
+<li>读取 4 个字节，得到序号 2</li>
+<li>查看 proto 知道是 int32 类型，所以读 4 个字节，得到的就是 page_number 的值</li>
+<li>读取 4 个字节，得到序号 3</li>
+<li>查看 proto 知道是 int32 类型，所以读 4 个字节，得到的就是 result_per_page 的值</li>
+</ul>
+<p>按上面这种方法，我们也能实现数据的序列化和反序列化，而且效果还不错。<br>
+实际上，Protobuf 就是特殊的 TLV，在传统 TLV 的基础上，对部分数据进行精简，从而使得序列化后体积更小。</p>
+<hr>
+<p>分割线</p>
+<hr>
+<p>先从一个简单的例子入手，定义一个 Test1</p>
+<pre><code class="language-protobuf">message Test1 {
+  optional int32 a = 1;
+}
+</code></pre>
+<p>然后给 a 赋值 150，接着打印</p>
+<pre><code class="language-objectivec">Test1 *test1 = [[Test1 alloc] init];
+test1.a = 150;
+NSLog(@&quot;%@&quot;, test1.data);
+//{length = 3, bytes = 0x089601}
+</code></pre>
+<p>你会很神奇地发现，按我们刚才的做法需要 8 个字节存储，到这里 3 个字节就搞定了！！！</p>
+<p>Protobuf 是怎么做到的呢，这就要涉及到一种核心编码方式<strong>Varints</strong>。</p>
+<h4 id="varints">Varints</h4>
+<p>Varints 这个词拆出来，就是 var int，即可变的 int 类型，这里的可变指的是长度可变，即 int32 不一定对应 4 个字节。因为在大部分情况下，我们都用不满 32bit，这会导致大部分 bit 位都是 0，而这就是浪费。</p>
+<p>在 Varints 编码环境下，一个 int64 可能占 1 到 10 个字节数。每个字节的第一位是标志位（MSB - Most significant bit），剩下 7 位才是真正存储数据的。</p>
+<pre><code>0000 0001
+^ msb
+</code></pre>
+<p>比如编码数字 1，只需要一个字节，MSB 为 0 代表结束。</p>
+<pre><code>10010110 00000001
+^ msb    ^ msb
+</code></pre>
+<p>编码数字 150 需要两个字节，MSB 为 1 代表后面还有数据。<br>
+计算数值时，把 MSB 去掉，因为是小端序，还要把前面的字节放到后面，再拼起来。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Ft301FPSufBlsFGrMNJzSmTa4Ivv.png" alt="" loading="lazy"></p>
+<p>至此，开头的问题后两个字节 0x9601 我们已经知道是什么意思了，那第一个字节 0x08 呢。<br>
+这个字节由两部分组成，field_number 和 wire_type，组合方式是(field_number &lt;&lt; 3) | wire_type，俗称 Tag<br>
+field_number 我们知道是 1，wire_type 则参考下面表格</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Used For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>VARINT</td>
+<td>int32, int64, uint32, uint64, sint32, sint64, bool, enum</td>
+</tr>
+<tr>
+<td>1</td>
+<td>I64</td>
+<td>fixed64, sfixed64, double</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LEN</td>
+<td>string, bytes, embedded messages, packed repeated fields</td>
+</tr>
+<tr>
+<td>3</td>
+<td>SGROUP</td>
+<td>group start (deprecated)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>EGROUP</td>
+<td>group end (deprecated)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>I32</td>
+<td>fixed32, sfixed32, float</td>
+</tr>
+</tbody>
+</table>
+<p>因为 int32 属于 Varints，所以为 0，拼起来就得到了 0x08<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FgAi7SiGiTm6DRuqQLB_jGvr3vhH.png" alt="" loading="lazy"></p>
+<p>乍一看，field_number 只有 5 个 bit，那不是最多只能定义 32 个 field 吗。其实不是，这个 Tag 也是一个 Varints，所以定义 fileid=16 应该长下面这样<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FpGrWiooPVBNOC31beagmqq2mjI4.png" alt="" loading="lazy"></p>
+<h4 id="varints-的局限性和对策">Varints 的局限性和对策</h4>
+<p>Varints 并不是万能的，有些场景它是低效的。<br>
+对于 int32、int64，比如编码一个-2，需要花费 10 个字节</p>
+<pre><code>11111110 11111111 11111111 11111111 11111111
+11111111 11111111 11111111 11111111 00000001
+</code></pre>
+<p>对于 sint32、sint64，则换了种思路，先采用 ZigZag 算法，然后再用 Varints 编码。<br>
+ZigZag 规则为，如果是负数，则存储其绝对值的 2 倍减 1；如果为非负数，则存储其绝对值的 2 倍。这样就有效降低了负数占用的字节空间。</p>
+<p>剩下的 wire type 中，<br>
+I64 和 I32，代表读取固定 8 个字节和 4 个字节。<br>
+LEN 则代表数据的长度需要由下一个数据确定。<br>
+比如下面这个例子</p>
+<pre><code class="language-protobuf">message Test2 {
+  optional string b = 2;
+}
+</code></pre>
+<pre><code class="language-objectivec">Test2 *test2 = [[Test2 alloc] init];
+test2.b = @&quot;hello world&quot;;
+NSLog(@&quot;%@&quot;, test2.data);
+// {length = 13, bytes = 0x120b68656c6c6f20776f726c64}
+</code></pre>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fu5BuH6xsIAhDBq0v6xIi4hMVLYG.png" alt="" loading="lazy"><br>
+需要注意这个长度 11 也是 Varints 编码。<br>
+剩下的 bytes、message 也是类似的解析。</p>
+<pre><code class="language-protobuf">message Test3 {
+  optional Test1 c = 3;
+}
+// 按开头的Test1，它编码后是这样的
+// 1a 03 [08 96 01]
+</code></pre>
+<h4 id="repeated-的解析">repeated 的解析</h4>
+<p>repeated 在 proto2 和 proto3 上的存储稍有不同。</p>
+<pre><code class="language-protobuf">message Test4 {
+  repeated bool d = 1;
+}
+// proto2: 0x080108000800
+// proto3: 0x0a03010000
+</code></pre>
+<p>比如上面这个数据，假设我设置了 YES、NO、NO 三个数据。<br>
+在 proto2 中占了 6 个字节，而在 proto3 中占了 5 个字节<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fom21OeqQrnHvjCRvN09xmvdSTVQ.png" alt="" loading="lazy"></p>
+<h3 id="解码浅析">解码浅析</h3>
+<p>解码其实没什么好说的，就是编码反过来而已。<br>
+这里主要补充一下对重复消息的处理，即在数据流中解析到一个 fileid，后面又再解析到这个 field 该如何处理：</p>
+<ul>
+<li>如果字段为不可分割的类型，则直接覆盖</li>
+<li>如果字段为 repeated，则 append 到已有字段。其实上文 proto2 中已经可以很清晰看到这点了。</li>
+<li>如果字段为嵌套消息，则递归执行 merge</li>
+</ul>
+<h3 id="参考资料">参考资料</h3>
+<p><a href="https://protobuf.dev/programming-guides/proto/">https://protobuf.dev/programming-guides/proto/</a><br>
+<a href="https://protobuf.dev/programming-guides/encoding/">https://protobuf.dev/programming-guides/encoding/</a><br>
+<a href="https://github.com/protocolbuffers/protobuf">https://github.com/protocolbuffers/protobuf</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/JSPatch源码笔记/" class="post-title gt-a-link">
+                    JSPatch源码笔记
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

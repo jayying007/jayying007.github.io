@@ -1,0 +1,345 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>搭建个人博客 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    搭建个人博客
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-06-24 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/LoloFQxCExMq/" class="post-tags">
+                            # 教程
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="服务器选购">服务器选购</h3>
+<p>我这次采用的是腾讯云，因为我有几百块的代金劵，哈哈。</p>
+<p>操作系统：Ubuntu 20.04 LTS</p>
+<p>硬件配置：1核 2GB 2Mbps</p>
+<h3 id="系统配置">系统配置</h3>
+<p>通过SSH获取密码登录系统，然后需要修改一下DNS服务器的配置。</p>
+<p>默认好像开启了systemd-resolved这个服务，一开始一直解析不了DNS。</p>
+<blockquote>
+<p>关于systemd-resolved，可以参考这篇文章：https://www.freedomwolf.cc/2020/01/dns_by_systemd/</p>
+</blockquote>
+<p>在<code>/etc/systemd/resolved.conf</code>中，把<code>#DNS=</code> 改为<code>DNS=1.1.1.1</code>，然后重启服务就可以了。</p>
+<pre><code class="language-shell">sudo systemctl restart systemd-resolved.service
+</code></pre>
+<p>然而，现在是可以ping www.baidu.com了，但是tencent内部的一些域名就解析不了了。</p>
+<p>当我执行sudo apt-get update的时候，会出现下面这段内容</p>
+<pre><code>Err:1 http://mirrors.tencentyun.com/ubuntu focal InRelease
+  Something wicked happened resolving 'mirrors.tencentyun.com:http' (-5 - No address associated with hostname)
+Err:2 http://mirrors.tencentyun.com/ubuntu focal-security InRelease
+  Something wicked happened resolving 'mirrors.tencentyun.com:http' (-5 - No address associated with hostname)
+Err:3 http://mirrors.tencentyun.com/ubuntu focal-updates InRelease
+  Something wicked happened resolving 'mirrors.tencentyun.com:http' (-5 - No address associated with hostname)
+Reading package lists... Done            
+W: Failed to fetch http://mirrors.tencentyun.com/ubuntu/dists/focal/InRelease  Something wicked happened resolving 'mirrors.tencentyun.com:http' (-5 - No address associated with hostname)
+W: Failed to fetch http://mirrors.tencentyun.com/ubuntu/dists/focal-security/InRelease  Something wicked happened resolving 'mirrors.tencentyun.com:http' (-5 - No address associated with hostname)
+W: Failed to fetch http://mirrors.tencentyun.com/ubuntu/dists/focal-updates/InRelease  Something wicked happened resolving 'mirrors.tencentyun.com:http' (-5 - No address associated with hostname)
+W: Some index files failed to download. They have been ignored, or old ones used instead.
+</code></pre>
+<p>一种方法是修改apt的镜像源，在/etc/apt/sources.list中配置其他镜像地址</p>
+<p>另外就是使用腾讯的DNS服务器了。在https://cloud.tencent.com/document/product/213/5225这里找。</p>
+<p>我的是广州六区，找不到，问了一下客服，选择了“私有网络-所有地域”这个类型的ip地址，然后就可以了。</p>
+<h3 id="wordpress的搭建">Wordpress的搭建</h3>
+<p>这个根据某位博主的指引，找到了一个不错的视频教程</p>
+<p>https://www.bilibili.com/video/BV1j4411C7Qf</p>
+<p>之前用WordPress搭建了一遍，但是感觉WordPress对代码和markdown的支持不太好，后面就改换Hexo了。</p>
+<p>如何安装Hexo可以在官网得到详细的教程，所以这里不打算展开讲，下面讲讲官网没提到的。</p>
+<h3 id="官网有的内容">官网有的内容</h3>
+<ul>
+<li>如何安装Hexo框架</li>
+<li>如何建网站、建文章、本地发布</li>
+</ul>
+<h3 id="我要讲的">我要讲的</h3>
+<h4 id="博客主题">博客主题</h4>
+<p>这里我选择了NexT，比较简洁，地址：https://theme-next.js.org，网站里面也介绍了如何配置各种东西。</p>
+<blockquote>
+<p>如果你不清楚某一个配置项如何实现的，可以在评论区留言</p>
+</blockquote>
+<h4 id="增加分类和标签页面">增加分类和标签页面</h4>
+<p>在source里面增加categories和tags两个文件夹，里面都添加一个index.md文件，内容分别为：</p>
+<pre><code>---
+title: categories
+date: 2021-06-13 10:16:14
+type: categories
+---
+</code></pre>
+<pre><code>---
+title: tags
+date: 2021-06-13 09:10:25
+type: tags
+---
+</code></pre>
+<p>最后记得在NexT的配置中开启这两个，比如我当前的配置如下：</p>
+<pre><code class="language-yaml">menu:
+  home: / || fa fa-home
+  #about: /about/ || fa fa-user
+  tags: /tags/ || fa fa-tags
+  categories: /categories/ || fa fa-th
+  archives: /archives/ || fa fa-archive
+  #schedule: /schedule/ || fa fa-calendar
+  #sitemap: /sitemap.xml || fa fa-sitemap
+  #commonweal: /404/ || fa fa-heartbeat
+</code></pre>
+<h4 id="部署到服务器上">部署到服务器上</h4>
+<p>这里采用Git的方式部署，首先需要安装Git部署插件</p>
+<pre><code class="language-shell">npm install hexo-deployer-git --save
+</code></pre>
+<p>本地配置添加（IP改为你的服务器地址，同时要先配置好SSH，比如我本地配置了SSH免密登陆服务器，不然每次都需要输入密码，当然这也看你个人意愿）</p>
+<pre><code class="language-yaml">deploy:
+  type: git
+  repo: ubuntu@11.22.33.44:/home/ubuntu/hexo
+  branch: master
+</code></pre>
+<p>然后在服务器上面创建一个hexo的git仓库</p>
+<blockquote>
+<p>写博客的几个步骤：</p>
+<p>hexo new 'new blog title'</p>
+<p>写内容...</p>
+<p>hexo clean</p>
+<p>hexo generate</p>
+<p>hexo deploy</p>
+</blockquote>
+<p>如果你按我上面说的，当你deploy的时候，会出错</p>
+<pre><code>On branch master
+nothing to commit, working tree clean
+Enumerating objects: 90, done.
+Counting objects: 100% (90/90), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (77/77), done.
+Writing objects: 100% (90/90), 54.96 KiB | 3.92 MiB/s, done.
+Total 90 (delta 15), reused 0 (delta 0), pack-reused 0
+remote: error: refusing to update checked out branch: refs/heads/master
+remote: error: By default, updating the current branch in a non-bare repository
+remote: is denied, because it will make the index and work tree inconsistent
+remote: with what you pushed, and will require 'git reset --hard' to match
+remote: the work tree to HEAD.
+remote: 
+remote: You can set the 'receive.denyCurrentBranch' configuration variable
+remote: to 'ignore' or 'warn' in the remote repository to allow pushing into
+remote: its current branch; however, this is not recommended unless you
+remote: arranged to update its work tree to match what you pushed in some
+remote: other way.
+remote: 
+remote: To squelch this message and still keep the default behaviour, set
+remote: 'receive.denyCurrentBranch' configuration variable to 'refuse'.
+To 159.75.249.140:/home/ubuntu/hexo
+ ! [remote rejected] HEAD -&gt; master (branch is currently checked out)
+error: failed to push some refs to '159.75.249.140:/home/ubuntu/hexo'
+FATAL {
+  err: Error: Spawn failed
+      at ChildProcess.&lt;anonymous&gt; (/Users/jieyingzhuang/Desktop/blog/node_modules/hexo-util/lib/spawn.js:51:21)
+      at ChildProcess.emit (node:events:394:28)
+      at Process.ChildProcess._handle.onexit (node:internal/child_process:290:12) {
+    code: 1
+  }
+} Something's wrong. Maybe you can find the solution here: %s https://hexo.io/docs/troubleshooting.html
+</code></pre>
+<p>你可以按照提示输入命令<code>git config receive.denyCurrentBranch ignore</code>解决，这里我采用另一种方法解决：</p>
+<p><strong>创建裸仓库，和代码文件分开存放</strong></p>
+<p>创建一个叫hexo.git的裸仓库，所以hexo的配置信息也要换成hexo.git，创建hexo空文件夹。然后添加钩子post-receive并设置为可执行文件，里面的内容为</p>
+<pre><code class="language-shell">git --work-tree=/home/ubuntu/hexo --git-dir=/home/ubuntu/hexo.git checkout -f
+</code></pre>
+<p>这样，当你deploy的时候，会把网站的内容到存到hexo文件夹中。后面你还需要配置服务器，用Apache或者Nginx，然后指定网站的根目录为hexo，即可正常访问。</p>
+<h3 id="没讲的东西">没讲的东西</h3>
+<p>感觉属于其他方面的知识，我就没有细说。这些也可以找其他博客看看。</p>
+<ul>
+<li>SSH免密登陆</li>
+<li>配置Nginx服务器（配置SSL证书）</li>
+<li>Hexo具体的配置信息（主要看各自喜好）</li>
+</ul>
+
+                </div>
+            </article>
+        </div>
+
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

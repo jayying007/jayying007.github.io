@@ -1,0 +1,381 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>部署Tensorflow模型到服务器--方法一 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    部署Tensorflow模型到服务器--方法一
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-08-01 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/r7E8B34FUdrX/" class="post-tags">
+                            # 模型部署
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/202fMsi6LMaJ/" class="post-tags">
+                            # Tensorflow
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/q3-MIN_7HWQl/" class="post-tags">
+                            # docker
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><strong>基本思路：利用tensorflow官方提供的tensorflow serving进行部署，同时，为了免去环境配置等麻烦操作，可借助docker容器。</strong></p>
+<h3 id="一-服务器环境选择">一、服务器环境选择</h3>
+<p>首先肯定要去租一个服务器，例如阿里云。一开始选了window server2012，结果很坑，装不了docker。上网想查解决方法，发现别人也遇到过这个问题。</p>
+<p>了解的原因大概是：docker需要在linux的环境下运行。但通过在window server2012下使用vitural box运行linux虚拟机的办法不行，因为这样会造成二次虚拟（官方解释：阿里云给的轻量应用服务器是运行在虚拟机上的，所以不能再开虚拟机）。</p>
+<p>不过网上一些大佬好像也给出了骚操作，但总之太过麻烦，不想去折腾，就没去尝试。</p>
+<p>正当我觉得凉凉，想重新买linux服务器的时候，才发现阿里云的控制台上可以重新更改系统镜像，于是很愉快地换成了ubuntu18.04.</p>
+<h3 id="二-ubuntu下docker容器的安装">二、Ubuntu下docker容器的安装</h3>
+<p>前提条件：Docker 要求 Ubuntu 系统的内核版本高于 3.10 ，通过 uname -r 命令查看你当前的内核版本。</p>
+<p>接下来就是在linux终端敲命令了：</p>
+<p><strong>1.获取docker安装包</strong></p>
+<pre><code>wget -qO- https://get.docker.com/ | sh
+</code></pre>
+<p>完成后会有一段提示</p>
+<blockquote>
+<p>If you would like to use Docker as a non-root user, you should now consider</p>
+<p>adding your user to the &quot;docker&quot; group with something like:</p>
+<p>sudo usermod -aG docker runoob</p>
+<p>Remember that you will have to log out and back in for this to take effect!</p>
+</blockquote>
+<p>一般嫌麻烦的话，以后执行docker命令都在root下进行就可以了</p>
+<p><strong>2.运行docker容器</strong></p>
+<pre><code>sudo service docker start
+</code></pre>
+<p><strong>3.测试hello-world程序</strong></p>
+<pre><code>docker run hello-world
+</code></pre>
+<p>第一次应该会失败，因为容器里还没有这个项目，所以docker会去下载，第二次运行就可以了。</p>
+<h3 id="三-模型的部署">三、模型的部署</h3>
+<p><strong>1.拉取带tensorflow serving的docker镜像</strong></p>
+<pre><code>docker pull tensorflow/serving 
+</code></pre>
+<p><strong>2.先来测试一下官方例子</strong></p>
+<pre><code>cd /root/software/
+git clone https://github.com/tensorflow/serving
+</code></pre>
+<p>将GitHub上的TensorFlow-serving拷贝下来，里面已经有一些模型，我们通过部署一个简单的模型上docker来观察结果</p>
+<pre><code>docker run -p 8501:8501 \
+  --mount type=bind,\
+source=/root/software/serving/tensorflow_serving/servables/tensorflow/testdata/saved_model_half_plus_two_cpu,\
+target=/models/half_plus_two \
+  -e MODEL_NAME=half_plus_two -t tensorflow/serving &amp;
+</code></pre>
+<p>运行成功后，我们写一个Python的代码测试</p>
+<pre><code class="language-python">import requests
+import json
+pdata={&quot;instances&quot;:[1,2,3]}
+param=json.dumps(pdata)
+res=requests.post('http://localhost:8501/v1/models/half_plus_two:predict',data=param)
+print(res.text)
+</code></pre>
+<p>可以看到res返回的结果，对应的是我们输入的1,2,3，之后我们就利用这种方式传递图片或其他数据过去</p>
+<pre><code>{
+    &quot;predictions&quot;: [2.5, 3.0, 3.5
+    ]
+}
+</code></pre>
+<blockquote>
+<p>结果分析：</p>
+<p>启动docker的时候，开启了8501端口，后面url通过该端口进行访问</p>
+<p>参数source表示你模型存放的文件夹，如果你去找这个文件夹，你会发现里面模型存放的格式有些特别，后面我们<strong>要部署模型时也需要先转为这种类型</strong></p>
+<p>model_name是docker上模型的名称，在url上也可以看到</p>
+<p>target是存放在docker上的路径</p>
+<p>下面就开始部署我们自己的模型了</p>
+</blockquote>
+<h3 id="4部署自己模型">4.部署自己模型</h3>
+<p>刚才第三步说过，要将模型导出为特殊的类型（有一个variables文件夹，同目录下一个pb模型，这个pb模型和之前的还不大一样）。</p>
+<p>首先需要我们训练完模型后一个正常的checkpoint，转换的方法可以参考下面的做法</p>
+<pre><code class="language-python">import tensorflow as tf
+import numpy as np
+
+x = tf.placeholder(tf.float32, name='input_x')
+feed = np.random.rand(100)
+y = x + 1
+
+w = tf.Variable(0.)
+b = tf.Variable(0.)
+
+y_ = tf.add(tf.multiply(w, x), b)
+
+loss = tf.reduce_mean(tf.square(y-y_))
+
+optimizer = tf.train.GradientDescentOptimizer(0.2)
+train = optimizer.minimize(loss)
+
+init = tf.global_variables_initializer()
+
+saver = tf.train.Saver()
+
+with tf.Session() as sess:
+    sess.run(init)
+    for i in range(200):
+        sess.run(train, feed_dict={x: feed})
+        if i % 5 == 0:
+            print(i, sess.run([w,b]))
+
+    saver.save(sess, './linear/linear.ckpt')
+
+with tf.Session() as sess2:
+    sess2.run(init)
+    saver.restore(sess2, './linear/linear.ckpt')
+
+    # 将训练好的模型保存在modelName下，版本为1，当然你的版本可以随便写
+    builder = tf.saved_model.builder.SavedModelBuilder(&quot;./modelName/1&quot;)
+
+    inputs = {
+        # 注意，这里是你预测模型的时候需要传的参数，调用模型的时候，传参必须和这里一致
+        # 这里的input_x就是模型里面定义的输入placeholder
+        &quot;input_x&quot;: tf.saved_model.utils.build_tensor_info(x)
+    }
+    outputs = {
+        &quot;output_y&quot;: tf.saved_model.utils.build_tensor_info(y),
+    }
+    prediction_signature = tf.saved_model.signature_def_utils.build_signature_def(
+        inputs=inputs,
+        outputs=outputs,
+        method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME
+    )
+
+    builder.add_meta_graph_and_variables(
+        sess2,
+        [tf.saved_model.tag_constants.SERVING],
+        {tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY: prediction_signature}
+    )
+    builder.save()
+</code></pre>
+<p>之后仿照样例模型，用docker运行这个模型就可以了，端口号、路径和模型名称什么的自定义即可，不冲突就行。</p>
+<pre><code>docker run -p 8502:8501 \
+  --mount type=bind,\source=/root/software/serving/tensorflow_serving/servables/tensorflow/testdata/face/face2,\target=/models/face2 \
+  -e MODEL_NAME=face2 -t tensorflow/serving &amp;
+</code></pre>
+<p>一段测试代码，跟上面的有一点类似，具体什么参数看自己的模型</p>
+<pre><code class="language-python">import requests
+import numpy as np
+import json
+# json格式序列调整
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+feature=np.array(range(128))
+param = {
+	&quot;instances&quot;:[
+		#每一个大括号是一次请求，里面是每次请求的参数
+              {
+		&quot;in&quot;:feature
+	      }
+	]
+}
+param = json.dumps(param, cls=NumpyEncoder)
+
+res = requests.post(&quot;http://localhost:8502/v1/models/face2:predict&quot;, data=param)
+# 根据自己设定的返回数据读取
+# softmax = json.loads(res2.text)[&quot;predictions&quot;][0]
+</code></pre>
+<p>至此，大功告成。</p>
+<blockquote>
+<p>PS：如果有多个模型需要部署，只需要修改本地端口号即可，不需要修改docker的端口号。（就是docker run命令的时候，只改第一个8501，不需要改第二个8501）</p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/k-means算法/" class="post-title gt-a-link">
+                    k-means算法
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

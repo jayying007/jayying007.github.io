@@ -1,0 +1,353 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>正式记录语雀第一篇文章 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    正式记录语雀第一篇文章
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-02-17 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/dRHpBmefCWG/" class="post-tags">
+                            # Hexo
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/3IFcahSsrRCe/" class="post-tags">
+                            # 搭建博客
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="前言">前言</h3>
+<p>这个标题可能有点误导，因为我从 2020 年就开始用语雀了。<br>
+这里指的其实是用语雀在<a href="https://www.zhuangjieying.com">我的博客</a>发布文章。</p>
+<p>2021 年白嫖一台服务器之后，就在上面搭建了个人博客，也发了一些文章。这里写文章需要使用 Markdown 语法，当时用的是 Typora+PicGo 组合，其实也还不错。<br>
+不过自建的 Hexo 博客其实特性并没有语雀那么多，就编辑体验而言，也是语雀优一些。另外你也需要同时维护博客和语雀两套系统。<br>
+综合这些因素，后面我的文章主要输出都在语雀上。2022 年我的个人博客基本没有产出了。</p>
+<p>另外，虽然语雀上面的文章也是公开的，但是猜测是因为反爬策略，搜索引擎上也找不到文章。<br>
+于是有了需求：<strong>在语雀上面编辑文章，然后自动发布到个人博客上</strong>。</p>
+<h3 id="开搞吧">开搞吧 🔨</h3>
+<p>用流程图来表示，大概如图所示<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fi_BM5OTLlEvBjTTj0dDSYhREna_.png" alt="" loading="lazy"></p>
+<p>在语雀上写完文章后，通过 WebHook 的方式通知到博客服务器；<br>
+服务器通过语雀 Token，访问其开放 API 读取文章；<br>
+通过 hexo 命令重新生成静态网站、部署。</p>
+<p>WebHook 可以在知识库设置里面选择<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fu0FNdGOtQeSeYBFKZhqfuelIJla.png" alt="" loading="lazy"></p>
+<p>服务器的话，其实我们只是想收到 Push 通知，然后调用脚本执行相关命令。<br>
+这里选择了最简单的 Nodejs 搭建服务器，代码如下</p>
+<pre><code class="language-javascript">//导入第三方模块：express，创建基于Node.js的Web服务器
+let express = require(&quot;express&quot;);
+const { exec } = require(&quot;child_process&quot;);
+
+//调用第三方模块提供的功能
+let server = express();
+//运行Web服务器监听特定的端口
+let port = 5050;
+
+server.listen(port, function (req, rsp) {
+  console.log(&quot;服务器启动成功，正在监听端口：&quot;, port);
+});
+
+var isRuningScript = false;
+server.post(&quot;/yuque/xxx&quot;, function (req, res) {
+  console.log(&quot;receive notify from yuque&quot;);
+  if (isRuningScript) {
+    console.log(&quot;is running&quot;);
+    return;
+  }
+  isRuningScript = true;
+
+  exec(&quot;xxx.sh&quot;, (err, stdout, stderr) =&gt; {
+    // console.log(`stdout: ${stdout}`);
+    // console.log(`stderr: ${stderr}`);
+    isRuningScript = false;
+    if (err) {
+      console.log(&quot;fail to execute shell&quot;);
+      return;
+    }
+    console.log(&quot;website is redeploy&quot;);
+  });
+});
+</code></pre>
+<p>然后在后台运行</p>
+<pre><code class="language-shell">node main.js &gt;log.txt 2&gt;&amp;1 &amp;
+</code></pre>
+<p>脚本的逻辑分为两部分：<strong>拉取语雀文章</strong>、<strong>重新部署 hexo</strong>。<br>
+拉取语雀文章，这里可以使用现有轮子<a href="https://github.com/x-cold/yuque-hexo">yuque-hexo</a>。<br>
+这样我们的脚本就大概如下</p>
+<pre><code class="language-shell">YUQUE_TOKEN=xxx yuque-hexo sync
+hexo clean
+hexo generate
+hexo deploy
+</code></pre>
+<h3 id="进一步">进一步 ❓</h3>
+<p>上面已经解决了语雀发布文章，自动同步个人博客。不过观察上面的流程，你会发现我们把 Hexo 整个文件夹都放到服务器上面了。如果我想换个博客主题或者调整下配置，就只能到服务器上面改了。<br>
+这显然很不方便，实际上，为了知道某个配置是否调整合适，你还是需要本地运行看一遍。<br>
+于是需求又来了：<strong>本地修改配置，提交 Commit 后能自动更新博客样式</strong>。</p>
+<p>整个流程如下：<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FlcGTZH-eIY1razxiJzakbv0v4Yb.png" alt="" loading="lazy"></p>
+<p>Github 上面也有 WebHook，服务器沿用 Nodejs 的代码即可，和语雀很相似，给个新接口区分下</p>
+<pre><code class="language-javascript">server.post(&quot;/github/yyy&quot;, function (req, res) {
+  console.log(&quot;receive notify from github&quot;);
+  if (isRuningScript) {
+    console.log(&quot;is running&quot;);
+    return;
+  }
+  isRuningScript = true;
+
+  exec(&quot;yyy.sh&quot;, (err, stdout, stderr) =&gt; {
+    // console.log(`stdout: ${stdout}`);
+    // console.log(`stderr: ${stderr}`);
+    isRuningScript = false;
+    if (err) {
+      console.log(&quot;fail to execute shell&quot;);
+      return;
+    }
+    console.log(&quot;website is redeploy&quot;);
+  });
+});
+</code></pre>
+<p>这里因为不存在语雀文档的更新，所以脚本只是更新代码、重新部署 Hexo。</p>
+<pre><code class="language-shell">npm update
+git fetch origin master
+git reset --hard origin/master
+git submodule update
+hexo clean
+hexo generate
+hexo deploy
+</code></pre>
+<h3 id="这样就好了吗">这样就好了吗</h3>
+<p>要知道，我原先 Hexo 上面有好些文章的，但是使用 yuque-hexo 插件之后，它把我的文章全删掉了，替换为语雀上的文章。<br>
+但我还想保留原先 Hexo 上的文章，一种做法是修改 yuque-hexo 的代码，把那段删除的逻辑给去掉，实际上我已经提了<a href="https://github.com/x-cold/yuque-hexo/issues/135">· Issue #135 · x-cold/yuque-hexo</a></p>
+<p>前端的逻辑我不太熟。实际上，还有一种方法不用改 yuque-hexo 代码就能实现上面的效果：<br>
+在提交 Hexo 代码的时候，将其中的文章 copy 到某个路径，也做提交。然后博客服务器拉取代码时，就能把这部分也拉下来。后面执行 yuque-hexo 清理了原路径后，把 copy 的那份再挪回去就可以了。</p>
+<p>为了实现这个逻辑，大概需要如下修改：<br>
+利用 Git hooks，在 pre-commit 和 commit-msg 中加上以下代码</p>
+<pre><code class="language-shell">origin_post_dir=source/_posts_origin
+
+if [ ! -d &quot;$origin_post_dir&quot; ]; then
+        mkdir $origin_post_dir
+fi
+
+exec cp source/_posts/* $origin_post_dir
+</code></pre>
+<p>在 post-commit 加上以下代码</p>
+<pre><code class="language-shell">git add source/_posts_origin
+git commit --no-verify -m &quot;auto commit _posts_origin&quot;
+</code></pre>
+<p>之后拉取语雀的脚本做下更新</p>
+<pre><code class="language-shell">YUQUE_TOKEN=xxx yuque-hexo sync
+cp source/_posts_origin/* source/_posts
+hexo clean
+hexo generate
+hexo deploy
+</code></pre>
+<p>这样做完就很完美了<sup>_</sup></p>
+<h3 id="扩展">扩展</h3>
+<p>在网上查找资料的时候，发现大多数都是用的 Github Action、Github Pages 等自动化部署方案，毕竟只有我的服务器是白嫖的 🐶。如果是这种需求的，可以参考这些：<br>
+<a href="https://www.yuque.com/songxingguo/devhints/gwpsg4dq6tp27z3s?view=doc_embed">如何将语雀文章发布到 Hexo 博客</a><br>
+<a href="https://www.zhwei.cn/hexo-github-actions-yuque/">Hexo：语雀云端写作 Github Actions 持续集成 | HONGWEI</a></p>
+<p>另一个点是，如果你并不追求及时同步语雀的文章到博客上，你完全不需要 WebHook，不需要搭建 Nodejs 服务器。<br>
+只需要在服务器上写一个定时脚本，定期拉取语雀和拉取代码即可。</p>
+<h3 id="其他资料">其他资料</h3>
+<p>语雀的开放 API 文档<a href="https://www.yuque.com/yuque/developer?view=doc_embed">开发者文档</a><br>
+我的 Hexo Next 主题 <a href="https://github.com/jayying007/hexo-theme-next">https://github.com/jayying007/hexo-theme-next</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/LUXfkV4cdh/" class="post-title gt-a-link">
+                    神秘的RSS
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

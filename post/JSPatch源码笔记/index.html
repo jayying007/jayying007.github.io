@@ -1,0 +1,491 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>JSPatch源码笔记 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    JSPatch源码笔记
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-03-06 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/Jyshrk607hz/" class="post-tags">
+                            # 源码
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/XcM7rkX9zj0/" class="post-tags">
+                            # JSPatch
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a href="https://github.com/bang590/JSPatch">https://github.com/bang590/JSPatch</a></p>
+<blockquote>
+<p>作者居然是校友，哈哈哈</p>
+</blockquote>
+<p>其实在 Github 的 Wiki 上，已经有很详细的原理说明了，所以这里纯粹作为我个人阅读源码的笔记。</p>
+<hr>
+<p>这个项目对于学习 ObjC runtime、JavaScriptCore 的应用都是不错的选择，建议参考文档用 Safari 调试下 JS 代码。</p>
+<h2 id="defineclass">defineClass</h2>
+<h3 id="方法替换">方法替换</h3>
+<p>如果是替换方法，会给原 Class 加入新的 Method，selector 为原方法名称加上 ORIG 前缀，IMP 则指向原方法。<br>
+原方法的 IMP 则修改为_objc_msgForward，即强制走转发流程。</p>
+<pre><code class="language-objectivec">IMP msgForwardIMP = _objc_msgForward;
+
+if (class_respondsToSelector(cls, selector)) {
+    NSString *originalSelectorName = [NSString stringWithFormat:@&quot;ORIG%@&quot;, selectorName];
+    SEL originalSelector = NSSelectorFromString(originalSelectorName);
+    if(!class_respondsToSelector(cls, originalSelector)) {
+        class_addMethod(cls, originalSelector, originalImp, typeDescription);
+    }
+}
+
+_JSOverideMethods[cls][JPSelectorName] = function;
+
+class_replaceMethod(cls, selector, msgForwardIMP, typeDescription);
+</code></pre>
+<p>这个过程同时将 JS 函数记录下来。（_JSOverideMethods）<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Fkk-2dhUiKzbFYNujFeUgvcwzA3n.png" alt="" loading="lazy"></p>
+<p>在 JS 中，也会将该方法记下来（_ocCls）<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//Ft9icU1ja2evghgGEyJ07K4b73CW.png" alt="" loading="lazy"></p>
+<pre><code class="language-javascript">var _setupJSMethod = function(className, methods, isInst, realClsName) {
+	for (var name in methods) {
+		var key = isInst ? 'instMethods': 'clsMethods',
+			func = methods[name]
+		_ocCls[className][key][name] = _wrapLocalMethod(name, func, realClsName)
+	}
+}
+...
+...
+	var ret = _OC_defineClass(declaration, newInstMethods, newClsMethods)
+var className = ret['cls']
+var superCls = ret['superCls']
+
+_ocCls[className] = {
+	instMethods: {},
+	clsMethods: {},
+}
+
+_setupJSMethod(className, instMethods, 1, realClsName)
+_setupJSMethod(className, clsMethods, 0, realClsName)
+
+return require(className)
+</code></pre>
+<p>最后的 require 相当于在 JS 的全局变量中声明了这个变量，后续 JS 代码调用就不会找不到该变量了。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FnyuC3omrnGUdPS2rgGw61l901iZ.png" alt="" loading="lazy"></p>
+<h3 id="方法添加">方法添加</h3>
+<p>方法添加其实跟上面的流程很像，最后也是利用 class_replaceMethod 这个函数进行方法插入。只不过没有原方法，所以其 IMP 直接就是_objc_msgForward</p>
+<h2 id="运行">运行</h2>
+<p>在一些小型 patch 上，defineClass 基本就能解决问题了。在 JS 解析过程中，无非就是将这些类、方法的信息做一下存储记录。<br>
+直到 App 真正运行，执行到了被替换的方法，然后来到了 JPForwardInvocation 这个函数。</p>
+<pre><code class="language-objectivec">static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, NSInvocation *invocation);
+</code></pre>
+<p>这里从 NSInvocation 能拿到返回值、调用者、调用方法名、调用参数。<br>
+结合上面保存的信息，就能找到对应的 JS 函数，执行该函数。</p>
+<p>JS 函数里面，因为在解析 JS 脚本之前，所有的方法调用已经被转为__c()这种方法调用</p>
+<pre><code class="language-javascript">handleBtn: function(sender) {
+	var tableViewCtrl = JPTableViewController.__c(&quot;alloc&quot;)().__c(&quot;init&quot;)()
+	self.__c(&quot;navigationController&quot;)().__c(&quot;pushViewController_animated&quot;)(tableViewCtrl, YES)
+}
+</code></pre>
+<pre><code class="language-javascript">__c: function(methodName) {
+	var slf = this
+
+	if (slf instanceof Boolean) {
+		return function() {
+			return false
+		}
+	}
+	if (slf[methodName]) {
+		return slf[methodName].bind(slf);
+	}
+
+	if (!slf.__obj &amp;&amp; !slf.__clsName) {
+		throw new Error(slf + '.' + methodName + ' is undefined')
+	}
+	if (slf.__isSuper &amp;&amp; slf.__clsName) {
+		slf.__clsName = _OC_superClsName(slf.__obj.__realClsName ? slf.__obj.__realClsName: slf.__clsName);
+	}
+	var clsName = slf.__clsName
+	if (clsName &amp;&amp; _ocCls[clsName]) {
+		var methodType = slf.__obj ? 'instMethods': 'clsMethods'
+		if (_ocCls[clsName][methodType][methodName]) {
+			slf.__isSuper = 0;
+			return _ocCls[clsName][methodType][methodName].bind(slf)
+		}
+	}
+
+	return function(){
+		var args = Array.prototype.slice.call(arguments)
+		return _methodFunc(slf.__obj, slf.__clsName, methodName, args, slf.__isSuper)
+	}
+}
+</code></pre>
+<p>__c 方法先在之前的记录列表里面查找是否有该 JS Function，如果有的话则返回对应的 JS Function。<br>
+如果没有，则调用_methodFunc。</p>
+<pre><code class="language-javascript">var _methodFunc = function (
+  instance,
+  clsName,
+  methodName,
+  args,
+  isSuper,
+  isPerformSelector
+) {
+  var selectorName = methodName;
+  if (!isPerformSelector) {
+    methodName = methodName.replace(/__/g, &quot;-&quot;);
+    selectorName = methodName.replace(/_/g, &quot;:&quot;).replace(/-/g, &quot;_&quot;);
+    var marchArr = selectorName.match(/:/g);
+    var numOfArgs = marchArr ? marchArr.length : 0;
+    if (args.length &gt; numOfArgs) {
+      selectorName += &quot;:&quot;;
+    }
+  }
+  var ret = instance
+    ? _OC_callI(instance, selectorName, args, isSuper)
+    : _OC_callC(clsName, selectorName, args);
+  return _formatOCToJS(ret);
+};
+</code></pre>
+<p>_methodFunc 也是一个很关键的方法，它实现了 JS 调用任意 OC 方法，不难猜到，_OC_callI 和_OC_callC 的实现逻辑大概就是：根据 clsName 和 selector，找到对应的 IMP，然后执行。</p>
+<p>到这里，JSPatch 的核心原理已经讲完了。代码不算多，但实现很精妙。</p>
+<h2 id="细节部分">细节部分</h2>
+<h3 id="super">super</h3>
+<p>以 viewDidLoad 为例</p>
+<pre><code class="language-javascript">viewDidLoad: function() {
+  self.__c(&quot;super&quot;)().__c(&quot;viewDidLoad&quot;)()
+}
+</code></pre>
+<p>JS 上为 Object 定义了 super 方法，可以简单理解为打了一个__isSuper 的标记。</p>
+<pre><code class="language-javascript">super: function() {
+  var slf = this
+  if (slf.__obj) {
+    slf.__obj.__realClsName = slf.__realClsName;
+  }
+  return {__obj: slf.__obj, __clsName: slf.__clsName, __isSuper: 1}
+}
+</code></pre>
+<p>之后执行 viewDidLoad 方法时，将该信息传递给了 callSector</p>
+<pre><code class="language-objectivec">if (isSuper) {
+    NSString *superSelectorName = [NSString stringWithFormat:@&quot;SUPER_%@&quot;, selectorName];
+    SEL superSelector = NSSelectorFromString(superSelectorName);
+
+    Class superCls;
+    if (realClsName.length) {
+        Class defineClass = NSClassFromString(realClsName);
+        superCls = defineClass ? [defineClass superclass] : [cls superclass];
+    } else {
+        superCls = [cls superclass];
+    }
+
+    Method superMethod = class_getInstanceMethod(superCls, selector);
+    IMP superIMP = method_getImplementation(superMethod);
+
+    class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
+
+    NSString *JPSelectorName = [NSString stringWithFormat:@&quot;_JP%@&quot;, selectorName];
+    JSValue *overideFunction = _JSOverideMethods[superCls][JPSelectorName];
+    if (overideFunction) {
+        overrideMethod(cls, superSelectorName, overideFunction, NO, NULL);
+    }
+
+    selector = superSelector;
+    superClassName = NSStringFromClass(superCls);
+}
+</code></pre>
+<p>这里查找了 superclass，以及对应 selector 的 IMP 实现，并将其以前缀 SUPER_的形式加入当前类的方法列表。</p>
+<h3 id="struct">struct</h3>
+<p>JSValue 原生支持了几种常见结构体的转换</p>
+<pre><code class="language-objectivec">@interface JSValue (StructSupport)
+/*!
+@method
+@abstract Convert a JSValue to a CGPoint.
+@discussion Reads the properties named &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; from
+ this JSValue, and converts the results to double.
+@result The new CGPoint.
+*/
+- (CGPoint)toPoint;
+
+/*!
+@method
+@abstract Convert a JSValue to an NSRange.
+@discussion Reads the properties named &lt;code&gt;location&lt;/code&gt; and
+ &lt;code&gt;length&lt;/code&gt; from this JSValue and converts the results to double.
+@result The new NSRange.
+*/
+- (NSRange)toRange;
+
+/*!
+@method
+@abstract Convert a JSValue to a CGRect.
+@discussion Reads the properties named &lt;code&gt;x&lt;/code&gt;, &lt;code&gt;y&lt;/code&gt;,
+ &lt;code&gt;width&lt;/code&gt;, and &lt;code&gt;height&lt;/code&gt; from this JSValue and converts the results to double.
+@result The new CGRect.
+*/
+- (CGRect)toRect;
+
+/*!
+@method
+@abstract Convert a JSValue to a CGSize.
+@discussion Reads the properties named &lt;code&gt;width&lt;/code&gt; and
+ &lt;code&gt;height&lt;/code&gt; from this JSValue and converts the results to double.
+@result The new CGSize.
+*/
+- (CGSize)toSize;
+@end
+</code></pre>
+<p>不过 JSPatch 支持传递自定义的结构体，不过这需要在 JSExtension 中提前定义好结构体的信息。<br>
+其实 JSPatch 传过来的参数就是一个 NSDictionary，而结构体无非就是 malloc 一段内存块，然后根据结构信息在不同的地址写入数值。</p>
+<pre><code class="language-objectivec">case '{': {
+    NSString *typeString = extractStructName([NSString stringWithUTF8String:argumentType]);
+    JSValue *val = arguments[i-2];
+    #define JP_CALL_ARG_STRUCT(_type, _methodName) \
+    if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
+        _type value = [val _methodName];  \
+        [invocation setArgument:&amp;value atIndex:i];  \
+        break; \
+    }
+    JP_CALL_ARG_STRUCT(CGRect, toRect)
+    JP_CALL_ARG_STRUCT(CGPoint, toPoint)
+    JP_CALL_ARG_STRUCT(CGSize, toSize)
+    JP_CALL_ARG_STRUCT(NSRange, toRange)
+    @synchronized (_context) {
+        NSDictionary *structDefine = _registeredStruct[typeString];
+        if (structDefine) {
+            size_t size = sizeOfStructTypes(structDefine[@&quot;types&quot;]);
+            void *ret = malloc(size);
+            getStructDataWithDict(ret, valObj, structDefine);
+            [invocation setArgument:ret atIndex:i];
+            free(ret);
+            break;
+        }
+    }
+
+    break;
+}
+</code></pre>
+<p>自定义结构体的赋值可以查看 getStructDataWithDict 方法。</p>
+<h3 id="c-function">C Function</h3>
+<p>这个用了 ffi 库。<br>
+大致思路就是通过函数名，利用 dlsym 找到对应 C 函数的函数地址，然后就能执行了。</p>
+<h3 id="block">block</h3>
+<p>这个也是用了 ffi 库，但是调试时 block 调用错误，issue 也有不少反馈，可能跟 iOS 的 block 结构改变有关？<br>
+不过也不影响原理的理解</p>
+<pre><code class="language-javascript">global.block = function (args, cb) {
+  var that = this;
+  var slf = global.self;
+  if (args instanceof Function) {
+    cb = args;
+    args = &quot;&quot;;
+  }
+  var callback = function () {
+    var args = Array.prototype.slice.call(arguments);
+    global.self = slf;
+    return cb.apply(that, _formatOCToJS(args));
+  };
+  var ret = { args: args, cb: callback, argCount: cb.length, __isBlock: 1 };
+  if (global.__genBlock) {
+    ret[&quot;blockObj&quot;] = global.__genBlock(args, cb);
+  }
+  return ret;
+};
+</code></pre>
+<p>JS 这里给 block 打上标记，同时结合 JPBlock 创建了一个 BlockWrapper 传递给 OC。<br>
+这个 BlockWrapper 包含了函数的签名信息，以及对应的 JS Function。所以调用原 block，可以理解为创建一个新的 block，这个 block 里面再利用[JSValue callWithArgument:]调用到原 block</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/[转] iOS APP可执行文件的组成/" class="post-title gt-a-link">
+                    [转] iOS APP可执行文件的组成
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

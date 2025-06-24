@@ -1,0 +1,276 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>NSTimer的一些理解&amp;RunLoop简介 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    NSTimer的一些理解&amp;RunLoop简介
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-09-04 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/bFG9yWXLLRK/" class="post-tags">
+                            # 定时
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/UIsrms7AfLf/" class="post-tags">
+                            # RunLoop
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="runloop">RunLoop</h3>
+<p>The purpose of a run loop is to keep your thread busy when there is work to do and put your thread to sleep when there is none.</p>
+<p>The app frameworks automatically set up and run the run loop on the main thread as part of the application startup process.</p>
+<figure data-type="image" tabindex="1"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/runloop.jpg" alt="Structure of a run loop and its sources" loading="lazy"></figure>
+<hr>
+<figure data-type="image" tabindex="2"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/custominputsource.jpg" alt="Operating a custom input source" loading="lazy"></figure>
+<p>You must be sure to add one or more input sources, timers, or run-loop observers to any modes you create for them to be useful.</p>
+<p>错误做法：</p>
+<pre><code class="language-objective-c">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+	[runLoop run];
+	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) {
+		NSLog(@&quot;in other thread.&quot;);
+	}];
+});
+</code></pre>
+<p>正确做法：</p>
+<pre><code class="language-objective-c">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+	[NSTimer scheduledTimerWithTimeInterval:3 repeats:YES block:^(NSTimer * _Nonnull timer) {
+		NSLog(@&quot;in other thread.&quot;);
+	}];
+  [runLoop run];
+});
+</code></pre>
+<p>RunLoop有多种Modes，在某一时刻只会运行在一种Mode下，处理这个Mode下对应的sources。</p>
+<p>一般情况下，项目中都不需要我们去使用RunLoop，因为主线程的已经默认开启了。子线程的话，除非你需要Timer、performSelector这类需要运行在RunLoop上的东西时才开启。</p>
+<h3 id="nstimer">NSTimer</h3>
+<p>从RunLoop的特性我们知道，一般情况下NSTimer运行在NSDefaultRunLoopMode模式，当scrollview滑动时，RunLoop是运行在UITrackingRunLoopMode模式下的，此时NSTimer就不工作了，到了指定时间也不会触发事件。</p>
+<p>If a timer is not in the mode currently being monitored by the run loop, it does not fire until you run the run loop in one of the timer’s supported modes.</p>
+<p>NSTimer并不是实时的，如果当前RunLoop有任务在执行，Timer将等任务结束再处理。如果你是一个重复的Timer，在5秒、10秒、15秒这些时间点触发，第一次因为延迟而在7秒的时候才执行，那么下次执行时间还是10秒。</p>
+<p>If the firing time is delayed so much that it misses one or more of the scheduled firing times, the timer is fired only once for the missed time period.</p>
+<p>比如下面每隔十秒执行的Timer：</p>
+<p>49秒的时候delay，直到53秒执行；</p>
+<p>59秒的时候delay，直到08秒执行；</p>
+<p>39秒、49秒的时候delay，也只在56秒执行一次。</p>
+<figure data-type="image" tabindex="3"><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/image-20210904155650452.png" alt="image-20210904155650452" loading="lazy"></figure>
+<p>延迟后要不要执行，可以通过设置<code>tolerance</code>去做</p>
+<h4 id="注意点">注意点</h4>
+<blockquote>
+<p>Run loops maintain strong references to their timers, so you don’t have to maintain your own strong reference to a timer after you have added it to a run loop</p>
+</blockquote>
+<p>RunLoop强引用Timer，Timer强引用Target，所以Timer存在的话，Target就不会消亡。通过invalidate方法可以从RunLoop中移除Timer。不过如果你把invalidate写在target的dealloc里面，那就是<strong>循环引用</strong>了</p>
+<h4 id="关于后台运行">关于后台运行</h4>
+<p>理论上，app进入后台，短暂待一会就进入挂起状态。你可以在项目中设置一个重复的Timer去验证。</p>
+<p>所以问题是，如果你想在几个小时后（比如你的App是类似闹钟之类的东西）执行某些代码逻辑？</p>
+<p>这里有一些方法供参考：</p>
+<ol>
+<li>设置本地通知。通知是由IOS管理的，所以不用担心App被kill掉，只要时间一到，IOS就会触发通知</li>
+<li>类似于后台播放音乐、定位、VOIP这些（这些可能需要申请权限，而且滥用的话苹果审核估计也不通过），可以后台播放静音文件（伪装你在播放音乐，实际是做它用），这样你的App就能一直运行了。。</li>
+<li>如果不是要精确的时间的话，可以在下次App启动的时候去做个时间检查，过了时间点的就可以执行相关的逻辑。</li>
+</ol>
+<h3 id="参考资料">参考资料</h3>
+<p>https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1</p>
+<p>https://blog.csdn.net/totogo2010/article/details/107321490?spm=1001.2014.3001.5501</p>
+<p>https://www.jianshu.com/p/11fae16ab622</p>
+<p>https://developer.apple.com/documentation/foundation/nstimer</p>
+<p><a href="https://blog.csdn.net/totogo2010/article/details/8048652/">ios应用程序状态变迁</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/分享一道算法设计题/" class="post-title gt-a-link">
+                    分享一道算法设计题
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

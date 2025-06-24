@@ -1,0 +1,518 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>iOS 显示HDR组件 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    iOS 显示HDR组件
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2025-06-24 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/aji1gM3S6I/" class="post-tags">
+                            # HDR
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/DQXvbE-2VYP/" class="post-tags">
+                            # UI
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/8tQaAKVbVX/" class="post-tags">
+                            # iOS
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h2 id="概述">概述</h2>
+<p>在iOS中，我们可以显示HDR图片，播放HDR视频，但能不能显示HDR控件呢？</p>
+<p>比如文字、按钮、进度条这些。在系统相册中，播放HDR视频时，你会发现进度条也有HDR效果。</p>
+<h2 id="hdr图片">HDR图片</h2>
+<p>在此之前，我们先回顾一下显示HDR图片的方法。</p>
+<pre><code class="language-objective-c">NSString *imagePath = [[NSBundle mainBundle] pathForResource:@&quot;IMG_4167.HEIC&quot; ofType:nil];
+
+UIImage *image = [UIImageReader.defaultReader imageWithContentsOfFileURL:[NSURL fileURLWithPath:imagePath]];
+
+UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(60, 120, 120, 120)];
+imageView.image = image;
+imageView.preferredImageDynamicRange = UIImageDynamicRangeHigh;
+</code></pre>
+<p>那么，是不是用HDR图片生成UI控件就好了？</p>
+<p>理论上看起来是可行的，不过实际上文本要怎么处理？</p>
+<h2 id="hdr-控件">HDR 控件</h2>
+<p>经过一番搜查，在Github上发现了这个项目：<br>
+<a href="https://github.com/tsuzukihashi/EDR_Swift">GitHub - tsuzukihashi/EDR_Swift: I want to use EDR features easily.</a></p>
+<p>作者是用CoreImage的方式，生成了HDR的二维码和条形码，然后用MetalKit将其渲染到屏幕上。</p>
+<p>这种方法在一次WWDC的分享中有提及过：<br>
+<a href="https://developer.apple.com/videos/play/wwdc2022/10114/">Display EDR content with Core Image, Metal, and SwiftUI - WWDC22 - Videos - Apple Developer</a></p>
+<p>查看CoreImage的相关接口，发现了生成文本图片的方式。</p>
+<pre><code class="language-objective-c">@interface CIFilter (Builtins)
++ (CIFilter&lt;CITextImageGenerator&gt;*) textImageGeneratorFilter;
++ (CIFilter&lt;CIAttributedTextImageGenerator&gt;*) attributedTextImageGeneratorFilter;
+@end
+</code></pre>
+<p>但是这两个接口无法处理文本截断的场景，CoreImage没有宽度这些信息。<br>
+实际上，我们要的是CIImage，所以可以通过Core Graphics绘制文本为CGImage，再转换成CIImage就可以了。</p>
+<hr>
+<p>于是乎，渲染HDR Label便成为了可能。<br>
+可以仿照上面的项目实现，具体逻辑如下：</p>
+<pre><code class="language-objective-c">#import &lt;Foundation/Foundation.h&gt;
+#import &lt;MetalKit/MetalKit.h&gt;
+
+@interface MetalRender : NSObject &lt;MTKViewDelegate&gt;
+
+- (instancetype)initWithImageProvider:(CIImage * (^)(CGFloat contentScaleFactor, CGFloat headroom))imageProvider;
+
+@property (nonatomic) id&lt;MTLDevice&gt; device;
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &quot;MetalRender.h&quot;
+
+@interface MetalRender ()
+
+@property (nonatomic) id&lt;MTLCommandQueue&gt; commandQueue;
+@property (nonatomic) CIContext *renderContext;
+
+@property (nonatomic) CIImage * (^imageProvider)(CGFloat contentScaleFactor, CGFloat headroom);
+
+@end
+
+@implementation MetalRender
+
+- (instancetype)initWithImageProvider:(CIImage * (^)(CGFloat, CGFloat))imageProvider {
+	self = [super init];
+	if (self) {
+		self.imageProvider = imageProvider;
+		self.device = MTLCreateSystemDefaultDevice();
+		self.commandQueue = [self.device newCommandQueue];
+		self.renderContext = [CIContext
+		contextWithMTLCommandQueue:self.commandQueue
+		options:@{ kCIContextName : @&quot;MetalRender&quot;, kCIContextCacheIntermediates : @(YES), kCIContextAllowLowPower : @(YES) }];
+	}
+	return self;
+}
+
+- (void)drawInMTKView:(MTKView *)view {
+	// Create a new command buffer for each render pass to the current drawable.
+	id&lt;MTLCommandBuffer&gt; commandBuffer = [_commandQueue commandBuffer];
+	
+	id&lt;CAMetalDrawable&gt; drawable = view.currentDrawable;
+	if (drawable == nil) {
+		return;
+	}
+	CGSize drawSize = view.drawableSize;
+	CGFloat contentScaleFactor = view.contentScaleFactor;
+	
+	CIRenderDestination *destination = [[CIRenderDestination alloc] initWithWidth:drawSize.width
+																		   height:drawSize.height
+																	  pixelFormat:view.colorPixelFormat
+																	commandBuffer:commandBuffer
+															   mtlTextureProvider:^id&lt;MTLTexture&gt; {
+																   return drawable.texture;
+															   }];
+																	
+	if (@available(iOS 16.0, *)) {
+		CGFloat headroom = view.window.screen.currentEDRHeadroom;
+		CIImage *image = self.imageProvider(contentScaleFactor, headroom);
+		
+		CGRect iRect = [image extent];
+		CGRect backBounds = CGRectMake(0, 0, drawSize.width, drawSize.height);
+		CGFloat shiftX = round((backBounds.size.width + iRect.origin.x - iRect.size.width) * 0.5);
+		CGFloat shiftY = round((backBounds.size.height + iRect.origin.y - iRect.size.height) * 0.5);
+		image = [image imageByApplyingTransform:CGAffineTransformMakeTranslation(shiftX, shiftY)];
+		
+		[_renderContext startTaskToRender:image fromRect:backBounds toDestination:destination atPoint:CGPointZero error:nil];
+	}
+	
+	[commandBuffer presentDrawable:drawable];
+	[commandBuffer commit];
+}
+
+- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
+
+}
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &lt;MetalKit/MetalKit.h&gt;
+#import &quot;MetalRender.h&quot;
+
+@interface MetalView : MTKView
+
+- (instancetype)initWithFrame:(CGRect)frame render:(MetalRender *)render;
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &quot;MetalView.h&quot;
+
+@interface MetalView ()
+
+@property (nonatomic) MetalRender *render;
+
+@end
+
+@implementation MetalView
+
+- (instancetype)initWithFrame:(CGRect)frame render:(MetalRender *)render {
+	self = [super initWithFrame:frame device:render.device];
+	if (self) {
+		self.render = render;
+		
+		self.preferredFramesPerSecond = 10;
+		self.framebufferOnly = NO;
+		self.delegate = self.render;
+		self.backgroundColor = UIColor.clearColor;
+		
+		CAMetalLayer *layer = (CAMetalLayer *)self.layer;
+		if (@available(iOS 16.0, *)) {
+			layer.wantsExtendedDynamicRangeContent = YES;
+		}
+		layer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearSRGB);
+		self.colorPixelFormat = MTLPixelFormatRGBA16Float;
+	}
+	return self;
+}
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &lt;UIKit/UIKit.h&gt;
+
+@interface EDRLabel : UIView
+
+@property (nonatomic) NSString *text;
+
+- (void)applyStyleWithLabel:(UILabel *)label;
+
+@end
+</code></pre>
+<pre><code class="language-objective-c">#import &quot;EDRLabel.h&quot;
+#import &quot;MetalView.h&quot;
+#import &lt;CoreImage/CIFilterBuiltins.h&gt;
+
+@interface EDRLabel ()
+
+@property (nonatomic) MetalView *metalView;
+@property (nonatomic) CIImage *ciImage;
+
+@property (nonatomic) UIFont *font;
+@property (nonatomic) UIColor *textColor;
+@property (nonatomic) NSLineBreakMode lineBreakMode;
+@property (nonatomic) NSInteger numberOfLines;
+
+@end
+
+@implementation EDRLabel
+
+- (instancetype)initWithFrame:(CGRect)frame {
+	self = [super initWithFrame:frame];
+	if (self) {
+		__weak typeof(self) weakSelf = self;
+		MetalRender *render = [[MetalRender alloc] initWithImageProvider:^CIImage *(CGFloat contentScaleFactor, CGFloat headroom) {
+			__strong typeof(self) strongSelf = weakSelf;
+			CIImage *image = strongSelf.ciImage;
+			CGFloat red, green, blue, alpha;
+			[strongSelf.textColor getRed:&amp;red green:&amp;green blue:&amp;blue alpha:&amp;alpha];
+			
+			CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearSRGB);
+			CIColor *maxFillColor = [CIColor colorWithRed:headroom * red
+													green:headroom * green
+													 blue:headroom * blue
+													alpha:alpha
+											   colorSpace:colorSpace];
+			
+			CIImage *fillImage = [CIImage imageWithColor:maxFillColor];
+			CIFilter&lt;CIBlendWithMask&gt; *maskFilter = [CIFilter blendWithAlphaMaskFilter];
+			maskFilter.maskImage = image;
+			maskFilter.inputImage = fillImage;
+			
+			return [maskFilter.outputImage
+			imageByCroppingToRect:CGRectMake(0, 0, strongSelf.width * contentScaleFactor, strongSelf.height * contentScaleFactor)];
+		}];
+		
+		self.metalView = [[MetalView alloc] initWithFrame:frame render:render];
+		[self addSubview:self.metalView];
+		self.userInteractionEnabled = NO;
+	}
+	return self;
+}
+
+- (void)applyStyleWithLabel:(UILabel *)label {
+	self.text = label.text;
+	self.font = label.font;
+	self.textColor = label.textColor;
+	self.lineBreakMode = label.lineBreakMode;
+	self.numberOfLines = label.numberOfLines;
+}
+
+- (void)layoutSubviews {
+	[super layoutSubviews];
+
+	self.metalView.frame = self.bounds;
+}
+
+- (void)setFrame:(CGRect)frame {
+	BOOL sizeChange = self.bounds.size.width != frame.size.width || self.bounds.size.height != frame.size.height;
+	if (sizeChange) {
+		_ciImage = nil;
+	}
+	
+	[super setFrame:frame];
+}
+
+- (void)setText:(NSString *)text {
+	_text = text;
+	_ciImage = nil;
+}
+
+- (CIImage *)ciImage {
+	if (_ciImage == nil) {
+		UILabel *label = [[UILabel alloc] initWithFrame:self.bounds];
+		label.text = self.text;
+		label.font = self.font;
+		label.lineBreakMode = self.lineBreakMode;
+		label.numberOfLines = self.numberOfLines;
+		
+		UIGraphicsImageRenderer *render = [[UIGraphicsImageRenderer alloc] initWithBounds:label.bounds];
+		UIImage *image = [render imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
+			[label.layer renderInContext:rendererContext.CGContext];
+		}];
+		
+		_ciImage = [[CIImage alloc] initWithImage:image];
+	}
+	return _ciImage;
+}
+
+@end
+</code></pre>
+<p>最难的文本解决了，那实现HDR的UILabel、UIButton、UISlider就不是太复杂的事情了。这里不再赘述。</p>
+<h2 id="hdr-color">HDR Color</h2>
+<p>上面这种方式还是挺曲折的，而iOS 26迎来了新接口，可以直接把UIColor设置为HDR模式，这样对于UILabel、UIButton的接入就更简单了。</p>
+<p><a href="https://developer.apple.com/videos/play/wwdc2025/243/">What’s new in UIKit - WWDC25 - Videos - Apple Developer</a></p>
+<p>现阶段Xcode还没有iOS 26的SDK，想要尝鲜的可以通过runtime的形式调用到。</p>
+<pre><code class="language-objective-c">- (UIColor *)hdrColorWithHeadroom:(CGFloat)headroom {
+	SEL sel = NSSelectorFromString(@&quot;colorWithRed:green:blue:alpha:linearExposure:&quot;);
+	if ([UIColor.class respondsToSelector:sel] == NO) {
+		return self;
+	}
+	
+	CGFloat red = 1;
+	CGFloat green = 1;
+	CGFloat blue = 1;
+	CGFloat alpha = 1;
+	CGFloat linearExposure = headroom;
+	[self getRed:&amp;red green:&amp;green blue:&amp;blue alpha:&amp;alpha];
+	
+	NSMethodSignature *signature = [UIColor methodSignatureForSelector:sel];
+	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+	[invocation setTarget:UIColor.class];
+	[invocation setSelector:sel];
+	[invocation setArgument:&amp;red atIndex:2];
+	[invocation setArgument:&amp;green atIndex:3];
+	[invocation setArgument:&amp;blue atIndex:4];
+	[invocation setArgument:&amp;alpha atIndex:5];
+	[invocation setArgument:&amp;linearExposure atIndex:6];
+	[invocation invoke];
+	
+	UIColor *__unsafe_unretained color = nil;
+	[invocation getReturnValue:&amp;color];
+	
+	return color;
+}
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/跨平台网络框架mars浅析/" class="post-title gt-a-link">
+                    跨平台网络框架mars浅析
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

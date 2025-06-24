@@ -1,0 +1,797 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>AFNetworking源码分析 | 影帝的网络日志</title>
+
+<link rel="shortcut icon" href="https://jayying007.github.io/favicon.ico?v=1750777237119">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://jayying007.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/9.12.0/languages//dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-T5DQK64QPQ-G"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-T5DQK64QPQ-G');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+    
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            影帝的网络日志
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/post/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1750777237119"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    AFNetworking源码分析
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2023-05-07 ·
+                    </time>
+                    
+                        <a href="https://jayying007.github.io/tag/Jyshrk607hz/" class="post-tags">
+                            # 源码
+                        </a>
+                    
+                        <a href="https://jayying007.github.io/tag/CWsVcAw6KFV/" class="post-tags">
+                            # 网络
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a href="https://github.com/AFNetworking/AFNetworking">https://github.com/AFNetworking/AFNetworking</a></p>
+<h2 id="简介">简介</h2>
+<p>AFNetworking 这个网络框架，相信 iOS 开发都不陌生。如果你的项目是通过 Http 进行通信，那么这个框架可以帮你简化网络请求和响应的逻辑。<br>
+实际上它就是对系统 NSURLSession、NSURLSessionTask 这些逻辑做了封装，提供了更安全更易用的接口。<br>
+虽然老早就知道这个框架，但一直没有去看其源码实现。等到最近终于抽出时间看时，这个框架已经寿终正寝了。。。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FqCBsO0axNH87FQL-fAExyIN8FPr.png" alt="" loading="lazy"></p>
+<blockquote>
+<p>虽然但是，大厂一般比较少用 Http 这种方式进行通信，而是直接基于 TCP 实现。所以 AFNetworking 的帮助就不大了。<br>
+这里推荐一个跨平台网络框架<a href="https://github.com/Tencent/mars">https://github.com/Tencent/mars</a>，也是微信客户端使用的网络框架。</p>
+</blockquote>
+<h2 id="与原生的对比">与原生的对比</h2>
+<p>这里简单写几个例子，演示用 AFNetworking 和不同 AFNetworking 代码的区别<br>
+{% tabs Get %}</p>
+<!-- tab 原生Get请求 -->
+<pre><code class="language-objectivec">- (void)get {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/get?name=123&amp;password=456&quot;];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  [request setValue:@&quot;testValue&quot; forHTTPHeaderField:@&quot;Test-Header-Field&quot;];
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                  completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+                                    if (error != nil) {
+                                      NSLog(@&quot;出错了，%@&quot;, error);
+                                    } else {
+                                      NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                      NSLog(@&quot;%@&quot;, result);
+                                    }
+                                  }];
+  [task resume];
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Get请求 -->
+<pre><code class="language-objectivec">- (void)af_get {
+  [[AFHTTPSessionManager manager] GET:@&quot;https://httpbin.org/get&quot;
+     parameters:@{ @&quot;name&quot; : @123, @&quot;password&quot; : @456 }
+     headers:@{ @&quot;Test-Header-Field&quot; : @&quot;testValue&quot; }
+     progress:nil
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       NSLog(@&quot;%@&quot;, responseObject);
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}</p>
+<p>{% tabs Post %}</p>
+<!-- tab 原生Post请求 -->
+<pre><code class="language-objectivec">- (void)post {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/post&quot;];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  [request setHTTPMethod:@&quot;POST&quot;];
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                  completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+                                    if (error != nil) {
+                                      NSLog(@&quot;出错了，%@&quot;, error);
+                                    } else {
+                                      NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                      NSLog(@&quot;%@&quot;, result);
+                                    }
+                                  }];
+  [task resume];
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Post请求 -->
+<pre><code class="language-objectivec">- (void)af_post {
+  [[AFHTTPSessionManager manager] POST:@&quot;https://httpbin.org/post&quot;
+     parameters:nil
+     headers:nil
+     progress:nil
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       NSLog(@&quot;%@&quot;, responseObject);
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}</p>
+<p>{% tabs Download %}</p>
+<!-- tab 原生Download请求 -->
+<pre><code class="language-objectivec">- (void)download {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/image/jpeg&quot;];
+  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+  NSURLSession *session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+  NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request];
+  [task resume];
+}
+#pragma mark - NSURLSessionDownloadDelegate
+- (void)URLSession:(NSURLSession *)session
+             downloadTask:(NSURLSessionDownloadTask *)downloadTask
+             didWriteData:(int64_t)bytesWritten
+        totalBytesWritten:(int64_t)totalBytesWritten
+totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+    float rate = 1.f * totalBytesWritten / totalBytesExpectedToWrite;
+    NSLog(@&quot;下载进度：%.2lf&quot;, rate);
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+    NSString *downloadPath = [location path];
+    NSLog(@&quot;已下载到路径：%@&quot;, downloadPath);
+    UIImage *image = [UIImage imageWithContentsOfFile:downloadPath];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //self.imageView.image = image;
+    });
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Download请求 -->
+<pre><code class="language-objectivec">- (void)af_download {
+  AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] init];
+  manager.responseSerializer = [[AFImageResponseSerializer alloc] init];
+  [manager GET:@&quot;https://httpbin.org/image/jpeg&quot;
+     parameters:nil
+     headers:nil
+     progress:^(NSProgress *_Nonnull downloadProgress) {
+       NSLog(@&quot;下载进度：%.2lf&quot;, downloadProgress.fractionCompleted);
+     }
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       dispatch_async(dispatch_get_main_queue(), ^{
+         //self.imageView.image = responseObject;
+       });
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}<br>
+如果是下载图片，其实 AFNetworking 还扩展了 UIKit 组件的功能，可以写更少的代码。</p>
+<p>{% tabs Upload %}</p>
+<!-- tab 原生Upload请求 -->
+<pre><code class="language-objectivec">- (void)upload {
+  NSURL *url = [NSURL URLWithString:@&quot;https://httpbin.org/post&quot;];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+  [request setHTTPMethod:@&quot;POST&quot;];
+  NSURLSession *session = [NSURLSession sharedSession];
+  UIImage *image = [UIImage imageNamed:@&quot;boss&quot;];
+  NSData *imgData = UIImagePNGRepresentation(image);
+  NSURLSessionUploadTask *task =
+    [session uploadTaskWithRequest:request
+     fromData:imgData
+     completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+       if (error != nil) {
+         NSLog(@&quot;出错了，%@&quot;, error);
+       } else {
+         NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+         NSLog(@&quot;%@&quot;, result);
+       }
+     }];
+  [task resume];
+}
+</code></pre>
+<!-- endtab -->
+<!-- tab AFNetworking Upload请求 -->
+<pre><code class="language-objectivec">- (void)af_upload {
+  [[AFHTTPSessionManager manager] POST:@&quot;https://httpbin.org/post&quot;
+     parameters:nil
+     headers:nil
+     constructingBodyWithBlock:^(id&lt;AFMultipartFormData&gt; _Nonnull formData) {
+       UIImage *image = [UIImage imageNamed:@&quot;boss&quot;];
+       NSData *imgData = UIImagePNGRepresentation(image);
+       [formData appendPartWithFormData:imgData name:@&quot;imgData&quot;];
+     }
+     progress:^(NSProgress *_Nonnull downloadProgress) {
+       NSLog(@&quot;上传进度：%.2lf&quot;, downloadProgress.fractionCompleted);
+     }
+     success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+       NSLog(@&quot;%@&quot;, responseObject);
+     }
+     failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+       NSLog(@&quot;出错了，%@&quot;, error);
+     }];
+}
+</code></pre>
+<!-- endtab -->
+<p>{% endtabs %}</p>
+<p>对比代码看出，在 Apple 推出 NSURLSession 之后，AFNetworking 的作用相较于之前小了一些，但仍然还有用处。比如所有的网络请求都统一为 Block 的回调方式，而且带有 progess。</p>
+<h2 id="代码结构">代码结构</h2>
+<p>对其源码的阅读可以分下面几个类别去看：</p>
+<ol>
+<li><strong>对 NSURLSession 及其上传/下载任务的管理</strong></li>
+</ol>
+<p>相关文件：AFURLSessionManager、AFHTTPSessionManager<br>
+这两个类可以说是框架的核心了，也是你使用 AFNetworking 99%的原因。</p>
+<ol start="2">
+<li><strong>请求和响应的序列化</strong></li>
+</ol>
+<p>相关文件：AFURLRequestSerialization、AFURLResponseSerialization<br>
+比如你请求时带上的 queryString、HttpHeader、HttpBody，都可以通过 AFHTTPRequestSerializer 提供的更简单的接口实现。AFURLResponseSerialization 则可以将返回的 NSData 解析成你想要的数据类型。</p>
+<ol start="3">
+<li><strong>安全相关</strong></li>
+</ol>
+<p>主要就是 AFSecurityPolicy 这个类，用于 SSL Pinning。</p>
+<ol start="4">
+<li><strong>网络可达性</strong></li>
+</ol>
+<p>AFNetworkReachabilityManager 这个类框架本身并没有用到，是个相对独立的模块。</p>
+<ol start="5">
+<li><strong>UIKit 的扩展</strong></li>
+</ol>
+<p>如支持了 UIButton、UIImageView 设置网络图片，有点像 SDWebImage。</p>
+<h2 id="源码分析">源码分析</h2>
+<h3 id="对-nsurlsession-及其上传下载任务的管理">对 NSURLSession 及其上传/下载任务的管理</h3>
+<p>AFURLSessionManager 对 NSURLSession 做了封装，从某种意义上说，你不需要直接创建 or 调用 NSURLSession 的接口了，在 AFURLSessionManager 能找到常见的接口。</p>
+<pre><code class="language-objectivec">/**
+ Creates and returns a manager for a session created with the specified configuration. This is the designated initializer.
+
+ @param configuration The configuration used to create the managed session.
+
+ @return A manager for a newly-created session.
+ */
+- (instancetype)initWithSessionConfiguration:(nullable NSURLSessionConfiguration *)configuration NS_DESIGNATED_INITIALIZER;
+
+/**
+ Creates an `NSURLSessionDataTask` with the specified request.
+
+ @param request The HTTP request for the request.
+ @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
+ @param downloadProgressBlock A block object to be executed when the download progress is updated. Note this block is called on the session queue, not the main queue.
+ @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
+ */
+- (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request
+                               uploadProgress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock
+                             downloadProgress:(nullable void (^)(NSProgress *downloadProgress))downloadProgressBlock
+                            completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject,  NSError * _Nullable error))completionHandler;
+
+/**
+ Creates an `NSURLSessionUploadTask` with the specified request for an HTTP body.
+
+ @param request The HTTP request for the request.
+ @param bodyData A data object containing the HTTP body to be uploaded.
+ @param uploadProgressBlock A block object to be executed when the upload progress is updated. Note this block is called on the session queue, not the main queue.
+ @param completionHandler A block object to be executed when the task finishes. This block has no return value and takes three arguments: the server response, the response object created by that serializer, and the error that occurred, if any.
+ */
+- (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request
+                                         fromData:(nullable NSData *)bodyData
+                                         progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgressBlock
+                                completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+</code></pre>
+<p>AFURLSessionManager 对 NSURLSessionTask 事件的回调采用的是 Block+Notification 的方式。</p>
+<pre><code class="language-objectivec">/**
+ Sets a block to be executed as the last message related to a specific task, as handled by the `NSURLSessionTaskDelegate` method `URLSession:task:didCompleteWithError:`.
+
+ @param block A block object to be executed when a session task is completed. The block has no return value, and takes three arguments: the session, the task, and any error that occurred in the process of executing the task.
+ */
+- (void)setTaskDidCompleteBlock:(nullable void (^)(NSURLSession *session, NSURLSessionTask *task, NSError * _Nullable error))block;
+
+/**
+ Sets a block to be executed when a download task has completed a download, as handled by the `NSURLSessionDownloadDelegate` method `URLSession:downloadTask:didFinishDownloadingToURL:`.
+
+ @param block A block object to be executed when a download task has completed. The block returns the URL the download should be moved to, and takes three arguments: the session, the download task, and the temporary location of the downloaded file. If the file manager encounters an error while attempting to move the temporary file to the destination, an `AFURLSessionDownloadTaskDidFailToMoveFileNotification` will be posted, with the download task as its object, and the user info of the error.
+ */
+- (void)setDownloadTaskDidFinishDownloadingBlock:(nullable NSURL * _Nullable  (^)(NSURLSession *session, NSURLSessionDownloadTask *downloadTask, NSURL *location))block;
+
+/**
+ Posted when a task suspends its execution.
+ */
+FOUNDATION_EXPORT NSString * const AFNetworkingTaskDidSuspendNotification;
+</code></pre>
+<p>AFURLSessionManager 持有了 NSURLSession，将 delegate 设置为自己，同时也存储了一个 AFURLSessionManagerTaskDelegate 数组，用于关联 NSURLSession 创建的 Task。<br>
+<img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FncP7pMujiV7TNkQsp_ODX34BZdw.png" alt="" loading="lazy"><br>
+AFURLSessionManagerTaskDelegate 中维护了 progressBlock、completeBlock 等信息。<br>
+大致逻辑是，启动 NSURLSessionTask 时，NSURLSession 通过 NSURLSessionDelegate 通知到 AFURLSessionManager。然后 AFURLSessionManager 再找出对应的 AFURLSessionManagerTaskDelegate，将相关信息传递过去。<br>
+核心代码如下：</p>
+<pre><code class="language-objectivec">- (void)URLSession:(__unused NSURLSession *)session
+              task:(NSURLSessionTask *)task
+didCompleteWithError:(NSError *)error
+{
+    error = objc_getAssociatedObject(task, AuthenticationChallengeErrorKey) ?: error;
+    __strong AFURLSessionManager *manager = self.manager;
+
+    __block id responseObject = nil;
+
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    userInfo[AFNetworkingTaskDidCompleteResponseSerializerKey] = manager.responseSerializer;
+
+    //Performance Improvement from #2672
+    NSData *data = nil;
+    if (self.mutableData) {
+        data = [self.mutableData copy];
+        //We no longer need the reference, so nil it out to gain back some memory.
+        self.mutableData = nil;
+    }
+
+		//省略无关代码
+
+    if (error) {
+        //略略略
+    } else {
+        dispatch_async(url_session_manager_processing_queue(), ^{
+            NSError *serializationError = nil;
+            responseObject = [manager.responseSerializer responseObjectForResponse:task.response data:data error:&amp;serializationError];
+
+            //省略无关代码
+
+            dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
+                if (self.completionHandler) {
+                    self.completionHandler(task.response, responseObject, serializationError);
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingTaskDidCompleteNotification object:task userInfo:userInfo];
+                });
+            });
+        });
+    }
+}
+</code></pre>
+<h3 id="请求和响应的序列化">请求和响应的序列化</h3>
+<p>AFHTTPRequestSerializer 用于简化 queryString、HttpHeader、HttpBody 等的设置。例如它会自动帮你加上 User-Agent、Accept-Language。</p>
+<pre><code class="language-objectivec">- (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request
+                               withParameters:(id)parameters
+                                        error:(NSError *__autoreleasing *)error
+{
+    NSMutableURLRequest *mutableRequest = [request mutableCopy];
+
+    [self.HTTPRequestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL * __unused stop) {
+        if (![request valueForHTTPHeaderField:field]) {
+            [mutableRequest setValue:value forHTTPHeaderField:field];
+        }
+    }];
+
+    NSString *query = @&quot;&quot;;
+    if (parameters) {
+        if (self.queryStringSerialization) {
+            //省略无关代码
+        } else {
+            switch (self.queryStringSerializationStyle) {
+                case AFHTTPRequestQueryStringDefaultStyle:
+                    query = AFQueryStringFromParameters(parameters);
+                    break;
+            }
+        }
+    }
+
+    if ([self.HTTPMethodsEncodingParametersInURI containsObject:[[request HTTPMethod] uppercaseString]]) {
+        if (query &amp;&amp; query.length &gt; 0) {
+            mutableRequest.URL = [NSURL URLWithString:[[mutableRequest.URL absoluteString] stringByAppendingFormat:mutableRequest.URL.query ? @&quot;&amp;%@&quot; : @&quot;?%@&quot;, query]];
+        }
+    } else {
+        if (![mutableRequest valueForHTTPHeaderField:@&quot;Content-Type&quot;]) {
+            [mutableRequest setValue:@&quot;application/x-www-form-urlencoded&quot; forHTTPHeaderField:@&quot;Content-Type&quot;];
+        }
+        [mutableRequest setHTTPBody:[query dataUsingEncoding:self.stringEncoding]];
+    }
+
+    return mutableRequest;
+}
+</code></pre>
+<p>AFHTTPResponseSerializer 用于简化返回结果。NSURLSession 返回的是 NSData，利用 AFJSONResponseSerializer，可以将其转为 NSDictionary。利用 AFImageResponseSerializer，可以将其转为 UIImage。省下自己去写转换的代码。</p>
+<pre><code class="language-objectivec">- (id)responseObjectForResponse:(NSURLResponse *)response
+                           data:(NSData *)data
+                          error:(NSError *__autoreleasing *)error
+{
+    if (![self validateResponse:(NSHTTPURLResponse *)response data:data error:error]) {
+        if (!error || AFErrorOrUnderlyingErrorHasCodeInDomain(*error, NSURLErrorCannotDecodeContentData, AFURLResponseSerializationErrorDomain)) {
+            return nil;
+        }
+    }
+
+    //省略无关代码
+    id responseObject = [NSJSONSerialization JSONObjectWithData:data options:self.readingOptions error:&amp;serializationError];
+
+    //省略无关代码
+    return responseObject;
+}
+
+- (BOOL)validateResponse:(NSHTTPURLResponse *)response
+                    data:(NSData *)data
+                   error:(NSError * __autoreleasing *)error
+{
+    BOOL responseIsValid = YES;
+    NSError *validationError = nil;
+
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        if (self.acceptableContentTypes &amp;&amp; ![self.acceptableContentTypes containsObject:[response MIMEType]] &amp;&amp;
+            !([response MIMEType] == nil &amp;&amp; [data length] == 0)) {
+            //省略无关代码
+            responseIsValid = NO;
+        }
+
+        if (self.acceptableStatusCodes &amp;&amp; ![self.acceptableStatusCodes containsIndex:(NSUInteger)response.statusCode] &amp;&amp; [response URL]) {
+            //省略无关代码
+            responseIsValid = NO;
+        }
+    }
+
+		//省略无关代码
+
+    return responseIsValid;
+}
+</code></pre>
+<p>其中，AFImageResponseSerializer 可以配置对 UIImage 立即解码，直接绘制 bitmap。因为是在子线程，所以降低了主线程解码的压力。</p>
+<h3 id="uikit-的扩展">UIKit 的扩展</h3>
+<p>这里以 UIImageView 支持设置网络图片为例，关键步骤都加了注释说明。</p>
+<pre><code class="language-objectivec">- (void)setImageWithURLRequest:(NSURLRequest *)urlRequest
+              placeholderImage:(UIImage *)placeholderImage
+                       success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *_Nullable response, UIImage *image))success
+                       failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *_Nullable response, NSError *error))failure {
+    //1.是否已有相同的任务在下载
+    if ([self isActiveTaskURLEqualToURLRequest:urlRequest]) {
+        return;
+    }
+    //2.取消之前的下载任务
+    [self cancelImageDownloadTask];
+
+    AFImageDownloader *downloader = [[self class] sharedImageDownloader];
+    //3.检查是否有缓存
+    id&lt;AFImageRequestCache&gt; imageCache = downloader.imageCache;
+    UIImage *cachedImage = [imageCache imageforRequest:urlRequest withAdditionalIdentifier:nil];
+    if (cachedImage) {
+        self.image = cachedImage;
+        [self clearActiveDownloadInformation];
+        return;
+    }
+    //4.没有缓存，开始下载图片
+    if (placeholderImage) {
+        self.image = placeholderImage;
+    }
+    __weak __typeof(self) weakSelf = self;
+    NSUUID *downloadID = [NSUUID UUID];
+    AFImageDownloadReceipt *receipt = [downloader downloadImageForURLRequest:urlRequest
+    withReceiptID:downloadID
+    success:^(NSURLRequest *_Nonnull request, NSHTTPURLResponse *_Nullable response, UIImage *_Nonnull responseObject) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        //5.下载完成要检查downloadID是否跟当前最新的receipt匹配，有可能出现下载途中加入了新的下载任务or清除了下载任务
+        if ([strongSelf.af_activeImageDownloadReceipt.receiptID isEqual:downloadID]) {
+            strongSelf.image = responseObject;
+            [strongSelf clearActiveDownloadInformation];
+        }
+    }
+    failure:^(NSURLRequest *_Nonnull request, NSHTTPURLResponse *_Nullable response, NSError *_Nonnull error) {
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if ([strongSelf.af_activeImageDownloadReceipt.receiptID isEqual:downloadID]) {
+            if (failure) {
+                failure(request, response, error);
+            }
+            [strongSelf clearActiveDownloadInformation];
+        }
+    }];
+
+    self.af_activeImageDownloadReceipt = receipt;
+}
+</code></pre>
+<p>这其实就是一个标准的图片下载框架的实现逻辑。</p>
+<p>下面简单看看 AFImageDownloader 的实现。</p>
+<pre><code class="language-objectivec">- (nullable AFImageDownloadReceipt *)downloadImageForURLRequest:(NSURLRequest *)request
+                                                  withReceiptID:(nonnull NSUUID *)receiptID
+                                                        success:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse  * _Nullable response, UIImage *responseObject))success
+                                                        failure:(nullable void (^)(NSURLRequest *request, NSHTTPURLResponse * _Nullable response, NSError *error))failure {
+    __block NSURLSessionDataTask *task = nil;
+    dispatch_sync(self.synchronizationQueue, ^{
+        NSString *URLIdentifier = request.URL.absoluteString;
+        if (URLIdentifier == nil) {
+            if (failure) {
+                NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:nil];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    failure(request, nil, error);
+                });
+            }
+            return;
+        }
+
+        // 1) Append the success and failure blocks to a pre-existing request if it already exists
+        AFImageDownloaderMergedTask *existingMergedTask = self.mergedTasks[URLIdentifier];
+        if (existingMergedTask != nil) {
+            AFImageDownloaderResponseHandler *handler = [[AFImageDownloaderResponseHandler alloc] initWithUUID:receiptID success:success failure:failure];
+            [existingMergedTask addResponseHandler:handler];
+            task = existingMergedTask.task;
+            return;
+        }
+
+        // 2) Attempt to load the image from the image cache if the cache policy allows it
+        switch (request.cachePolicy) {
+            case NSURLRequestUseProtocolCachePolicy:
+            case NSURLRequestReturnCacheDataElseLoad:
+            case NSURLRequestReturnCacheDataDontLoad: {
+                UIImage *cachedImage = [self.imageCache imageforRequest:request withAdditionalIdentifier:nil];
+                if (cachedImage != nil) {
+                    if (success) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            success(request, nil, cachedImage);
+                        });
+                    }
+                    return;
+                }
+                break;
+            }
+            default:
+                break;
+        }
+
+        // 3) Create the request and set up authentication, validation and response serialization
+        NSUUID *mergedTaskIdentifier = [NSUUID UUID];
+        NSURLSessionDataTask *createdTask;
+        __weak __typeof__(self) weakSelf = self;
+
+        createdTask = [self.sessionManager
+                       dataTaskWithRequest:request
+                       uploadProgress:nil
+                       downloadProgress:nil
+                       completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                           dispatch_async(self.responseQueue, ^{
+                               __strong __typeof__(weakSelf) strongSelf = weakSelf;
+                               AFImageDownloaderMergedTask *mergedTask = [strongSelf safelyGetMergedTask:URLIdentifier];
+                               if ([mergedTask.identifier isEqual:mergedTaskIdentifier]) {
+                                   mergedTask = [strongSelf safelyRemoveMergedTaskWithURLIdentifier:URLIdentifier];
+                                   if (error) {
+                                       for (AFImageDownloaderResponseHandler *handler in mergedTask.responseHandlers) {
+                                           if (handler.failureBlock) {
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   handler.failureBlock(request, (NSHTTPURLResponse *)response, error);
+                                               });
+                                           }
+                                       }
+                                   } else {
+                                       if ([strongSelf.imageCache shouldCacheImage:responseObject forRequest:request withAdditionalIdentifier:nil]) {
+                                           [strongSelf.imageCache addImage:responseObject forRequest:request withAdditionalIdentifier:nil];
+                                       }
+
+                                       for (AFImageDownloaderResponseHandler *handler in mergedTask.responseHandlers) {
+                                           if (handler.successBlock) {
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   handler.successBlock(request, (NSHTTPURLResponse *)response, responseObject);
+                                               });
+                                           }
+                                       }
+
+                                   }
+                               }
+                               [strongSelf safelyDecrementActiveTaskCount];
+                               [strongSelf safelyStartNextTaskIfNecessary];
+                           });
+                       }];
+
+        // 4) Store the response handler for use when the request completes
+        AFImageDownloaderResponseHandler *handler = [[AFImageDownloaderResponseHandler alloc] initWithUUID:receiptID
+                                                                                                   success:success
+                                                                                                   failure:failure];
+        AFImageDownloaderMergedTask *mergedTask = [[AFImageDownloaderMergedTask alloc]
+                                                   initWithURLIdentifier:URLIdentifier
+                                                   identifier:mergedTaskIdentifier
+                                                   task:createdTask];
+        [mergedTask addResponseHandler:handler];
+        self.mergedTasks[URLIdentifier] = mergedTask;
+
+        // 5) Either start the request or enqueue it depending on the current active request count
+        if ([self isActiveRequestCountBelowMaximumLimit]) {
+            [self startMergedTask:mergedTask];
+        } else {
+            [self enqueueMergedTask:mergedTask];
+        }
+
+        task = mergedTask.task;
+    });
+    if (task) {
+        return [[AFImageDownloadReceipt alloc] initWithReceiptID:receiptID task:task];
+    } else {
+        return nil;
+    }
+}
+</code></pre>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com//FoYzJoQkRF0LogflV8nay1RhJtl_.png" alt="" loading="lazy"><br>
+下载某个 URLRequest 时，会先在下载队列 mergedTasks 中检查是否已存在。<br>
+如果任务已存在，则给 AFImageDownloaderMergedTask 添加一个新的监听者即可（下载完成时会通知所有监听者），然后返回一个下载票据 AFImageDownloadReceipt。<br>
+如果不存在，则先查询本地缓存，有的话直接返回；<br>
+本地缓存不存在时，则需要创建一个新的 AFImageDownloaderMergedTask，然后加上监听者。这个过程通过 AFURLSessionManager 创建了一个 NSURLSessionDataTask。如果当前并发下载的次数还没达到上限的话，则直接启动 Task，否则就先进入队列等待。</p>
+<h2 id="参考资料">参考资料</h2>
+<p>找的资料有点古老，一些还是讲的 NSURLConnection，可以直接跳过。<br>
+<a href="https://nshipster.cn/afnetworking-2/">AFNetworking 2.0</a><br>
+<a href="http://blog.cnbang.net/tech/2320/">AFNetworking2.0 源码解析 « bang’s blog</a></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://jayying007.github.io/post/FBRetainCycleDetector源码分析/" class="post-title gt-a-link">
+                    FBRetainCycleDetector源码分析
+                </a>
+            </div>
+        
+
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'JHsf6kk7u31nFtmMMtWqQyHl-gzGzoHsz',
+		appKey: '6kuh7BaduW3qYuq5MUi7KaTm',
+		avatar: '',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: 'Just Go Go',
+		visitor: false,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first"></div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/jayying007" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        
+    </div>
+    <div>
+        Theme <a href="https://github.com/imhanjie/gridea-theme-pure" target="_blank">Pure</a>, Powered by <a
+                href="https://gridea.dev" target="_blank">Gridea</a> | <a href="https://jayying007.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
