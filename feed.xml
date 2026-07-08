@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gridea Pro</title>
+    <link>https://jayying007.github.io/</link>
+    <description>Welcome to Gridea Pro</description>
+    <language>zh-cn</language>
+    <generator>Gridea Pro</generator>
+    <lastBuildDate>Thu, 09 Jul 2026 00:21:30 +0800</lastBuildDate>
+    <atom:link href="https://jayying007.github.io/feed.xml" rel="self" type="application/rss+xml"></atom:link>
+    <item>
+      <title>AI编程</title>
+      <link>https://jayying007.github.io/post/aibian-cheng/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/aibian-cheng/</guid>
+      <pubDate>Sat, 31 Jan 2026 01:23:00 +0800</pubDate>
+      <description><![CDATA[<p>#编程</p>
+<p>最近几个星期在用TRAE，开发了两款自用的App。都是之前心心念念的功能。</p>
+<p>一款是收藏打卡，可以用来标记去过什么地方，哪些完成了，哪些想做还没做。</p>
+<p><img src="https://jayying007.github.io/post-images/1783531400918211000_0.png" alt="" /></p>
+<p>一款是习惯打卡，用于完成一些周期性的任务，比如拖地、洗床单。</p>
+<p>![](/post-images/1783531409172494000_0.p&hellip;</p>
+]]></description>
+    </item>
+    <item>
+      <title>记一次麦克风异常的排查经历</title>
+      <link>https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/</guid>
+      <pubDate>Tue, 24 Jun 2025 08:40:40 +0800</pubDate>
+      <description><![CDATA[<h2 id="heading">复现方式</h2>
+<p>进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。<br />
+然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。</p>
+<h2 id="heading-1">排查过程</h2>
+<p>通过AudioQueue实现的录音，启动都没有什么错误。<br />
+然后通过LevelMeter检查数据的音量，发现全是0。</p>
+<p>再看看AudioSession的各种接口，s&hellip;</p>
+]]></description>
+      <category>iOS</category>
+      <category>音视频</category>
+      <category>debug</category>
+    </item>
+    <item>
+      <title>周杰伦</title>
+      <link>https://jayying007.github.io/post/zhou-jie-lun/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/zhou-jie-lun/</guid>
+      <pubDate>Tue, 29 Apr 2025 01:00:47 +0800</pubDate>
+      <description><![CDATA[<p>上个月终于抢到了周杰伦演唱会的门票，所以上周六去了趟广西，现在做下记录。</p>
+<p>演唱会时间是周日晚上，而周日要补五一的班，所以我请了周日还有周一上午的假。</p>
+<p>周六去到广西先在附近逛逛。吃了一顿老友粉，味道感觉和螺蛳粉还挺像。随后开始在街边溜达，去了趟朝阳广场，打卡周同学，不过我并不打算收集，只是逛逛而已。</p>
+<p><img src="https://jayying007.github.io/post-images/1783530115072873000_0.jpeg" alt="" /></p>
+<p>广&hellip;</p>
+]]></description>
+    </item>
+    <item>
+      <title>大老热</title>
+      <link>https://jayying007.github.io/post/da-lao-re/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/da-lao-re/</guid>
+      <pubDate>Sun, 15 Dec 2024 01:18:02 +0800</pubDate>
+      <description><![CDATA[<p>请了3天半的年假，回老家过十二年一次的大老热。妈祖拜了，迎标旗看了，无人机表演也看了，人挤人体验了，很充实。<br />
+感觉跟过年一样，很多人都回来了。<br />
+<img src="https://jayying007.github.io/post-images/1783531120305237000_0.jpeg" alt="" /></p>
+<p>回老家的时候带了Xbox游戏手柄回来，也在电视上玩了二周目的黑神话第一章。</p>
+<p>在老家的电脑上收集了一波新的老照片，相当不错。<br />
+![](/post-images/17&hellip;</p>
+]]></description>
+    </item>
+    <item>
+      <title>独立开发</title>
+      <link>https://jayying007.github.io/post/du-li-kai-fa/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/du-li-kai-fa/</guid>
+      <pubDate>Thu, 03 Oct 2024 01:16:50 +0800</pubDate>
+      <description><![CDATA[<p>今天刷了一整天独立开发者的博客，多少有点收获吧，记录下来。<br />
+网站是这个：<a href="https://indiehacker.im/">Indie Hackers</a></p>
+<hr />
+<p>独立开发，是从0到1。<br />
+团队开发，是从1到100。</p>
+<p>独立开发，一般都是小众赛道，找有特殊需求的用户。</p>
+<p>设计可以从Dribble上找灵感💡，推广可以上Product Hunt之类的网站。</p>
+<h2 id="heading">吐槽</h2>
+<p>独立开发的作品，大多数我都&hellip;</p>
+]]></description>
+    </item>
+    <item>
+      <title>香港</title>
+      <link>https://jayying007.github.io/post/xiang-gang/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/xiang-gang/</guid>
+      <pubDate>Sat, 22 Jun 2024 01:15:06 +0800</pubDate>
+      <description><![CDATA[<p>这其实是一次蓄谋已久的旅行，可以看之前做的攻略[[香港一日游]]。</p>
+<p>不过为什么会是今日，其实是因为我的签注下周就过期了。</p>
+<p>但是我哥居然忘带通行证了，于是就变成了我的单人旅行。。。<br />
+来都来了，一些必要的打卡景点还是得看看的。</p>
+<p>第一次来香港，还是有很多新奇的体验的。</p>
+<p>旺角的很多街道都好有意思，我觉得符合我对香港的想象，今天没有完全逛完，下次来的话可以好好逛一逛。相比之下铜锣湾就过于商业，其实和&hellip;</p>
+]]></description>
+      <category>旅行</category>
+    </item>
+    <item>
+      <title>图书馆</title>
+      <link>https://jayying007.github.io/post/tu-shu-guan/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/tu-shu-guan/</guid>
+      <pubDate>Thu, 02 May 2024 01:11:20 +0800</pubDate>
+      <description><![CDATA[<p>今天去了趟广州图书馆，不用预约。</p>
+<p>坐地铁3号线转APM线，可以直达，非常方便。就是3号线人很多。</p>
+<p>因为我是带着阅读目的去的，所以并没有完整逛完整个图书馆。计划是看《运动解剖学》《运动心理学》《运动营养学》，实际只看了前两本。其实我发现这部分内容高中生物学过了，有那种死去的生物知识突然攻击我的感觉。</p>
+<blockquote>
+<p>简单做点笔记，就叫[[生命科学]]吧</p>
+</blockquote>
+<p>中午在负一楼吃了快餐，一般般，而且拿了三个菜，收了&hellip;</p>
+]]></description>
+    </item>
+    <item>
+      <title>外卖需谨慎</title>
+      <link>https://jayying007.github.io/post/wai-mai-xu-jin-shen/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/wai-mai-xu-jin-shen/</guid>
+      <pubDate>Sun, 24 Mar 2024 01:10:20 +0800</pubDate>
+      <description><![CDATA[<p>上次去参加深圳年会的时候，吃了一顿牛肉粿条，感觉还不错。<br />
+下午找了一下附近，只有中大旁边有，骑行花费二十分钟左右。吃起来味道还行，但没有深圳那会好吃，而且还偏贵一点。</p>
+<h3 id="heading">外卖</h3>
+<p>然后骑车看了下经常点外卖的鲍鱼饭，蒸鸡，发现全都是外卖营业，没有堂食的。。而且环境看起来挺脏的。<br />
+服了，我点的外卖大部分都是垃圾。以后周末就吃艺苑南路了(¯へ¯)</p>
+<h3 id="heading-1">房子</h3>
+<p>在碧家住了两年多了，有些单调，打算找其&hellip;</p>
+]]></description>
+    </item>
+    <item>
+      <title>检测幽门螺旋杆菌</title>
+      <link>https://jayying007.github.io/post/jian-ce-you-men-luo-xuan-gan-jun/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/jian-ce-you-men-luo-xuan-gan-jun/</guid>
+      <pubDate>Sat, 23 Mar 2024 01:08:42 +0800</pubDate>
+      <description><![CDATA[<p>今天去省二做了碳13呼气检查，结果是阴性的，有点意外，但是好事。<br />
+因为我哥前段时间去检查过阳性，而且我最近肠胃也感觉不是很好，难道只是吃的东西不够卫生？</p>
+<hr />
+<p>另外一个记录的原因是，这应该是除了每年的体检外，六七年来我第一次一个人去医院看病，没什么经验。<br />
+线上可以挂号，提前几天预约就可以了，甚至都不需要病历本（白花了1.5元）。<br />
+另外，这个检测是可以医保报销的，但我没有定点医保，结果花了21&hellip;</p>
+]]></description>
+    </item>
+    <item>
+      <title>计算机简史（三）</title>
+      <link>https://jayying007.github.io/post/computer-history-part-three/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/computer-history-part-three/</guid>
+      <pubDate>Sat, 28 Aug 2021 17:47:59 +0800</pubDate>
+      <description><![CDATA[<h3 id="heading">计算机网络</h3>
+<p>单台计算机如果要分享数据给其他计算机，可以通过网线传输或者无线传输。关于底层的数据传输，应该算通讯行业的事情了。</p>
+<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1592022001046-ab2d48af-1620-43ec-9c53-7fb0fbc5775f.png" alt="img" /></p>
+<p>![img](ht&hellip;</p>
+]]></description>
+      <category>计算机网络</category>
+      <category>数据库</category>
+      <category>分布式系统</category>
+      <category>搜索引擎</category>
+    </item>
+  </channel>
+</rss>

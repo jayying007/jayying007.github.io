@@ -2,79 +2,181 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://jayying007.github.io/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/post/hello-gridea-pro/</loc>
-    <lastmod>2026-07-07T23:17:10+08:00</lastmod>
+    <loc>https://jayying007.github.io/post/aibian-cheng/</loc>
+    <lastmod>2026-07-09T01:24:20+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/post/quick-start/</loc>
-    <lastmod>2026-07-07T23:24:47+08:00</lastmod>
+    <loc>https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/</loc>
+    <lastmod>2026-07-09T00:52:59+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/post/why-we-write/</loc>
-    <lastmod>2026-07-07T23:17:10+08:00</lastmod>
+    <loc>https://jayying007.github.io/post/zhou-jie-lun/</loc>
+    <lastmod>2026-07-09T01:03:36+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/post/indie-blog-is-not-dead/</loc>
-    <lastmod>2026-07-07T23:17:10+08:00</lastmod>
+    <loc>https://jayying007.github.io/post/da-lao-re/</loc>
+    <lastmod>2026-07-09T01:19:12+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/post/why-i-revived-gridea/</loc>
-    <lastmod>2026-07-07T23:33:41+08:00</lastmod>
+    <loc>https://jayying007.github.io/post/du-li-kai-fa/</loc>
+    <lastmod>2024-10-03T01:16:50+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/xiang-gang/</loc>
+    <lastmod>2026-07-09T01:15:41+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/tu-shu-guan/</loc>
+    <lastmod>2026-07-09T01:12:07+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/wai-mai-xu-jin-shen/</loc>
+    <lastmod>2024-03-24T01:10:20+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/jian-ce-you-men-luo-xuan-gan-jun/</loc>
+    <lastmod>2024-03-23T01:08:42+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/computer-history-part-three/</loc>
+    <lastmod>2026-07-09T00:35:18+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/computer-history-part-2/</loc>
+    <lastmod>2026-07-09T00:35:09+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/computer-history-part-1/</loc>
+    <lastmod>2026-07-09T01:25:15+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/post/generate-qr-code-manually/</loc>
+    <lastmod>2020-03-07T00:04:02+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://jayying007.github.io/post/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/memos/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://jayying007.github.io/tags/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://jayying007.github.io/archives/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/tag/gridea-pro/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
+    <loc>https://jayying007.github.io/tag/cao-zuo-xi-tong/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://jayying007.github.io/tag/getting-started/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
+    <loc>https://jayying007.github.io/tag/bios/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/ji-suan-ji-wang-luo/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/shu-ju-ku/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/fen-bu-shi-xi-tong/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/sou-suo-yin-qing/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/luo-ji-men/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/er-wei-ma/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/ios/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/yin-shi-pin/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/debug/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://jayying007.github.io/tag/lv-xing/</loc>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://jayying007.github.io/links/</loc>
-    <lastmod>2026-07-07T23:49:12+08:00</lastmod>
+    <lastmod>2026-07-09T01:26:58+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>

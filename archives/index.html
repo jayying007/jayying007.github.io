@@ -30,7 +30,7 @@
   (function () {
     try {
       var saved = localStorage.getItem('flavor-theme');
-      var theme = saved || 'dark';
+      var theme = saved || 'light';
       if (theme === 'light') {
         document.documentElement.classList.add('theme-light');
       }
@@ -79,13 +79,11 @@
         
         <a class="nav-item" href="/archives">归档</a>
         
-        <a class="nav-item" href="/tags">标签</a>
+        <a class="nav-item" href="/category/bian-cheng">编程</a>
         
-        <a class="nav-item" href="/links">友链</a>
+        <a class="nav-item" href="/category/sheng-huo">生活</a>
         
         <a class="nav-item" href="/post/about">关于</a>
-        
-        <a class="nav-item" href="/category/lu-xing/">旅行</a>
         
         
       </nav>
@@ -178,7 +176,7 @@
   <div class="page-header">
     <h1 class="page-title">归档</h1>
     
-    <p class="page-subtitle meta-text">共 5 篇文章</p>
+    <p class="page-subtitle meta-text">共 13 篇文章</p>
     
   </div>
 
@@ -187,33 +185,93 @@
     
     <h2 class="archive-year">2026</h2>
     
-    <a href="/post/hello-gridea-pro/" class="archive-item">
-      <time class="archive-item__date" datetime="2026-07-07T23:17:10+08:00">2026-07-07</time>
-      <span class="archive-item__title">念念不忘，必有回响 —— Gridea Pro，我们回来了</span>
-      <span class="archive-item__badge">置顶</span>
-    </a>
-    
-    <a href="/post/quick-start/" class="archive-item">
-      <time class="archive-item__date" datetime="2026-07-07T23:16:10+08:00">2026-07-07</time>
-      <span class="archive-item__title">Gridea Pro 完全上手指南 —— 从写作到发布，一篇搞定</span>
+    <a href="/post/aibian-cheng/" class="archive-item">
+      <time class="archive-item__date" datetime="2026-01-31T01:23:00+08:00">2026-01-31</time>
+      <span class="archive-item__title">AI编程</span>
       
     </a>
     
-    <a href="/post/why-we-write/" class="archive-item">
-      <time class="archive-item__date" datetime="2026-07-07T23:15:10+08:00">2026-07-07</time>
-      <span class="archive-item__title">都 2026 年了，我们为什么还要写博客</span>
+    
+    <h2 class="archive-year">2025</h2>
+    
+    <a href="/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/" class="archive-item">
+      <time class="archive-item__date" datetime="2025-06-24T08:40:40+08:00">2025-06-24</time>
+      <span class="archive-item__title">记一次麦克风异常的排查经历</span>
       
     </a>
     
-    <a href="/post/indie-blog-is-not-dead/" class="archive-item">
-      <time class="archive-item__date" datetime="2026-07-07T23:14:10+08:00">2026-07-07</time>
-      <span class="archive-item__title">独立博客没有死，正在死的是平庸的博客</span>
+    <a href="/post/zhou-jie-lun/" class="archive-item">
+      <time class="archive-item__date" datetime="2025-04-29T01:00:47+08:00">2025-04-29</time>
+      <span class="archive-item__title">周杰伦</span>
       
     </a>
     
-    <a href="/post/why-i-revived-gridea/" class="archive-item">
-      <time class="archive-item__date" datetime="2026-07-07T23:13:10+08:00">2026-07-07</time>
-      <span class="archive-item__title">我为什么复活了 Gridea —— 每个想写点什么的人，都值得一个更简单的开始</span>
+    
+    <h2 class="archive-year">2024</h2>
+    
+    <a href="/post/da-lao-re/" class="archive-item">
+      <time class="archive-item__date" datetime="2024-12-15T01:18:02+08:00">2024-12-15</time>
+      <span class="archive-item__title">大老热</span>
+      
+    </a>
+    
+    <a href="/post/du-li-kai-fa/" class="archive-item">
+      <time class="archive-item__date" datetime="2024-10-03T01:16:50+08:00">2024-10-03</time>
+      <span class="archive-item__title">独立开发</span>
+      
+    </a>
+    
+    <a href="/post/xiang-gang/" class="archive-item">
+      <time class="archive-item__date" datetime="2024-06-22T01:15:06+08:00">2024-06-22</time>
+      <span class="archive-item__title">香港</span>
+      
+    </a>
+    
+    <a href="/post/tu-shu-guan/" class="archive-item">
+      <time class="archive-item__date" datetime="2024-05-02T01:11:20+08:00">2024-05-02</time>
+      <span class="archive-item__title">图书馆</span>
+      
+    </a>
+    
+    <a href="/post/wai-mai-xu-jin-shen/" class="archive-item">
+      <time class="archive-item__date" datetime="2024-03-24T01:10:20+08:00">2024-03-24</time>
+      <span class="archive-item__title">外卖需谨慎</span>
+      
+    </a>
+    
+    <a href="/post/jian-ce-you-men-luo-xuan-gan-jun/" class="archive-item">
+      <time class="archive-item__date" datetime="2024-03-23T01:08:42+08:00">2024-03-23</time>
+      <span class="archive-item__title">检测幽门螺旋杆菌</span>
+      
+    </a>
+    
+    
+    <h2 class="archive-year">2021</h2>
+    
+    <a href="/post/computer-history-part-three/" class="archive-item">
+      <time class="archive-item__date" datetime="2021-08-28T17:47:59+08:00">2021-08-28</time>
+      <span class="archive-item__title">计算机简史（三）</span>
+      
+    </a>
+    
+    <a href="/post/computer-history-part-2/" class="archive-item">
+      <time class="archive-item__date" datetime="2021-08-28T11:21:47+08:00">2021-08-28</time>
+      <span class="archive-item__title">计算机简史（二）</span>
+      
+    </a>
+    
+    <a href="/post/computer-history-part-1/" class="archive-item">
+      <time class="archive-item__date" datetime="2021-08-15T14:16:27+08:00">2021-08-15</time>
+      <span class="archive-item__title">计算机简史（一）</span>
+      
+    </a>
+    
+    
+    <h2 class="archive-year">2020</h2>
+    
+    <a href="/post/generate-qr-code-manually/" class="archive-item">
+      <time class="archive-item__date" datetime="2020-03-07T00:04:02+08:00">2020-03-07</time>
+      <span class="archive-item__title">自己手动生成二维码</span>
       
     </a>
     
@@ -235,13 +293,11 @@
       
       <a class="footer-nav__link" href="/archives">归档</a>
       
-      <a class="footer-nav__link" href="/tags">标签</a>
+      <a class="footer-nav__link" href="/category/bian-cheng">编程</a>
       
-      <a class="footer-nav__link" href="/links">友链</a>
+      <a class="footer-nav__link" href="/category/sheng-huo">生活</a>
       
       <a class="footer-nav__link" href="/post/about">关于</a>
-      
-      <a class="footer-nav__link" href="/category/lu-xing/">旅行</a>
       
     </nav>
     
@@ -278,30 +334,6 @@
   </div>
 </footer>
 
-  
-  <div class="search-overlay" id="searchOverlay" style="display:none;">
-  <div class="search-modal">
-    <div class="search-header">
-      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <input type="text" class="search-input" id="searchInput" placeholder="搜索文章..." autocomplete="off" />
-      <span class="search-kbd">&#8984;K</span>
-      <button class="search-close" id="searchClose" type="button" aria-label="关闭搜索">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="search-results" id="searchResults"></div>
-  </div>
-</div>
-
-<script src="/scripts/search.js"></script>
   
 
   

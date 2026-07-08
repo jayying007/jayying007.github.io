@@ -38,21 +38,26 @@
   })();
 </script>
   <meta name="generator" content="Gridea Pro 1.2.2">
-  <title>友链 | Gridea Pro</title>
+  <title>记一次麦克风异常的排查经历 | Gridea Pro</title>
   
-<meta name="description" content="Welcome to Gridea Pro">
-<link rel="canonical" href="https://jayying007.github.io/links/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Gridea Pro","url":"https://jayying007.github.io","description":"Welcome to Gridea Pro","potentialAction":{"@type":"SearchAction","query-input":"required name=search_term_string","target":"https://jayying007.github.io/search?q={search_term_string}"}}</script>
-<meta property="og:title" content="Gridea Pro">
-<meta property="og:description" content="Welcome to Gridea Pro">
-<meta property="og:url" content="https://jayying007.github.io/links/">
-<meta property="og:type" content="website">
+<meta property="og:title" content="记一次麦克风异常的排查经历" />
+<meta property="og:type" content="article" />
+
+
+<meta name="description" content="复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s&amp;hellip;">
+<link rel="canonical" href="https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"记一次麦克风异常的排查经历","url":"https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/","description":"复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s\u0026hellip;","datePublished":"2025-06-24T08:40:40+08:00","dateModified":"2026-07-09T00:52:59+08:00","author":{"@type":"Person","name":"Gridea Pro"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/images/avatar.png"},"name":"Gridea Pro"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":"https://jayying007.github.io","name":"Gridea Pro","position":1},{"@type":"ListItem","item":"https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/","name":"记一次麦克风异常的排查经历","position":2}]}</script>
+<meta property="og:title" content="记一次麦克风异常的排查经历">
+<meta property="og:description" content="复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s&amp;hellip;">
+<meta property="og:url" content="https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/">
+<meta property="og:type" content="article">
 <meta property="og:site_name" content="Gridea Pro">
 <meta property="og:image" content="/images/avatar.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://jayying007.github.io/links/">
-<meta name="twitter:title" content="Gridea Pro">
-<meta name="twitter:description" content="Welcome to Gridea Pro">
+<meta name="twitter:url" content="https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/">
+<meta name="twitter:title" content="记一次麦克风异常的排查经历">
+<meta name="twitter:description" content="复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s&amp;hellip;">
 <meta name="twitter:image" content="/images/avatar.png">
 </head>
 <body class="flavor-theme">
@@ -172,62 +177,94 @@
 
   <main class="site-main" role="main">
     
-<div class="container">
-  <div class="page-header">
-    <h1 class="page-title">友链</h1>
-    <p class="page-subtitle">志同道合的朋友们</p>
-  </div>
-
-  <div class="links-page">
-    
-    <div class="links-grid">
+<article class="article-container">
+  <header class="article-header">
+    <h1 class="article-title">记一次麦克风异常的排查经历</h1>
+    <div class="article-meta">
       
-      <a href="https://gridea.pro" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-card__top">
-          
-          <div class="link-card__avatar-wrap">
-            <img src="https://www.gridea.pro/favicon.ico" alt="Gridea Pro" />
-          </div>
-          
-          <div class="link-card__info">
-            <span class="link-card__name">Gridea Pro</span>
-          </div>
-          <span class="link-card__arrow">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="7" y1="17" x2="17" y2="7"></line>
-              <polyline points="7 7 17 7 17 17"></polyline>
-            </svg>
-          </span>
-        </div>
-        
-        <span class="link-card__desc">一个简单而强大的静态博客写作客户端</span>
-        
-      </a>
       
-      <a href="http://159.75.249.140/" class="link-card" target="_blank" rel="noopener noreferrer">
-        <div class="link-card__top">
-          
-          <div class="link-card__avatar-wrap">
-            <img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/avatar/lufei.jpg" alt="影帝的网络日志" />
-          </div>
-          
-          <div class="link-card__info">
-            <span class="link-card__name">影帝的网络日志</span>
-          </div>
-          <span class="link-card__arrow">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="7" y1="17" x2="17" y2="7"></line>
-              <polyline points="7 7 17 7 17 17"></polyline>
-            </svg>
-          </span>
-        </div>
-        
-      </a>
+      <a href="/category/bian-cheng/" class="article-meta__category">编程</a>
+      
+      
+      <span class="article-meta__sep">·</span>
+      
+      <span class="article-meta__item">2025-06-24</span>
+      
+      <span class="article-meta__sep">·</span>
+      <span class="article-meta__item">1 分钟阅读</span>
       
     </div>
     
+    <div class="article-header__tags">
+      
+      <a href="/tag/ios/" class="tag-pill tag-pill--sm">iOS</a>
+      
+      <a href="/tag/yin-shi-pin/" class="tag-pill tag-pill--sm">音视频</a>
+      
+      <a href="/tag/debug/" class="tag-pill tag-pill--sm">debug</a>
+      
+    </div>
+    
+  </header>
+
+  
+
+  <div class="article-content">
+    <h2 id="heading">复现方式</h2>
+<p>进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。<br />
+然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。</p>
+<h2 id="heading-1">排查过程</h2>
+<p>通过AudioQueue实现的录音，启动都没有什么错误。<br />
+然后通过LevelMeter检查数据的音量，发现全是0。</p>
+<p>再看看AudioSession的各种接口，setActive、setCategory都是正常的。</p>
+<p>好奇怪🤔</p>
+<p>经过测试，这时使用微信的语音通话，是可以使用麦克风的。<br />
+此时回到腾讯会议，会出现中断的提示。</p>
+<p>也就是说，只有使用AudioUnit才能把音频权限抢回来，然后腾讯会议收到AudioSessionInterrupt的通知，出现提示。</p>
+<p>于是乎，我们可以自己写一个AudioUnit的录音demo，而这个之前早就写过了。<br />
+<a href="https://github.com/jayying007/iOSDemos">https://github.com/jayying007/iOSDemos</a></p>
+<p>测试时发现，即使是AudioUnit，选择RemoteIO也是不行的，需要选择VoiceProcessingIO。</p>
+<p>另外一个发现是，使用AudioQueue，只要把AudioSession setCategory的option AudioSessionModeVoiceChat加上，也是可以打断腾讯会议，把麦克风抢回来的。</p>
+<p>但是话说回来，AudioUnit本身是用于通话类场景的，这里录音使用真的好吗？</p>
+<h2 id="heading-2">疑问</h2>
+<p>一个支线任务：如何实现关闭麦克风，右上角的小黄点消失？🤔</p>
+<p>试了下，AudioUnit通过EnableIO把输入通道给关闭了，依然不行。</p>
+<p>最后试了下setInputMuted这个接口，发现可行。也就是说，可以仿照腾讯会议的逻辑，屏蔽掉其他App的录音。</p>
+<h2 id="heading-3">结论</h2>
+<p>我觉得这是苹果🍎的bug，其他App把麦克风关闭的时候无法录音，把麦克风打开的时候又可以录音。<br />
+setInputMuted这个逻辑本来是每个App单独设置的，怎么这里会影响到全部app呢。</p>
+
   </div>
-</div>
+
+  
+  <nav class="post-nav">
+    
+    <a href="/post/aibian-cheng/" class="post-nav-card post-nav-card--prev">
+      
+      <div class="post-nav-card__body">
+        <span class="post-nav-card__label meta-text">上一篇</span>
+        <span class="post-nav-card__title">AI编程</span>
+      </div>
+      <span class="post-nav-card__arrow">&larr;</span>
+    </a>
+    
+    
+    <a href="/post/zhou-jie-lun/" class="post-nav-card post-nav-card--next">
+      <div class="post-nav-card__body">
+        <span class="post-nav-card__label meta-text">下一篇</span>
+        <span class="post-nav-card__title">周杰伦</span>
+      </div>
+      
+      <span class="post-nav-card__arrow">&rarr;</span>
+    </a>
+    
+  </nav>
+
+  
+  
+
+
+</article>
 
   </main>
 

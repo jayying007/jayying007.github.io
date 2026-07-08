@@ -30,7 +30,7 @@
   (function () {
     try {
       var saved = localStorage.getItem('flavor-theme');
-      var theme = saved || 'dark';
+      var theme = saved || 'light';
       if (theme === 'light') {
         document.documentElement.classList.add('theme-light');
       }
@@ -79,13 +79,11 @@
         
         <a class="nav-item" href="/archives">归档</a>
         
-        <a class="nav-item" href="/tags">标签</a>
+        <a class="nav-item" href="/category/bian-cheng">编程</a>
         
-        <a class="nav-item" href="/links">友链</a>
+        <a class="nav-item" href="/category/sheng-huo">生活</a>
         
         <a class="nav-item" href="/post/about">关于</a>
-        
-        <a class="nav-item" href="/category/lu-xing/">旅行</a>
         
         
       </nav>
@@ -187,46 +185,20 @@
     
     <article class="post-card post-card--list">
   <div class="post-card__body">
-    <a href="/post/hello-gridea-pro/" class="post-card__title-link">
-      <h3 class="post-card__title clamp-3">念念不忘，必有回响 —— Gridea Pro，我们回来了</h3>
+    <a href="/post/aibian-cheng/" class="post-card__title-link">
+      <h3 class="post-card__title clamp-3">AI编程</h3>
     </a>
-    <a href="/post/hello-gridea-pro/" class="post-card__excerpt clamp-2">
-      你好，欢迎来到 Gridea Pro。
-如果你正在读这篇文章，说明你已经迈出了最重要的一步——决定拥有一个属于自己的博客。
+    <a href="/post/aibian-cheng/" class="post-card__excerpt clamp-2">
+      #编程
+最近几个星期在用TRAE，开发了两款自用的App。都是之前心心念念的功能。
+一款是收藏打卡，可以用来标记去过什么地方，哪些完成了，哪些想做还没做。
 
-关于 Gridea Pro
-搭建独立博客这件事，在过去一直有个尴尬的矛盾：想写博客的人很多，但现有的工具几乎...
-    </a>
-    <div class="post-card__meta meta-text">
-      2026-07-07
-      <span class="badge badge--top">置顶</span>
-    </div>
-  </div>
-  
-</article>
+一款是习惯打卡，用于完成一些周期性的任务，比如拖地、洗床单。
 
-    
-    <article class="post-card post-card--list">
-  <div class="post-card__body">
-    <a href="/post/quick-start/" class="post-card__title-link">
-      <h3 class="post-card__title clamp-3">Gridea Pro 完全上手指南 —— 从写作到发布，一篇搞定</h3>
-    </a>
-    <a href="/post/quick-start/" class="post-card__excerpt clamp-2">
-      这篇指南会带你一步一步熟悉 Gridea Pro 的界面和操作，从写第一篇文章到把博客发布到互联网上。
-
-认识界面
-打开 Gridea Pro 后，你会看到左侧是导航栏，右侧是内容区域。
-左侧导航从上到下依次是：
-
-
-
-导航
-说明
-
-...
+开发时用了我...
     </a>
     <div class="post-card__meta meta-text">
-      2026-07-07
+      2026-01-31
       
     </div>
   </div>
@@ -236,17 +208,18 @@
     
     <article class="post-card post-card--list">
   <div class="post-card__body">
-    <a href="/post/why-we-write/" class="post-card__title-link">
-      <h3 class="post-card__title clamp-3">都 2026 年了，我们为什么还要写博客</h3>
+    <a href="/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/" class="post-card__title-link">
+      <h3 class="post-card__title clamp-3">记一次麦克风异常的排查经历</h3>
     </a>
-    <a href="/post/why-we-write/" class="post-card__excerpt clamp-2">
-      你有没有过这样的时刻——
-某天深夜，突然想起一个很久没联系的人，想跟他说点什么，却发现你们之间已经隔了太多年的空白，连开口的理由都找不到了。
-
-或者翻手机相册，看到三年前拍的一张照片，背景里有一家街角的小店。你记得自己当时走进去过，吃...
+    <a href="/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/" class="post-card__excerpt clamp-2">
+      复现方式
+进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。
+然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。
+排查过程
+通过Audio...
     </a>
     <div class="post-card__meta meta-text">
-      2026-07-07
+      2025-06-24
       
     </div>
   </div>
@@ -256,15 +229,16 @@
     
     <article class="post-card post-card--list">
   <div class="post-card__body">
-    <a href="/post/indie-blog-is-not-dead/" class="post-card__title-link">
-      <h3 class="post-card__title clamp-3">独立博客没有死，正在死的是平庸的博客</h3>
+    <a href="/post/zhou-jie-lun/" class="post-card__title-link">
+      <h3 class="post-card__title clamp-3">周杰伦</h3>
     </a>
-    <a href="/post/indie-blog-is-not-dead/" class="post-card__excerpt clamp-2">
-      你可能听过很多次这样的说法：&amp;ldquo;博客已经过时了&amp;rdquo;、&amp;ldquo;现在谁还看博客&amp;rdquo;、&amp;ldquo;有公众号和小红书就够了&amp;rdquo;。
-但事实是——2026 年的今天，全球有超过 6 亿个博客，每天产...
+    <a href="/post/zhou-jie-lun/" class="post-card__excerpt clamp-2">
+      上个月终于抢到了周杰伦演唱会的门票，所以上周六去了趟广西，现在做下记录。
+演唱会时间是周日晚上，而周日要补五一的班，所以我请了周日还有周一上午的假。
+周六去到广西先在附近逛逛。吃了一顿老友粉，味道感觉和螺蛳粉还挺像。随后开始在街边溜达...
     </a>
     <div class="post-card__meta meta-text">
-      2026-07-07
+      2025-04-29
       
     </div>
   </div>
@@ -274,16 +248,41 @@
     
     <article class="post-card post-card--list">
   <div class="post-card__body">
-    <a href="/post/why-i-revived-gridea/" class="post-card__title-link">
-      <h3 class="post-card__title clamp-3">我为什么复活了 Gridea —— 每个想写点什么的人，都值得一个更简单的开始</h3>
+    <a href="/post/da-lao-re/" class="post-card__title-link">
+      <h3 class="post-card__title clamp-3">大老热</h3>
     </a>
-    <a href="/post/why-i-revived-gridea/" class="post-card__excerpt clamp-2">
-      2022 年 5 月 17 日，Gridea 发布了它的最后一个版本 v0.9.3。
-此后，再也没有更新过。Issues 无人回复，PR 无人合并。一个曾经帮助 28,000 多位用户搭建了自己博客的工具，就这样安静地停在了那里。
-我...
+    <a href="/post/da-lao-re/" class="post-card__excerpt clamp-2">
+      请了3天半的年假，回老家过十二年一次的大老热。妈祖拜了，迎标旗看了，无人机表演也看了，人挤人体验了，很充实。
+感觉跟过年一样，很多人都回来了。
+
+回老家的时候带了Xbox游戏手柄回来，也在电视上玩了二周目的黑神话第一章。
+在老家的电脑...
     </a>
     <div class="post-card__meta meta-text">
-      2026-07-07
+      2024-12-15
+      
+    </div>
+  </div>
+  
+</article>
+
+    
+    <article class="post-card post-card--list">
+  <div class="post-card__body">
+    <a href="/post/du-li-kai-fa/" class="post-card__title-link">
+      <h3 class="post-card__title clamp-3">独立开发</h3>
+    </a>
+    <a href="/post/du-li-kai-fa/" class="post-card__excerpt clamp-2">
+      今天刷了一整天独立开发者的博客，多少有点收获吧，记录下来。
+网站是这个：Indie Hackers
+
+独立开发，是从0到1。
+团队开发，是从1到100。
+独立开发，一般都是小众赛道，找有特殊需求的用户。
+设计可以从Dribble上找灵...
+    </a>
+    <div class="post-card__meta meta-text">
+      2024-10-03
       
     </div>
   </div>
@@ -295,6 +294,14 @@
   
 
   
+  
+  <nav class="pagination">
+    
+    <span class="pagination__info">1 / 3</span>
+    
+    <a href="/post/page/2/" class="btn btn--secondary">下一页 &rarr;</a>
+    
+  </nav>
   
 </div>
 
@@ -311,13 +318,11 @@
       
       <a class="footer-nav__link" href="/archives">归档</a>
       
-      <a class="footer-nav__link" href="/tags">标签</a>
+      <a class="footer-nav__link" href="/category/bian-cheng">编程</a>
       
-      <a class="footer-nav__link" href="/links">友链</a>
+      <a class="footer-nav__link" href="/category/sheng-huo">生活</a>
       
       <a class="footer-nav__link" href="/post/about">关于</a>
-      
-      <a class="footer-nav__link" href="/category/lu-xing/">旅行</a>
       
     </nav>
     
@@ -354,30 +359,6 @@
   </div>
 </footer>
 
-  
-  <div class="search-overlay" id="searchOverlay" style="display:none;">
-  <div class="search-modal">
-    <div class="search-header">
-      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <input type="text" class="search-input" id="searchInput" placeholder="搜索文章..." autocomplete="off" />
-      <span class="search-kbd">&#8984;K</span>
-      <button class="search-close" id="searchClose" type="button" aria-label="关闭搜索">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="search-results" id="searchResults"></div>
-  </div>
-</div>
-
-<script src="/scripts/search.js"></script>
   
 
   
