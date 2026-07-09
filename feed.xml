@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Gridea Pro</title>
+    <title>Jayying007</title>
     <link>https://jayying007.github.io/</link>
-    <description>Welcome to Gridea Pro</description>
+    <description>好好学习，天天向上</description>
     <language>zh-cn</language>
     <generator>Gridea Pro</generator>
     <lastBuildDate>Thu, 09 Jul 2026 00:21:30 +0800</lastBuildDate>
@@ -36,7 +36,6 @@
 ]]></description>
       <category>iOS</category>
       <category>音视频</category>
-      <category>debug</category>
     </item>
     <item>
       <title>周杰伦</title>
@@ -49,6 +48,7 @@
 <p><img src="https://jayying007.github.io/post-images/1783530115072873000_0.jpeg" alt="" /></p>
 <p>广&hellip;</p>
 ]]></description>
+      <enclosure url="http://127.0.0.1:6606/post-images/1783530115072873000_0.jpeg" length="0" type="image/jpeg"></enclosure>
     </item>
     <item>
       <title>大老热</title>
@@ -64,7 +64,7 @@
 ]]></description>
     </item>
     <item>
-      <title>独立开发</title>
+      <title>关于独立开发</title>
       <link>https://jayying007.github.io/post/du-li-kai-fa/</link>
       <guid isPermaLink="true">https://jayying007.github.io/post/du-li-kai-fa/</guid>
       <pubDate>Thu, 03 Oct 2024 01:16:50 +0800</pubDate>
@@ -135,19 +135,20 @@
 ]]></description>
     </item>
     <item>
-      <title>计算机简史（三）</title>
-      <link>https://jayying007.github.io/post/computer-history-part-three/</link>
-      <guid isPermaLink="true">https://jayying007.github.io/post/computer-history-part-three/</guid>
-      <pubDate>Sat, 28 Aug 2021 17:47:59 +0800</pubDate>
-      <description><![CDATA[<h3 id="heading">计算机网络</h3>
-<p>单台计算机如果要分享数据给其他计算机，可以通过网线传输或者无线传输。关于底层的数据传输，应该算通讯行业的事情了。</p>
-<p><img src="https://blog-img-1256061645.cos.ap-guangzhou.myqcloud.com/1592022001046-ab2d48af-1620-43ec-9c53-7fb0fbc5775f.png" alt="img" /></p>
-<p>![img](ht&hellip;</p>
+      <title>一场旅行：微信步数走满是什么体验？</title>
+      <link>https://jayying007.github.io/post/yi-chang-lu-xingwei-xin-bu-shu-zou-man-shi-shi-me-ti-yan/</link>
+      <guid isPermaLink="true">https://jayying007.github.io/post/yi-chang-lu-xingwei-xin-bu-shu-zou-man-shi-shi-me-ti-yan/</guid>
+      <pubDate>Sun, 27 Feb 2022 23:04:04 +0800</pubDate>
+      <description><![CDATA[<p>春节在家看B站时，看到有位Up主徒步走了下武汉（还是重庆，忘了），从凌晨开始，走了十几个小时，把微信步数走满了。路上遇到了形形色色的风景和人，我感觉挺有意思的，想模仿一下，于是有了下面的计划。。</p>
+<h3 id="heading">路线</h3>
+<p>我的想法：打开百度地图，搜一下有名的景点，把它们串起来就可以了吧。 上知乎找一下推荐的地方，然后挑选在路线附近的。</p>
+<h4 id="heading-1">客村</h4>
+<p>出发点</p>
+<h4 id="heading-2">广州塔</h4>
+<p>耗时：30分</p>
+<h4 id="heading-3">二沙岛</h4>
+<p>&hellip;</p>
 ]]></description>
-      <category>计算机网络</category>
-      <category>数据库</category>
-      <category>分布式系统</category>
-      <category>搜索引擎</category>
     </item>
   </channel>
 </rss>

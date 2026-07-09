@@ -38,7 +38,7 @@
   })();
 </script>
   <meta name="generator" content="Gridea Pro 1.2.2">
-  <title>记一次麦克风异常的排查经历 | Gridea Pro</title>
+  <title>记一次麦克风异常的排查经历 | Jayying007</title>
   
 <meta property="og:title" content="记一次麦克风异常的排查经历" />
 <meta property="og:type" content="article" />
@@ -46,13 +46,13 @@
 
 <meta name="description" content="复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s&amp;hellip;">
 <link rel="canonical" href="https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"记一次麦克风异常的排查经历","url":"https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/","description":"复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s\u0026hellip;","datePublished":"2025-06-24T08:40:40+08:00","dateModified":"2026-07-09T00:52:59+08:00","author":{"@type":"Person","name":"Gridea Pro"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/images/avatar.png"},"name":"Gridea Pro"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":"https://jayying007.github.io","name":"Gridea Pro","position":1},{"@type":"ListItem","item":"https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/","name":"记一次麦克风异常的排查经历","position":2}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"记一次麦克风异常的排查经历","url":"https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/","description":"复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s\u0026hellip;","datePublished":"2025-06-24T08:40:40+08:00","dateModified":"2026-07-09T23:11:02+08:00","author":{"@type":"Person","name":"Jayying007"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/images/avatar.png"},"name":"Jayying007"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":"https://jayying007.github.io","name":"Jayying007","position":1},{"@type":"ListItem","item":"https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/","name":"记一次麦克风异常的排查经历","position":2}]}</script>
 <meta property="og:title" content="记一次麦克风异常的排查经历">
 <meta property="og:description" content="复现方式 进入腾讯会议app，然后把麦克风关闭，这个时候手机上的小黄点会消失。 然后使用其他app的录音功能，比如系统的语音备忘录、QQ、微信，这个时候虽然录音正常启动，也出现小黄点，但实际上什么声音都没有。 排查过程 通过AudioQueue实现的录音，启动都没有什么错误。 然后通过LevelMeter检查数据的音量，发现全是0。 再看看AudioSession的各种接口，s&amp;hellip;">
 <meta property="og:url" content="https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Gridea Pro">
+<meta property="og:site_name" content="Jayying007">
 <meta property="og:image" content="/images/avatar.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://jayying007.github.io/post/ji-yi-ci-mai-ke-feng-yi-chang-de-pai-cha-jing-li/">
@@ -70,10 +70,10 @@
       <div class="top-bar__left">
         
         <a href="https://jayying007.github.io" class="site-avatar-link" aria-label="返回首页">
-          <img class="site-avatar" src="/images/avatar.png" alt="Gridea Pro" />
+          <img class="site-avatar" src="/images/avatar.png" alt="Jayying007" />
         </a>
         
-        <a href="https://jayying007.github.io" class="site-name-link">Gridea Pro</a>
+        <a href="https://jayying007.github.io" class="site-name-link">Jayying007</a>
       </div>
 
       
@@ -201,8 +201,6 @@
       
       <a href="/tag/yin-shi-pin/" class="tag-pill tag-pill--sm">音视频</a>
       
-      <a href="/tag/debug/" class="tag-pill tag-pill--sm">debug</a>
-      
     </div>
     
   </header>
@@ -255,6 +253,10 @@ setInputMuted这个逻辑本来是每个App单独设置的，怎么这里会影�
         <span class="post-nav-card__title">周杰伦</span>
       </div>
       
+      <div class="post-nav-card__img">
+        <img src="http://127.0.0.1:6606/post-images/1783530115072873000_0.jpeg" alt="周杰伦" loading="lazy" />
+      </div>
+      
       <span class="post-nav-card__arrow">&rarr;</span>
     </a>
     
@@ -302,14 +304,10 @@ setInputMuted这个逻辑本来是每个App单独设置的，怎么这里会影�
 
     
     <div class="footer-copyright">
-      <p>&copy; 2026 Gridea Pro. All rights reserved.</p>
+      <p>&copy; 2026 Jayying007. All rights reserved.</p>
     </div>
 
     
-    
-    <div class="footer-custom">
-      Powered by Gridea Pro
-    </div>
     
 
     
